@@ -9,6 +9,7 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@anu-vue/nuxt": "^0.13.1",
     "@anu-vue/preset-theme-default": "^0.13.1",
     "@iconify-json/carbon": "^1.1.16",
     "@iconify-json/line-md": "^1.1.24",
@@ -22,7 +23,6 @@
     "nuxt": "^3.4.3"
   },
   "dependencies": {
-    "@anu-vue/nuxt": "^0.13.1",
     "@duckdb/duckdb-wasm": "^1.25.0",
     "@floating-ui/vue": "^1.0.0",
     "apache-arrow": "^11.0.0",
