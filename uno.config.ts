@@ -5,13 +5,13 @@ import {
 } from 'unocss'
 
 export default defineConfig({
-  presets:[
-    presetAnu(),
-    presetThemeDefault(),
-    presetUno(),
-    presetAttributify(),
-    presetIcons(),
-    presetTypography(),
-  ],
+  // presets:[
+  //   presetAnu(),
+  //   presetThemeDefault(),
+  //   presetUno(),
+  //   presetAttributify(),
+  //   presetIcons(),
+  //   presetTypography(),
+  // ],
   include: [/.*\/anu-vue\.js(.*)?$/, /\.(vue|svelte|[jt]sx|mdx?|astro|elm|php|phtml|html)($|\?)/],
 })
