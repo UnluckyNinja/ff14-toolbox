@@ -1,0 +1,31 @@
+{
+  "name": "ffxiv-itemkit",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "devDependencies": {
+    "@iconify-json/carbon": "^1.1.16",
+    "@iconify-json/line-md": "^1.1.24",
+    "@iconify-json/logos": "^1.1.29",
+    "@types/d3": "^7.4.0",
+    "@types/node": "^18",
+    "@unocss/nuxt": "^0.51.12",
+    "@vueuse/core": "^10.1.2",
+    "@vueuse/nuxt": "^10.1.2",
+    "nuxt": "^3.4.3"
+  },
+  "dependencies": {
+    "@anu-vue/nuxt": "^0.13.1",
+    "@duckdb/duckdb-wasm": "^1.25.0",
+    "@floating-ui/vue": "^1.0.0",
+    "apache-arrow": "^11.0.0",
+    "d3": "^7.8.4",
+    "d3-dsv": "^3.0.1",
+    "fflate": "^0.7.4"
+  }
+}
