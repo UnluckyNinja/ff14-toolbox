@@ -43,7 +43,7 @@ onClickOutside(rootComp, () => {
     </div>
     <!-- Dropdown -->
     <div v-if="showDropdown" ref="floating"
-      class="children:px-4 children:py-1 border divide-y hover:children:bg-gray/20 hover:children:cursor-pointer rounded bg-light-1 max-h-50vh overflow-auto"
+      class="children:px-4 children:py-1 z-10 border divide-y hover:children:bg-gray/20 hover:children:cursor-pointer rounded bg-light-1 max-h-50vh overflow-auto"
       :style="floatingStyles">
       <slot name="default" :handleClick="handleClick"></slot>
     </div>
