@@ -1,0 +1,104 @@
+<script lang="ts" setup>
+const selectedItem = inject<any>('selected-item', null)
+
+const marketInfo = ref<any>(null)
+const updating = ref(false)
+const settings = useSetting()
+
+const marketCenter = useState<string | number>('marketCenter', () => '')
+
+watch([selectedItem, marketCenter, () => settings.value.onlyHQ], async ([item, market, HQ]) => {
+  if (!item || !market) return {}
+  updating.value = true
+  const options: any = {
+    listings: settings.value.numberPerPage,
+    entries: 10
+  }
+  if (item.canBeHQ && HQ) {
+    options.hq = true
+  }
+  marketInfo.value = await fetchMarket(market, item.id, options)
+  updating.value = false
+})
+
+</script>
+
+<template>
+  <div class="mt-4 py-4 rounded border bg-white shadow shadow-inner">
+    <!-- prices -->
+    <div v-if="updating">
+      <div class="text-center">
+        <ASpinner class="w-20"></ASpinner>
+      </div>
+    </div>
+    <div v-else-if="marketInfo && !updating">
+      <div class="text-center font-bold text-xl m-4"
+        v-if="marketInfo.listings.length === 0 && marketInfo.recentHistory.length === 0">
+        该物品可能无法交易
+      </div>
+      <div class="text-center divide-y-2 space-y-lg" v-else>
+        <!-- on sale -->
+        <div>
+          <h2 class="text-2xl m-2">在售列表</h2>
+          <table class="min-w-1/2 mx-auto table-auto">
+            <thead>
+              <tr>
+                <th>物品名</th>
+                <th>单价</th>
+                <th>数量</th>
+                <th>总计</th>
+                <th>雇员名</th>
+                <th>服务器</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in marketInfo.listings" class="odd:bg-dark/10 divide-x children:px-4 children:py-2">
+                <td>{{ selectedItem.name }}{{ item.hq ? '' : '' }}</td>
+                <td class="text-end">{{ item.pricePerUnit }}</td>
+                <td>x {{ item.quantity }}</td>
+                <td class="text-end">{{ item.total }}</td>
+                <td>{{ item.retainerName }}</td>
+                <td>{{ item.worldName }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- history -->
+        <div>
+          <h2 class="text-2xl m-2">历史交易</h2>
+          <table class="min-w-1/2 mx-auto table-auto">
+            <thead>
+              <tr>
+                <th>物品名</th>
+                <th>单价</th>
+                <th>数量</th>
+                <th>总计</th>
+                <th>购买者</th>
+                <th>服务器</th>
+                <th>购买时间</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in marketInfo.recentHistory" class="odd:bg-dark/10 divide-x children:px-4 children:py-2">
+                <td>{{ selectedItem.name }}{{ item.hq ? '' : '' }}</td>
+                <td class="text-end">{{ item.pricePerUnit }}</td>
+                <td>x {{ item.quantity }}</td>
+                <td class="text-end">{{ item.total }}</td>
+                <td>{{ item.buyerName }}</td>
+                <td>{{ item.worldName }}</td>
+                <td>{{ new Date(item.timestamp * 1000).toLocaleString('zh-CN') }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div v-else>
+      <div class="text-center">
+        <div class="text-lg">请在上方搜索框内输入关键词搜索物品并点击</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style lang="postcss" scoped></style>

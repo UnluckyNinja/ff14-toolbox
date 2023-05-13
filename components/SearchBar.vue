@@ -7,17 +7,7 @@ const emits = defineEmits<{
   (event: 'itemClick', value: any): void
 }>()
 
-const text = shallowRef<Record<string, any>[]>([])
-const db = shallowRef<DuckDBClient | null>(null)
-
-onMounted(async () => {
-  await loadItemData()
-  text.value = getItemData()
-  const { DuckDBClient } = await import('~/data/duckDB')
-  db.value = await DuckDBClient.of({
-    items: text.value,
-  })
-})
+const db = useState<DuckDBClient | null>('duckdb', ()=>null)
 
 const columnNames = [
   'items."key: #" as id',
