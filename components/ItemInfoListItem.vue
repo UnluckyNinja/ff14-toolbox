@@ -3,8 +3,8 @@ const props = defineProps<{
   item: any
 }>()
 
-const base = `https://cafemaker.wakingsands.com/i/`
-const imgUrl = computed(()=>{
+const base = 'https://cafemaker.wakingsands.com/i/'
+const imgUrl = computed(() => {
   const id = `${props.item.iconID}`.padStart(6, '0')
   const folder = id.substring(0, 3).padEnd(6, '0')
   return `${base}${folder}/${id}.png`
@@ -12,10 +12,12 @@ const imgUrl = computed(()=>{
 </script>
 
 <template>
-  <div class="col-span-1 border my-auto mx-1 px-1 border-dark shadow-inset rounded-lg grid grid-cols-6 place-items-center grid-auto-rows-54px">
+  <div class="grid col-span-1 grid-auto-rows-54px grid-cols-6 mx-1 my-auto place-items-center border border-dark rounded-lg px-1 shadow-inset">
     <div>{{ props.item.itemLevel }}</div>
-    <img class="mr-4" :src="imgUrl" alt="item icon" lazy/>
-    <div class="max-w-full text-sm col-span-4 justify-self-start line-clamp-2">{{ props.item.name }}</div>
+    <img class="mr-4" :src="imgUrl" alt="item icon" lazy>
+    <div class="line-clamp-2 col-span-4 max-w-full justify-self-start text-sm">
+      {{ props.item.name }}
+    </div>
   </div>
 </template>
 

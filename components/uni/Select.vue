@@ -1,51 +1,54 @@
 <script lang="ts" setup>
-import { autoUpdate, flip, offset, shift, size, useFloating } from '@floating-ui/vue';
+import { autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/vue'
 
 const props = withDefaults(defineProps<{
   current?: string
 }>(), {
-  current: ''
+  current: '',
 })
 
 const showDropdown = ref(false)
 
 function handleClick() {
-  showDropdown.value = false;
+  showDropdown.value = false
 }
-const reference = ref(null);
-const floating = ref(null);
+const reference = ref(null)
+const floating = ref(null)
 
-const { floatingStyles, middlewareData } = useFloating(reference, floating, {
+const { floatingStyles } = useFloating(reference, floating, {
   placement: 'bottom-end',
   middleware: [offset(5), flip(), shift()],
   whileElementsMounted: autoUpdate,
-});
+})
 const rootComp = ref()
 onClickOutside(rootComp, () => {
   showDropdown.value = false
 })
-
 </script>
 
 <template>
   <div ref="rootComp">
     <!-- Selected -->
-    <div ref="reference"
-      class="p-1 flex items-center focus:ring-2 ring-blue border rounded bg-light-1 dark:bg-dark-1 hover:cursor-pointer foucs:ring hover:brightness-110 text-sm"
+    <div
+      ref="reference"
+      class="flex text-sm focus:ring items-center border rounded bg-white p-1 ring-blue hover:cursor-pointer dark:bg-dark-1 focus:ring-2 dark:bg-gray-800"
+      tabindex="0"
       @click="showDropdown = true"
-      tabindex="0">
+    >
       <slot class="flex-1" name="content">
-        <div class="flex-1 whitespace-nowrap text-ellipsis overflow-hidden">
+        <div class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
           {{ props.current }}
         </div>
       </slot>
-      <div i-carbon-list class="flex-none mx-1"></div>
+      <div i-carbon-list class="mx-1 flex-none" />
     </div>
     <!-- Dropdown -->
-    <div v-if="showDropdown" ref="floating"
-      class="children:px-4 children:py-1 z-10 border divide-y hover:children:bg-gray/20 hover:children:cursor-pointer rounded bg-light-1 max-h-50vh overflow-auto"
-      :style="floatingStyles">
-      <slot name="default" :handleClick="handleClick"></slot>
+    <div
+      v-if="showDropdown" ref="floating"
+      class="border rounded bg-white dark:bg-gray-800 z-10 max-h-50vh overflow-auto divide-y children:px-4 children:py-1 hover:children:cursor-pointer hover:children:bg-gray/20"
+      :style="floatingStyles"
+    >
+      <slot name="default" :handle-click="handleClick" />
     </div>
   </div>
 </template>

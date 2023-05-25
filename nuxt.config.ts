@@ -1,19 +1,25 @@
-import { presetUno, transformerDirectives, transformerVariantGroup } from 'unocss'
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   typescript: {
-    shim: false
+    shim: false,
   },
+
   modules: [
+    '@nuxt/devtools',
     '@vueuse/nuxt',
-    '@anu-vue/nuxt',
     '@unocss/nuxt',
+    '@nuxthq/ui',
   ],
+
   vite: {
-    assetsInclude: ['**/*.wasm']
+    assetsInclude: ['**/*.wasm'],
   },
+
   nitro: {
-    preset: 'cloudflare-pages'
-  }
+    preset: 'cloudflare-pages',
+  },
+
+  devtools: {
+    enabled: true,
+  },
 })

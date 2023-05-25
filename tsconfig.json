@@ -2,7 +2,6 @@
   // https://nuxt.com/docs/guide/concepts/typescript
   "extends": "./.nuxt/tsconfig.json",
   "types": [
-    "vite/client",
-    "anu-vue/volar"
+    "vite/client"
   ]
 }
