@@ -22,4 +22,8 @@ export default defineNuxtConfig({
   devtools: {
     enabled: true,
   },
+
+  ui: {
+    icons: ['logos'],
+  },
 })

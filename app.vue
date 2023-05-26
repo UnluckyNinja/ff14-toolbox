@@ -22,7 +22,9 @@ function toggle() {
       </UContainer>
     </nav>
     <NuxtPage />
-    <footer class="pt-20" />
+    <footer class="flex justify-center py-10 border-t mt-10 container mx-auto">
+      <UButton size="xl" variant="link" color="white" to="https://github.com/UnluckyNinja/ff14-toolbox" target="_blank" icon="i-logos-github-icon" />
+    </footer>
   </div>
 </template>
 

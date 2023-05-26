@@ -61,15 +61,20 @@ function select(index: number) {
 
 <template>
   <div ref="compRoot" class="relative">
-    <div class="relative">
+    <div class="relative my-4">
+      <!-- workaround due to nuxtlabs/ui style conflicting with unocss -->
+      <!-- <div class="pl-12"></div> -->
       <UInput
         v-model="search"
+        size="xl"
         name="search-input"
         placeholder="输入物品名，空格分隔关键词，不区分大小写"
+        icon="i-heroicons-magnifying-glass-20-solid"
+        :trailing="false"
         @update:model-value="isSearching = true"
         @focus="showSearchResult = results.length > 0"
       />
-      <div v-show="search !== ''" class="absolute right-10 top-0 h-full flex items-center text-gray/50">
+      <div v-show="search !== ''" class="absolute right-10 top-0 h-full flex items-center">
         <div v-if="isSearching">
           搜索中
         </div>
@@ -81,7 +86,7 @@ function select(index: number) {
     <div
       v-show="showSearchResult"
       v-bind="containerProps"
-      class="absolute top-full z-10 w-full overflow-auto border border-yellow-600 rounded p-2 bg-white shadow max-h-300px dark:bg-black"
+      class="absolute top-full z-10 w-full overflow-auto border border-yellow-600 rounded p-2 bg-white max-h-300px dark:bg-black mt-px shadow-lg"
     >
       <div v-bind="wrapperProps">
         <div v-for="i, idx in list" :key="idx" class="grid grid-cols-3" style="height: 60px">
