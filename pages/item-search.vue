@@ -13,7 +13,7 @@ onMounted(initialize)
 
 provide('duckDB', db)
 
-const servers = useServerInfo()
+const servers = reactive(useServerInfo())
 
 const isAppLoading = computed(() => {
   if (!db.value)

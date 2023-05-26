@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const servers = useServerInfo()
+const servers = reactive(useServerInfo())
 const settings = useSettings()
 if (settings.value.selectedRegion === '') {
   nextTick(() => {
@@ -8,11 +8,11 @@ if (settings.value.selectedRegion === '') {
         stop()
         return
       }
-      if (servers.value.regions.length > 0) {
-        if (servers.value.regions.includes('中国'))
+      if (servers.regions.length > 0) {
+        if (servers.regions.includes('中国'))
           settings.value.selectedRegion = '中国'
         else
-          settings.value.selectedRegion = servers.value.regions[0]
+          settings.value.selectedRegion = servers.regions[0]
 
         stop()
       }
@@ -22,7 +22,7 @@ if (settings.value.selectedRegion === '') {
 
 // when selected region change, automatically change selected data center
 watch(() => settings.value.selectedRegion, (newVal) => {
-  const dcs = servers.value.dataCenters?.filter(it => it.region === newVal)
+  const dcs = servers.dataCenters?.filter(it => it.region === newVal)
   if (!dcs || dcs.length === 0)
     return
 
@@ -30,7 +30,7 @@ watch(() => settings.value.selectedRegion, (newVal) => {
 })
 
 const dataCenterObj = computed(() => {
-  return servers.value.dataCenters?.find(it => it.name === settings.value.selectedDataCenter)
+  return servers.dataCenters?.find(it => it.name === settings.value.selectedDataCenter)
 })
 
 // when selected data center change, automatically change selected server to that data center
@@ -39,13 +39,13 @@ watch(() => settings.value.selectedDataCenter, (newVal) => {
 })
 
 const dataCenterOptions = computed(() => {
-  return servers.value.dataCenters?.filter(it => it.region === settings.value.selectedRegion) ?? []
+  return servers.dataCenters?.filter(it => it.region === settings.value.selectedRegion) ?? []
 })
 
 const serverOptions = computed(() => {
   if (!dataCenterObj.value)
     return []
-  return dataCenterObj.value.worlds.map(it => servers.value.worlds?.find(w => w.id === it)?.name) as string[]
+  return dataCenterObj.value.worlds.map(it => servers.worlds?.find(w => w.id === it)?.name) as string[]
 })
 </script>
 

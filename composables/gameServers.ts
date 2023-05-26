@@ -5,23 +5,20 @@ interface DataCenter {
 }
 
 export function useServerInfo() {
-  const state = useState('server-info', () => {
-    const { data: dataCenters } = useFetch<DataCenter[]>('https://universalis.app/api/v2/data-centers', { server: false, responseType: 'json' })
-    const { data: worlds } = useFetch<{ id: number; name: string }[]>('https://universalis.app/api/v2/worlds', { server: false, responseType: 'json' })
-    const regions = computed(() => {
-      if (!dataCenters.value)
-        return []
-      return [...new Set(dataCenters.value.map(it => it.region))]
-    })
+  const { data: dataCenters } = useFetch<DataCenter[]>('https://universalis.app/api/v2/data-centers', { server: false, responseType: 'json' })
+  const { data: worlds } = useFetch<{ id: number; name: string }[]>('https://universalis.app/api/v2/worlds', { server: false, responseType: 'json' })
 
-    return reactive({
-      regions,
-      dataCenters,
-      worlds,
-    })
+  const regions = computed(() => {
+    if (!dataCenters.value)
+      return []
+    return [...new Set(dataCenters.value.map(it => it.region))]
   })
 
-  return state
+  return {
+    regions,
+    dataCenters,
+    worlds,
+  }
 }
 
 export async function fetchMarket(server: string | number, items: (string | number)[] | string, options?: Record<string, any>) {
