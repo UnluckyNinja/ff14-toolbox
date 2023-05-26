@@ -58,10 +58,12 @@ function onItemClick(item: any) {
         @item-click="onItemClick($event)"
       />
       <OptionsPanel />
-      <CurrentItemInfo v-if="selectedItem" :item="selectedItem" />
       <div class="grid grid-cols-6 gap-2">
-        <SearchHistoryList class="col-span-1" />
-        <MarketInfo class="col-span-5" />
+        <SearchHistoryList class="col-span-1 hidden md:block" />
+        <div class="col-span-6 md:col-span-5">
+          <CurrentItemInfo v-if="selectedItem" class="ml-4" :item="selectedItem" />
+          <MarketInfo />
+        </div>
       </div>
     </div>
   </div>

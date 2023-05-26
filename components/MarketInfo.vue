@@ -40,7 +40,7 @@ watch([selectedItem, () => settings.value.selectedServer, () => settings.value.o
       >
         该物品可能无法交易
       </div>
-      <div v-else class="text-sm text-center grid grid-cols-2 divide-x">
+      <div v-else class="text-sm text-center grid grid-cols-1 divide-x md:grid-cols-2">
         <!-- on sale -->
         <div>
           <h2 class="m-2 text-2xl">

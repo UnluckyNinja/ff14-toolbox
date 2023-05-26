@@ -54,41 +54,59 @@ const serverOptions = computed(() => {
     <!-- settings -->
     <div
       v-if="settings.showOptions"
-      class="grid grid-cols-12 gap-2 p-2 even:children:justify-self-start odd:children:justify-self-end"
+      class="flex flex-wrap gap-2 p-2 items-center"
     >
-      <div class="col-span-1">
+      <div>
         运营地区
-      </div>
-      <UniSelect v-slot="{ handleClick }" class="col-span-2 w-full flex-1" :current="settings.selectedRegion">
-        <div v-for="region in servers.regions" :key="region" tabindex="0" @click="handleClick(); settings.selectedRegion = region">
-          <span class="text-sm">
-            {{ region }}
-          </span>
+        <div class="inline-block">
+          <UPopover class="mr-10">
+            <UButton class="min-w-30" color="white" trailing-icon="i-heroicons-chevron-down-20-solid">
+              <span class="flex-1">
+                {{ settings.selectedRegion }}
+              </span>
+            </UButton>
+            <template #panel="{ close }">
+              <UButton v-for="region in servers.regions" :key="region" block color="gray" variant="ghost" tabindex="0" @click="close(); settings.selectedRegion = region">
+                <span class="text-sm">
+                  {{ region }}
+                </span>
+              </UButton>
+            </template>
+          </UPopover>
         </div>
-      </UniSelect>
-      <div class="col-span-1">
+      </div>
+      <div>
         大区
-      </div>
-      <UniSelect v-slot="{ handleClick }" class="col-span-2 w-full flex-1" :current="settings.selectedDataCenter">
-        <div v-for="dc in dataCenterOptions" :key="dc.name" tabindex="0" @click="handleClick(); settings.selectedDataCenter = dc.name">
-          <span class="text-sm">
-            {{ dc.name }}
-          </span>
+        <div class="inline-block">
+          <UPopover class="mr-10">
+            <UButton class="min-w-30" color="white" trailing-icon="i-heroicons-chevron-down-20-solid">
+              <span class="flex-1">
+                {{ settings.selectedDataCenter }}
+              </span>
+            </UButton>
+            <template #panel="{ close }">
+              <UButton v-for="dc in dataCenterOptions" :key="dc.name" block color="gray" variant="ghost" tabindex="0" @click="close(); settings.selectedDataCenter = dc.name">
+                <span class="text-sm">
+                  {{ dc.name }}
+                </span>
+              </UButton>
+            </template>
+          </UPopover>
         </div>
-      </UniSelect>
-      <div class="col-span-1">
-        条目数量
       </div>
-      <div class="col-span-2">
-        <UInput v-model="settings.numberPerPage" type="number" name="npp-input" />
+      <div>
+        条目数量
+        <div class="inline-block">
+          <UInput v-model="settings.numberPerPage" type="number" name="npp-input" />
+        </div>
       </div>
     </div>
     <!-- servers -->
-    <div v-if="settings.selectedDataCenter" class="grid grid-cols-12 gap-y-2 p-2">
+    <div v-if="settings.selectedDataCenter" class="grid grid-cols-12 p-2 gap-y-2">
       <div class="col-span-1">
         市场服务器
       </div>
-      <div class="col-span-11 flex flex-wrap gap-4">
+      <div class="flex gap-4 col-span-11 flex-wrap">
         <URadio
           v-model="settings.selectedServer"
           :label="settings.selectedDataCenter" help="显示全区数据"

@@ -24,8 +24,13 @@ export function useSearchHistory() {
       history.value.shift()
   }
 
+  function clear() {
+    history.value.splice(0)
+  }
+
   return {
     history,
     add,
+    clear,
   }
 }

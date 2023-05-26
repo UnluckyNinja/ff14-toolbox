@@ -31,7 +31,7 @@ onClickOutside(rootComp, () => {
     <!-- Selected -->
     <div
       ref="reference"
-      class="flex text-sm focus:ring items-center border rounded bg-white p-1 ring-blue hover:cursor-pointer dark:bg-dark-1 focus:ring-2 dark:bg-gray-800"
+      class="flex text-sm items-center border rounded p-1 focus:ring bg-white ring-blue hover:cursor-pointer dark:bg-dark-1 focus:ring-2 dark:bg-gray-800"
       tabindex="0"
       @click="showDropdown = true"
     >
@@ -40,12 +40,12 @@ onClickOutside(rootComp, () => {
           {{ props.current }}
         </div>
       </slot>
-      <div i-carbon-list class="mx-1 flex-none" />
+      <div i-carbon-list class="flex-none mx-1" />
     </div>
     <!-- Dropdown -->
     <div
       v-if="showDropdown" ref="floating"
-      class="border rounded bg-white dark:bg-gray-800 z-10 max-h-50vh overflow-auto divide-y children:px-4 children:py-1 hover:children:cursor-pointer hover:children:bg-gray/20"
+      class="border rounded bg-white dark:bg-gray-800 divide-y z-10 max-h-50vh overflow-auto children:px-4 children:py-1 hover:children:cursor-pointer hover:children:bg-gray/20"
       :style="floatingStyles"
     >
       <slot name="default" :handle-click="handleClick" />

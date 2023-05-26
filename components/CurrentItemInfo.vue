@@ -31,7 +31,7 @@ const links = reactive(useItemExternalLink(item))
     >
       {{ item.name }}
     </div>
-    <UButton class="mx-2" @click="copyName">
+    <UButton class="mx-2" icon="i-heroicons-clipboard-document-list-20-solid" variant="outline" @click="copyName">
       复制
     </UButton>
     <div class="underline children:mx-2 dark:text-blue-3 text-blue-7">
