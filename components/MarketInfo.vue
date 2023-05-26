@@ -133,7 +133,7 @@ watch([selectedItem, () => settings.value.selectedServer, () => settings.value.o
           请在上方搜索框内输入关键词搜索物品并点击
         </div>
         <div class="text-lg">
-          建议将Universalis相关域名加入到代理列表中
+          请确保可以正常访问Universalis，建议将相关域名加入到代理列表中
         </div>
       </div>
     </div>

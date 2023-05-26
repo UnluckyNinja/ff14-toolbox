@@ -16,8 +16,6 @@ provide('duckDB', db)
 const servers = useServerInfo()
 
 const isAppLoading = computed(() => {
-  if (servers.value.regions.length === 0)
-    return true
   if (!db.value)
     return true
   return false
@@ -57,7 +55,12 @@ function onItemClick(item: any) {
         class="flex-1"
         @item-click="onItemClick($event)"
       />
-      <OptionsPanel />
+      <div>
+        <OptionsPanel v-if="servers.regions.length > 0" />
+        <div v-else>
+          获取Universalis服务器数据中
+        </div>
+      </div>
       <div class="grid grid-cols-6 gap-2">
         <SearchHistoryList class="col-span-1 hidden md:block" />
         <div class="col-span-6 md:col-span-5">
