@@ -24,6 +24,6 @@ export default defineNuxtConfig({
   },
 
   ui: {
-    icons: ['logos'],
+    icons: ['carbon'],
   },
 })
