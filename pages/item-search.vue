@@ -11,14 +11,6 @@ const { db } = useDuckDB()
 
 provide('duckDB', db)
 
-const servers = reactive(useServerInfo())
-
-const isAppLoading = computed(() => {
-  if (!db.value)
-    return true
-  return false
-})
-
 // on searchbar select item
 const selectedItem = shallowRef(null as any)
 provide('selected-item', selectedItem)
@@ -37,28 +29,14 @@ function onItemClick(item: any) {
 
 <template>
   <div class="container mx-auto mt-10">
-    <div v-if="isAppLoading" class="grid items-center gap-4 grid-rows-2 place-content-center text-center text-3xl">
-      <div class="row-span-1">
-        加载数据中，请稍候<br>
-        <span class="text-base">
-          （下载5MB左右的数据库，视网络情况可能需要几分钟）<br>
-          如果加载较慢，建议后续查询保持页面开启
-        </span>
-      </div>
-      <div class="row-span-1">
-        <UIcon name="i-heroicons-arrow-path" class="animate-spin text-3xl mx-auto" />
-      </div>
-    </div>
+    <DBLoading v-if="!db" />
     <div v-else>
       <SearchBar
         class="flex-1"
         @item-click="onItemClick($event)"
       />
       <div>
-        <OptionsPanel v-if="servers.regions.length > 0" />
-        <div v-else>
-          获取Universalis服务器数据中
-        </div>
+        <OptionsPanel />
       </div>
       <div class="grid grid-cols-6 gap-2">
         <SearchHistoryList class="col-span-1 hidden md:block" />

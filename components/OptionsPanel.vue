@@ -50,7 +50,7 @@ const serverOptions = computed(() => {
 </script>
 
 <template>
-  <div>
+  <div v-if="servers.regions.length > 0">
     <!-- settings -->
     <div
       v-if="settings.showOptions"
@@ -128,6 +128,9 @@ const serverOptions = computed(() => {
       <!-- workaround for UToggle tailwind class conflict -->
       <!-- <div class="translate-x-4" /> -->
     </div>
+  </div>
+  <div v-else>
+    获取Universalis服务器数据中
   </div>
 </template>
 

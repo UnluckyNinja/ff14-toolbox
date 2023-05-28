@@ -28,12 +28,13 @@ function sortInstances(a: Instance, b: Instance) {
 
 export function useInstanceContent() {
   const types = new Set(instances.browse.map(it => it.t))
+  const source = instances.browse.slice().reverse() // so new content first
   return {
-    dungeons: instances.browse.filter(it => it.t === '迷宫挑战').sort(sortInstances),
-    trials: instances.browse.filter(it => it.t === '讨伐歼灭战').sort(sortInstances),
-    raids: instances.browse.filter(it => it.t === '大型任务').sort(sortInstances),
-    treasures: instances.browse.filter(it => it.t === '寻宝').sort(sortInstances),
-    variants: instances.browse.filter(it => it.t === '特殊迷宫探索').sort(sortInstances),
+    dungeons: source.filter(it => it.t === '迷宫挑战').sort(sortInstances),
+    trials: source.filter(it => it.t === '讨伐歼灭战').sort(sortInstances),
+    raids: source.filter(it => it.t === '大型任务').sort(sortInstances),
+    treasures: source.filter(it => it.t === '寻宝').sort(sortInstances),
+    variants: source.filter(it => it.t === '特殊迷宫探索').sort(sortInstances),
     types,
   }
 }

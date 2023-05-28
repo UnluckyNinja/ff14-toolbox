@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import type { Instance } from '~/composables/instances'
 
+const emits = defineEmits<{
+  (event: 'update:modelValue', value: Instance): void
+}>()
+
 const instances = useInstanceContent()
 type InsType = Exclude<keyof typeof instances, 'types'>
 const categories: {
@@ -34,12 +38,9 @@ const categories: {
     icon: '61846',
   },
 ]
-const base = 'https://cafemaker.wakingsands.com/i/'
-function imgUrl(_id: string) {
-  const id = `${_id}`.padStart(6, '0')
-  const folder = id.substring(0, 3).padEnd(6, '0')
-  return `${base}${folder}/${id}.png`
-}
+
+const imgUrl = itemIconUrl
+
 const selectedCategory = ref<InsType>('dungeons')
 const sublistIndex = ref(0)
 function chooseCategory(type: InsType) {
@@ -75,10 +76,12 @@ const list = computed(() => {
 </script>
 
 <template>
-  <div class="m-2 border p-2 flex flex-col gap-2">
+  <div class="m-2 border rounded p-2 flex flex-col gap-2">
+    <!-- header -->
     <div class="text-center">
       副本列表
     </div>
+    <!-- categories -->
     <div class="flex justify-around">
       <UButton
         v-for="c in categories" :key="c.name" class="p-1"
@@ -87,24 +90,31 @@ const list = computed(() => {
         :title="c.name"
         @click="chooseCategory(c.type)"
       >
-        <img class="w-6 h-6" :src="imgUrl(c.icon)">
+        <img class="w-8 h-8" :src="imgUrl(c.icon)">
       </UButton>
     </div>
+    <!-- instances list -->
     <div class="flex flex-col overflow-hidden">
       <div v-for="item, i in list" :key="item.name">
-        <UButton block color="white" variant="solid" size="xs" @click="sublistIndex = i">
+        <!-- collapse toggle -->
+        <UButton block color="white" variant="solid" size="sm" @click="sublistIndex = i">
           {{ item.name }}
         </UButton>
-        <div class="transition transition-all ease-in-out overflow-auto duration-250" :class="sublistIndex === i ? 'max-h-999' : 'max-h-0'">
+        <!-- sublist -->
+        <div class="transition transition-all overflow-auto duration-500 ease-out" :class="sublistIndex === i ? 'h-120' : 'h-0'">
           <UButton
             v-for="ins in item.children" :key="ins.i"
             color="gray" block variant="ghost" size="2xs"
+            @click="emits('update:modelValue', ins)"
           >
-            <div class="text-xs text-left w-full flex gap-1">
+            <div class="text-sm text-left w-full flex gap-1 items-center">
+              <!-- icon -->
               <img class="w-4 h-4 inline-block" :src="imgUrl(`${ins.c}`)">
+              <!-- name -->
               <div class="truncate flex-grow" :title="ins.n">
                 {{ ins.n }}
               </div>
+              <!-- minimum character level -->
               <div class="text-gray">
                 Lv.{{ ins.min_lvl }}
               </div>
