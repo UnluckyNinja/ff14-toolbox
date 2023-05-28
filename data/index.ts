@@ -1,6 +1,6 @@
 import { decompressSync } from 'fflate'
 import { csvParseRows } from 'd3'
-import item_cn_compressed from '~/data/Item_cn_compressed.csv?url'
+import item_cn_compressed from '~/assets/data/Item_cn_compressed.csv?url'
 
 async function loadItemCSV(): Promise<string> {
   if (process.server)

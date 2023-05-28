@@ -7,9 +7,7 @@ useHead({
   title: route.meta.title as string,
 })
 
-const { db, initialize } = useDuckDB()
-
-onMounted(initialize)
+const { db } = useDuckDB()
 
 provide('duckDB', db)
 
@@ -20,6 +18,7 @@ const isAppLoading = computed(() => {
     return true
   return false
 })
+
 // on searchbar select item
 const selectedItem = shallowRef(null as any)
 provide('selected-item', selectedItem)

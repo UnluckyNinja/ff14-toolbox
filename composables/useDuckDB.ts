@@ -2,9 +2,10 @@ import type { ShallowRef } from 'nuxt/dist/app/compat/capi'
 import { loadItemData } from '~/data'
 import type { DuckDBClient } from '~/data/duckDB'
 
-export function useDuckDB() {
-  const db = shallowRef<DuckDBClient | null>(null)
+const db = shallowRef<DuckDBClient | null>(null)
+let promise: Promise<void> | null = null
 
+export function useDuckDB() {
   async function initialize() {
     // should be run only once in client
     if (db.value)
@@ -16,8 +17,10 @@ export function useDuckDB() {
       items: text,
     })
   }
+  if (process.client && !promise)
+    promise = initialize()
 
-  return { db, initialize }
+  return { db }
 }
 
 export const columnNames = [

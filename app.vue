@@ -11,7 +11,7 @@ function toggle() {
 <template>
   <div>
     <nav>
-      <UContainer class="flex items-center mt-4 py-2 border rounded-lg shadow dark:bg-gray-800 bg-gray-200">
+      <UContainer class="items-center flex mt-4 py-2 border rounded-lg shadow dark:bg-gray-800 bg-gray-200">
         <NuxtLink to="/">
           <UButton icon="i-heroicons-home" size="lg" variant="ghost" />
         </NuxtLink>
@@ -22,7 +22,7 @@ function toggle() {
       </UContainer>
     </nav>
     <NuxtPage />
-    <footer class="flex justify-center py-10 border-t mt-10 container mx-auto text-2xl">
+    <footer class="flex mt-10 container mx-auto justify-center py-10 border-t text-2xl">
       <UButton size="xl" variant="link" color="white" to="https://github.com/UnluckyNinja/ff14-toolbox" target="_blank" icon="i-carbon-logo-github" />
     </footer>
   </div>
