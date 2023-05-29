@@ -21,6 +21,12 @@ provide('selected-item', selectedItem)
 
 const selectedInstance = ref<Instance>()
 
+const isNotDone = computed(() => {
+  if (!selectedInstance.value)
+    return false
+  return !instanceLoots[selectedInstance.value.i]
+})
+
 const loots = computed(() => {
   if (!selectedInstance.value || !instanceLoots[selectedInstance.value.i])
     return []
@@ -158,7 +164,15 @@ const imgUrl = itemIconUrl
             </tbody>
           </table>
           <div class="text-center m-2 text-gray/80">
-            不可交易物品不会显示在这里呦啦哩
+            <div v-if="isNotDone">
+              🚧 施工ing... 还未录入数据啦哩 🚧
+            </div>
+            <div v-else-if="loots.length === 0">
+              这个本好像没有可交易掉落啦哩
+            </div>
+            <div v-else>
+              不可交易物品不会显示在这里呦啦哩
+            </div>
           </div>
         </div>
         <div v-else class="col-span-5">
