@@ -123,7 +123,8 @@ const imgUrl = itemIconUrl
             <tbody class="odd:children:bg-gray/10">
               <tr v-for="item, i in items" :key="i" class="divide-x text-center children:p-2">
                 <td>
-                  <img v-if="item?.iconID" :src="itemIconUrl(item.iconID)" alt="" class="inline-block">
+                  <img v-if="item?.iconID" class="w-12 h-12 inline-block" :src="itemIconUrl(item.iconID)" alt="" :title="`ID: ${item.id}`">
+                  <USkeleton v-else class="w-12 h-12 rounded-lg" />
                 </td>
                 <td class="whitespace-normal">
                   {{ item?.name }}
@@ -156,6 +157,9 @@ const imgUrl = itemIconUrl
               </tr>
             </tbody>
           </table>
+          <div class="text-center m-2 text-gray/80">
+            不可交易物品不会显示在这里呦啦哩
+          </div>
         </div>
         <div v-else class="col-span-5">
           <div class="text-center">
