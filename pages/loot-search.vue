@@ -33,8 +33,10 @@ const items = shallowReactive([] as any[])
 const settings = useSettings()
 
 watch([loots, () => settings.value.selectedServer], async ([newLoot, newServer]) => {
-  if (newLoot.length === 0)
+  if (newLoot.length === 0) {
+    marketData.value = []
     return
+  }
   marketData.value = []
   const data = await fetchMarket(newServer, newLoot, {
     listings: 1,
@@ -69,8 +71,10 @@ watch([loots, () => settings.value.selectedServer], async ([newLoot, newServer])
   // console.log(items)
 })
 watch(loots, async (newVal) => {
-  if (newVal.length === 0)
+  if (newVal.length === 0) {
+    items.splice(0)
     return
+  }
   items.splice(0)
   for (let i = 0; i < newVal.length; i++) {
     queryID(newVal[i].toString()).then((result) => {
@@ -80,6 +84,7 @@ watch(loots, async (newVal) => {
 })
 
 const time = formatTimeAgo
+const imgUrl = itemIconUrl
 </script>
 
 <template>
@@ -90,10 +95,11 @@ const time = formatTimeAgo
       <div class="grid grid-cols-7">
         <InstanceList class="col-span-2" @update:model-value="selectedInstance = $event" />
         <div v-if="selectedInstance" class="col-span-5">
-          <div class="text-center">
+          <h2 class="text-center text-xl font-bold">
+            <img class="w-8 h-8 inline-block" :src="imgUrl(selectedInstance.c.toString())">
             {{ selectedInstance.n }}
-          </div>
-          <table class="w-full m-2 gap-2 table-auto border-spacing-xl">
+          </h2>
+          <table class="w-full m-2 gap-2 table-auto border-spacing-xl whitespace-nowrap">
             <thead>
               <tr class="divide-x">
                 <th>图标</th>
@@ -114,12 +120,12 @@ const time = formatTimeAgo
                 <td>
                   <img v-if="item?.iconID" :src="itemIconUrl(item.iconID)" alt="" class="inline-block">
                 </td>
-                <td>
+                <td class="whitespace-normal">
                   {{ item?.name }}
                 </td>
                 <td>
                   <div class="text-right">
-                    <span class="float-left text-gray">
+                    <span class="float-left text-gray mr-2">
                       {{ marketData[i]?.listings[0].worldName }}
                     </span>
                     {{ marketData[i]?.listings[0].pricePerUnit.toLocaleString() }}
@@ -130,7 +136,7 @@ const time = formatTimeAgo
                 </td>
                 <td>
                   <div class="text-right" :title="time(new Date(marketData[i]?.recentHistory[0].timestamp))">
-                    <span class="float-left text-gray">
+                    <span class="float-left text-gray mr-2">
                       {{ marketData[i]?.recentHistory[0].worldName }}
                     </span>
                     {{ marketData[i]?.recentHistory[0].pricePerUnit.toLocaleString() }}

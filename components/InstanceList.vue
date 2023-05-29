@@ -116,7 +116,7 @@ const list = computed(() => {
               </div>
               <!-- minimum character level -->
               <div class="text-gray">
-                Lv.{{ ins.min_lvl }}
+                Lv.{{ ins.min_lvl === 1 ? ins.max_lvl : ins.min_lvl }}
               </div>
             </div>
           </UButton>
