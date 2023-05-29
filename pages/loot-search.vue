@@ -38,13 +38,15 @@ const items = shallowReactive([] as any[])
 
 const settings = useSettings()
 
+const toast = useToast()
+
 watch([loots, () => settings.value.selectedServer], async ([newLoot, newServer]) => {
   if (newLoot.length === 0) {
     marketData.value = []
     return
   }
   marketData.value = []
-  const data = await fetchMarket(newServer, newLoot, {
+  const response = await fetchMarket(newServer, newLoot, {
     listings: 1,
     entries: 1,
     fields: [
@@ -69,6 +71,12 @@ watch([loots, () => settings.value.selectedServer], async ([newLoot, newServer])
     ],
   })
 
+  if (!response.ok) {
+    toast.add({ title: 'Universalis 当前不可用', description: response.statusText, color: 'red', icon: 'i-heroicons-exclamation-circle' })
+    return
+  }
+
+  const data = await response.json()
   if (loots.value !== newLoot)
     return
 
@@ -138,20 +146,20 @@ const imgUrl = itemIconUrl
                 <td>
                   <div class="text-right">
                     <span class="float-left text-gray mr-2">
-                      {{ marketData[i]?.listings[0].worldName }}
+                      {{ marketData[i]?.listings[0]?.worldName ?? '' }}
                     </span>
-                    {{ marketData[i]?.listings[0].pricePerUnit.toLocaleString() }}
+                    {{ marketData[i]?.listings[0]?.pricePerUnit.toLocaleString() ?? '暂无' }}
                   </div>
                 </td>
                 <td class="text-right">
-                  {{ marketData[i] ? Math.round(marketData[i]?.currentAveragePrice).toLocaleString() : '' }}
+                  {{ marketData[i] ? Math.round(marketData[i].currentAveragePrice).toLocaleString() : '' }}
                 </td>
                 <td>
                   <div class="text-right" :title="time(new Date(marketData[i]?.recentHistory[0].timestamp))">
                     <span class="float-left text-gray mr-2">
-                      {{ marketData[i]?.recentHistory[0].worldName }}
+                      {{ marketData[i]?.recentHistory[0]?.worldName ?? '' }}
                     </span>
-                    {{ marketData[i]?.recentHistory[0].pricePerUnit.toLocaleString() }}
+                    {{ marketData[i]?.recentHistory[0]?.pricePerUnit.toLocaleString() ?? '暂无' }}
                   </div>
                 </td>
                 <td class="text-right">

@@ -107,7 +107,7 @@ const list = computed(() => {
             color="gray" block variant="ghost" size="2xs"
             @click="emits('update:modelValue', ins)"
           >
-            <div class="text-sm text-left w-full flex gap-1 items-center">
+            <div class="text-base text-left w-full flex gap-1 items-center">
               <!-- icon -->
               <img class="w-4 h-4 inline-block" :src="imgUrl(`${ins.c}`)">
               <!-- name -->

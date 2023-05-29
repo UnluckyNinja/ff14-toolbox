@@ -27,6 +27,6 @@ export async function fetchMarket(server: string | number, items: (string | numb
     ...options,
   }
   const querystring = new URLSearchParams(queries).toString()
-  const data = await fetch(`${url}?${querystring}`)
-  return await data.json()
+  const response = await fetch(`${url}?${querystring}`)
+  return response
 }

@@ -9,6 +9,8 @@ const isSearchingDataCenter = computed(() => {
   return settings.value.selectedDataCenter === settings.value.selectedServer
 })
 
+const toast = useToast()
+
 watch([selectedItem, () => settings.value.selectedServer, () => settings.value.onlyHQ], async ([item, market, HQ]) => {
   if (!item || !market)
     return {}
@@ -20,7 +22,13 @@ watch([selectedItem, () => settings.value.selectedServer, () => settings.value.o
   if (item.canBeHQ && HQ)
     options.hq = true
 
-  marketInfo.value = await fetchMarket(market, item.id, options)
+  const response = await fetchMarket(market, item.id, options)
+  if (!response.ok) {
+    toast.add({ title: 'Universalis 当前不可用', description: response.statusText, color: 'red', icon: 'i-heroicons-exclamation-circle' })
+    updating.value = false
+    return
+  }
+  marketInfo.value = await response.json()
   updating.value = false
 })
 </script>
