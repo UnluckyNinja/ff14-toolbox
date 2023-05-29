@@ -63,6 +63,9 @@ watch([loots, () => settings.value.selectedServer], async ([newLoot, newServer])
     ],
   })
 
+  if (loots.value !== newLoot)
+    return
+
   if (newLoot.length > 1)
     marketData.value = newLoot.map(it => data.items[it])
   else
@@ -78,6 +81,8 @@ watch(loots, async (newVal) => {
   items.splice(0)
   for (let i = 0; i < newVal.length; i++) {
     queryID(newVal[i].toString()).then((result) => {
+      if (loots.value !== newVal)
+        return
       items[i] = result
     })
   }
