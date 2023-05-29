@@ -4,7 +4,7 @@ import type { Instance } from '~/composables/instances'
 import { instanceLoots } from '~/data/loots'
 
 definePageMeta({
-  title: 'FF14 物品搜索工具',
+  title: 'FF14 副本可交易掉落查询',
 })
 const route = useRoute()
 useHead({

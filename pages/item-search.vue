@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 definePageMeta({
-  title: 'FF14 物品搜索工具',
+  title: 'FF14 市场物品价格速查',
 })
 const route = useRoute()
 useHead({
