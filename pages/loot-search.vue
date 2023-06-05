@@ -11,10 +11,10 @@ useHead({
   title: route.meta.title as string,
 })
 
-const { db } = useDuckDB()
-const { queryID } = useQueries(db)
+// const { db } = useDuckDB()
+// const { queryID } = useQueries(db)
 
-provide('duckDB', db)
+// provide('duckDB', db)
 
 const selectedItem = shallowRef(null as any)
 provide('selected-item', selectedItem)
@@ -34,7 +34,11 @@ const loots = computed(() => {
 })
 
 const marketData = ref<any[]>([])
-const items = shallowReactive([] as any[])
+const items = shallowReactive<{
+  id: string
+  name: string
+  iconID: string
+}[]>([])
 
 const settings = useSettings()
 
@@ -94,11 +98,23 @@ watch(loots, async (newVal) => {
   }
   items.splice(0)
   for (let i = 0; i < newVal.length; i++) {
-    queryID(newVal[i].toString()).then((result) => {
+    const url = itemUrl(newVal[i])
+    fetch(url).then((res) => {
+      return res.json()
+    }).then((json) => {
       if (loots.value !== newVal)
         return
-      items[i] = result
+      items[i] = {
+        id: json.ID,
+        name: json.Name,
+        iconID: json.IconID,
+      }
     })
+    // queryID(newVal[i].toString()).then((result) => {
+    //   if (loots.value !== newVal)
+    //     return
+    //   items[i] = result
+    // })
   }
 })
 
@@ -108,8 +124,7 @@ const imgUrl = itemIconUrl
 
 <template>
   <div class="container mx-auto mt-10">
-    <DBLoading v-if="!db" />
-    <div v-else>
+    <div>
       <OptionsPanel />
       <div class="grid grid-cols-7">
         <InstanceList class="col-span-2" @update:model-value="selectedInstance = $event" />
@@ -137,8 +152,7 @@ const imgUrl = itemIconUrl
             <tbody class="odd:children:bg-gray/10">
               <tr v-for="item, i in items" :key="i" class="divide-x text-center children:p-2">
                 <td>
-                  <img v-if="item?.iconID" class="w-12 h-12 inline-block" :src="itemIconUrl(item.iconID)" alt="" :title="`ID: ${item.id}`">
-                  <USkeleton v-else class="w-12 h-12 rounded-lg" />
+                  <UniImage v-if="item?.iconID" class="w-12 h-12 inline-block" :src="itemIconUrl(item.iconID)" alt="" :title="`ID: ${item.id}`" />
                 </td>
                 <td class="whitespace-normal">
                   {{ item?.name }}

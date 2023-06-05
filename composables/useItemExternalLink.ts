@@ -44,10 +44,14 @@ export function getItemExternalLink(item: { id: string; name: string }) {
   }
 }
 
-const base = 'https://cafemaker.wakingsands.com/i/'
+const base = 'https://cafemaker.wakingsands.com'
 
-export function itemIconUrl(_id: string) {
-  const id = `${_id}`.padStart(6, '0')
-  const folder = id.substring(0, 3).padEnd(6, '0')
-  return `${base}${folder}/${id}.png`
+export function itemIconUrl(id: string | number) {
+  const _id = `${id}`.padStart(6, '0')
+  const folder = _id.substring(0, 3).padEnd(6, '0')
+  return `${base}/i/${folder}/${_id}.png`
+}
+
+export function itemUrl(id: string | number) {
+  return `${base}/item/${id}`
 }
