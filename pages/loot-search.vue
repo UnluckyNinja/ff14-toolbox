@@ -162,7 +162,7 @@ const imgUrl = itemIconUrl
                     <span class="float-left text-gray mr-2">
                       {{ marketData[i]?.listings[0]?.worldName ?? '' }}
                     </span>
-                    {{ marketData[i]?.listings[0]?.pricePerUnit.toLocaleString() ?? '暂无' }}
+                    {{ marketData[i] ? marketData[i].listings[0]?.pricePerUnit.toLocaleString() ?? '暂无' : '查询中' }}
                   </div>
                 </td>
                 <td class="text-right">
@@ -173,7 +173,7 @@ const imgUrl = itemIconUrl
                     <span class="float-left text-gray mr-2">
                       {{ marketData[i]?.recentHistory[0]?.worldName ?? '' }}
                     </span>
-                    {{ marketData[i]?.recentHistory[0]?.pricePerUnit.toLocaleString() ?? '暂无' }}
+                    {{ marketData[i] ? marketData[i].recentHistory[0]?.pricePerUnit.toLocaleString() ?? '暂无' : '查询中' }}
                   </div>
                 </td>
                 <td class="text-right">
