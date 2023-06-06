@@ -2,7 +2,7 @@ import type { MaybeRef } from '@vueuse/core'
 
 // utils to generate links
 function huijiLink(id: string, name: string) {
-  const _id = parseInt(id)
+  const _id = Number.parseInt(id)
   const isItem = _id > 1000 || _id < 20 // skip tomestone
   return `https://ff14.huijiwiki.com/wiki/${isItem ? '物品:' : ''}${name}`
 }

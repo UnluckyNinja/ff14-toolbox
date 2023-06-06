@@ -2,6 +2,7 @@
 import { formatTimeAgo } from '@vueuse/core'
 import type { Instance } from '~/composables/instances'
 import { instanceLoots } from '~/data/loots'
+import { EndPoint, fetchItems } from '~/utils/xivapi'
 
 definePageMeta({
   title: 'FF14 副本可交易掉落查询',
@@ -34,11 +35,11 @@ const loots = computed(() => {
 })
 
 const marketData = ref<any[]>([])
-const items = shallowReactive<{
-  id: string
+const items = ref<({
+  id: number
   name: string
-  iconID: string
-}[]>([])
+  iconURL: string
+} | null)[]>([])
 
 const settings = useSettings()
 
@@ -91,31 +92,29 @@ watch([loots, () => settings.value.selectedServer], async ([newLoot, newServer])
 
   // console.log(items)
 })
+
 watch(loots, async (newVal) => {
-  if (newVal.length === 0) {
-    items.splice(0)
+  items.value.splice(0)
+
+  if (newVal.length === 0)
     return
-  }
-  items.splice(0)
-  for (let i = 0; i < newVal.length; i++) {
-    const url = itemUrl(newVal[i])
-    fetch(url).then((res) => {
-      return res.json()
-    }).then((json) => {
-      if (loots.value !== newVal)
-        return
-      items[i] = {
-        id: json.ID,
-        name: json.Name,
-        iconID: json.IconID,
-      }
-    })
-    // queryID(newVal[i].toString()).then((result) => {
-    //   if (loots.value !== newVal)
-    //     return
-    //   items[i] = result
-    // })
-  }
+
+  const results = await fetchItems(newVal)
+
+  if (loots.value !== newVal)
+    return
+
+  const base = EndPoint.base()
+  items.value = newVal.map((id) => {
+    const item = results.find(it => it.ID === id)
+    if (!item)
+      return null
+    return {
+      id: item.ID,
+      name: item.Name,
+      iconURL: base + item.Icon,
+    }
+  })
 })
 
 const time = formatTimeAgo
@@ -150,39 +149,65 @@ const imgUrl = itemIconUrl
               </tr>
             </thead>
             <tbody class="odd:children:bg-gray/10">
-              <tr v-for="item, i in items" :key="i" class="divide-x text-center children:p-2">
-                <td>
-                  <UniImage v-if="item?.iconID" class="w-12 h-12 inline-block" :src="itemIconUrl(item.iconID)" alt="" :title="`ID: ${item.id}`" />
-                </td>
-                <td class="whitespace-normal">
-                  {{ item?.name }}
-                </td>
-                <td>
-                  <div class="text-right">
-                    <span class="float-left text-gray mr-2">
-                      {{ marketData[i]?.listings[0]?.worldName ?? '' }}
-                    </span>
-                    {{ marketData[i] ? marketData[i].listings[0]?.pricePerUnit.toLocaleString() ?? '暂无' : '查询中' }}
-                  </div>
-                </td>
-                <td class="text-right">
-                  {{ marketData[i] ? Math.round(marketData[i].currentAveragePrice).toLocaleString() : '' }}
-                </td>
-                <td>
-                  <div class="text-right" :title="time(new Date(marketData[i]?.recentHistory[0].timestamp))">
-                    <span class="float-left text-gray mr-2">
-                      {{ marketData[i]?.recentHistory[0]?.worldName ?? '' }}
-                    </span>
-                    {{ marketData[i] ? marketData[i].recentHistory[0]?.pricePerUnit.toLocaleString() ?? '暂无' : '查询中' }}
-                  </div>
-                </td>
-                <td class="text-right">
-                  {{ marketData[i] ? Math.round(marketData[i].averagePrice).toLocaleString() : '' }}
-                </td>
-                <td class="text-right">
-                  {{ marketData[i]?.regularSaleVelocity.toFixed(2) }}
-                </td>
-              </tr>
+              <template v-for="item, i in items" :key="i">
+                <tr v-if="item" class="divide-x text-center children:p-2">
+                  <td>
+                    <UniImage class="w-12 h-12 inline-block" :src="item.iconURL" alt="" :title="`ID: ${item.id}`" />
+                  </td>
+                  <td class="whitespace-normal">
+                    {{ item.name }}
+                  </td>
+                  <td class="text-right">
+                    <div v-if="marketData[i]">
+                      <div class="text-gray mb-1 text-xs">
+                        当前最低价
+                      </div>
+                      <span class="float-left text-gray mr-2">
+                        {{ marketData[i].listings[0]?.worldName ?? '' }}
+                      </span>
+                      {{ marketData[i].listings[0]?.pricePerUnit.toLocaleString() ?? '暂无' }}
+                    </div>
+                    <div v-else>
+                      查询中
+                    </div>
+                  </td>
+                  <td class="text-right">
+                    <div v-if="marketData[i]">
+                      <div class="text-gray mb-1 text-xs">
+                        平均标价
+                      </div>
+                      {{ Math.round(marketData[i].currentAveragePrice).toLocaleString() }}
+                    </div>
+                  </td>
+                  <td class="text-right">
+                    <div v-if="marketData[i]" :title="time(new Date(marketData[i]?.recentHistory[0].timestamp * 1000), { max: 'day' })">
+                      <div class="text-gray mb-1 text-xs">
+                        最近成交
+                      </div>
+                      <span class="float-left text-gray mr-2">
+                        {{ marketData[i].recentHistory[0]?.worldName ?? '' }}
+                      </span>
+                      {{ marketData[i].recentHistory[0]?.pricePerUnit.toLocaleString() ?? '暂无' }}
+                    </div>
+                    <div v-else>
+                      查询中
+                    </div>
+                  </td>
+                  <td class="text-right">
+                    <div v-if="marketData[i]">
+                      <div class="text-gray mb-1 text-xs">
+                        平均成交价
+                      </div>
+                      {{ Math.round(marketData[i].averagePrice).toLocaleString() }}
+                    </div>
+                  </td>
+                  <td class="text-right">
+                    <div v-if="marketData[i]">
+                      {{ marketData[i].regularSaleVelocity.toFixed(2) }}
+                    </div>
+                  </td>
+                </tr>
+              </template>
             </tbody>
           </table>
           <div class="text-center m-2 text-gray/80">
