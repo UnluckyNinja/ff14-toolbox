@@ -1,6 +1,16 @@
 <script lang="ts" setup>
+const props = withDefaults(defineProps<{
+  display: {
+    hq: boolean
+  }
+}>(), {
+  display: () => ({
+    hq: true,
+  }),
+})
 const servers = reactive(useServerInfo())
 const settings = useSettings()
+
 if (settings.value.selectedRegion === '') {
   nextTick(() => {
     const stop = watch(servers, () => {
@@ -121,15 +131,15 @@ const serverOptions = computed(() => {
           @click="settings.selectedServer = sv"
         />
       </div>
-      <div class="col-span-1">
+      <div v-if="props.display.hq" class="col-span-1">
         仅HQ
       </div>
-      <UToggle v-model="settings.onlyHQ" />
+      <UToggle v-if="props.display.hq" v-model="settings.onlyHQ" />
       <!-- workaround for UToggle tailwind class conflict -->
       <!-- <div class="translate-x-4" /> -->
     </div>
   </div>
-  <div v-else>
+  <div v-else class="p-4">
     获取Universalis服务器数据中
   </div>
 </template>
