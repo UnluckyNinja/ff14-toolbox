@@ -9,21 +9,23 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^0.39.4",
+    "@antfu/eslint-config": "^0.39.5",
     "@iconify-json/carbon": "^1.1.17",
     "@iconify-json/line-md": "^1.1.24",
     "@iconify-json/logos": "^1.1.31",
     "@iconify-json/mdi": "^1.1.52",
     "@nuxt/devtools": "^0.5.5",
-    "@nuxthq/ui": "^2.2.1",
+    "@nuxthq/ui": "^2.3.0",
     "@types/d3": "^7.4.0",
     "@types/node": "^18",
-    "@unocss/eslint-config": "^0.52.7",
-    "@unocss/nuxt": "^0.52.7",
+    "@unocss/eslint-config": "^0.53.1",
+    "@unocss/nuxt": "^0.53.1",
     "@vueuse/core": "^10.1.2",
     "@vueuse/nuxt": "^10.1.2",
     "eslint": "^8.42.0",
-    "nuxt": "^3.5.2"
+    "lint-staged": "^13.2.2",
+    "nuxt": "^3.5.3",
+    "simple-git-hooks": "^2.8.1"
   },
   "dependencies": {
     "@duckdb/duckdb-wasm": "^1.25.0",
@@ -35,5 +37,13 @@
   },
   "overrides": {
     "nuxt": "3.5.0"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx,vue,md}": [
+      "eslint --cache --fix"
+    ]
   }
 }

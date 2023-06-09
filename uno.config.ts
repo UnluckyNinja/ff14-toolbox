@@ -1,5 +1,12 @@
 import {
   defineConfig,
+  presetUno,
 } from 'unocss'
 
-export default defineConfig({})
+export default defineConfig({
+  presets: [
+    presetUno({
+      variablePrefix: 'tw-',
+    }),
+  ],
+})
