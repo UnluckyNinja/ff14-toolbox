@@ -76,7 +76,7 @@ const list = computed(() => {
 </script>
 
 <template>
-  <div class="m-2 border rounded p-2 flex flex-col gap-2">
+  <div class="m-2 flex flex-col gap-2 border rounded p-2">
     <!-- header -->
     <div class="text-center">
       副本列表
@@ -90,7 +90,7 @@ const list = computed(() => {
         :title="c.name"
         @click="chooseCategory(c.type)"
       >
-        <img class="w-8 h-8" :src="imgUrl(c.icon)">
+        <img class="h-8 w-8" :src="imgUrl(c.icon)">
       </UButton>
     </div>
     <!-- instances list -->
@@ -101,17 +101,17 @@ const list = computed(() => {
           {{ item.name }}
         </UButton>
         <!-- sublist -->
-        <div class="transition transition-all overflow-auto duration-500 ease-out" :class="sublistIndex === i ? 'h-120' : 'h-0'">
+        <div class="overflow-auto transition transition-all duration-500 ease-out" :class="sublistIndex === i ? 'h-120' : 'h-0'">
           <UButton
             v-for="ins in item.children" :key="ins.i"
             color="gray" block variant="ghost" size="2xs"
             @click="emits('update:modelValue', ins)"
           >
-            <div class="text-base text-left w-full flex gap-1 items-center">
+            <div class="w-full flex items-center gap-1 text-left text-base">
               <!-- icon -->
-              <img class="w-4 h-4 inline-block" :src="imgUrl(`${ins.c}`)">
+              <img class="inline-block h-4 w-4" :src="imgUrl(`${ins.c}`)">
               <!-- name -->
-              <div class="truncate flex-grow" :title="ins.n">
+              <div class="flex-grow truncate" :title="ins.n">
                 {{ ins.n }}
               </div>
               <!-- minimum character level -->

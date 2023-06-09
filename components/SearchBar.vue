@@ -86,7 +86,7 @@ function select(index: number) {
     <div
       v-show="showSearchResult"
       v-bind="containerProps"
-      class="absolute top-full z-10 w-full overflow-auto border border-yellow-600 rounded p-2 bg-white max-h-300px dark:bg-black mt-px shadow-lg"
+      class="absolute top-full z-10 mt-px max-h-300px w-full overflow-auto border border-yellow-600 rounded bg-white p-2 shadow-lg dark:bg-black"
     >
       <div v-bind="wrapperProps">
         <div v-for="i, idx in list" :key="idx" class="grid grid-cols-3" style="height: 60px">

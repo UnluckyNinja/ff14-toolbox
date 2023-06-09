@@ -36,18 +36,18 @@ const imgUrl = itemIconUrl
 </script>
 
 <template>
-  <div class="container mx-auto mt-10">
+  <div class="mx-auto mt-10 container">
     <div>
       <OptionsPanel :display="{ hq: false }" />
       <div class="grid grid-cols-7">
         <InstanceList class="col-span-2" @update:model-value="selectedInstance = $event" />
         <div v-if="selectedInstance" class="col-span-5">
           <h2 class="text-center text-xl font-bold">
-            <img class="inline-block w-8 h-8" :src="imgUrl(selectedInstance.c.toString())">
+            <img class="inline-block h-8 w-8" :src="imgUrl(selectedInstance.c.toString())">
             {{ selectedInstance.n }}
           </h2>
           <MarketItemList v-if="loots.length > 0" :ids="loots" />
-          <div class="text-center m-2 text-gray/80">
+          <div class="m-2 text-center text-gray/80">
             <div v-if="isNotDone">
               🚧 施工ing... 还未录入数据啦哩 🚧
             </div>

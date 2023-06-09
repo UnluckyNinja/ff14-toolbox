@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div class="grid items-center gap-4 grid-rows-2 place-content-center text-center text-3xl">
+  <div class="grid grid-rows-2 place-content-center items-center gap-4 text-center text-3xl">
     <div class="row-span-1">
       加载数据中，请稍候<br>
       <span class="text-base">
@@ -12,7 +12,7 @@
       </span>
     </div>
     <div class="row-span-1">
-      <UIcon name="i-heroicons-arrow-path" class="animate-spin text-3xl mx-auto" />
+      <UIcon name="i-heroicons-arrow-path" class="mx-auto animate-spin text-3xl" />
     </div>
   </div>
 </template>

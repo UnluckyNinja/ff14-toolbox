@@ -64,7 +64,7 @@ const serverOptions = computed(() => {
     <!-- settings -->
     <div
       v-if="settings.showOptions"
-      class="flex flex-wrap gap-2 p-2 items-center"
+      class="flex flex-wrap items-center gap-2 p-2"
     >
       <div>
         运营地区
@@ -112,11 +112,11 @@ const serverOptions = computed(() => {
       </div>
     </div>
     <!-- servers -->
-    <div v-if="settings.selectedDataCenter" class="grid grid-cols-12 p-2 gap-y-2">
+    <div v-if="settings.selectedDataCenter" class="grid grid-cols-12 gap-y-2 p-2">
       <div class="col-span-1">
         市场服务器
       </div>
-      <div class="flex gap-4 col-span-11 flex-wrap">
+      <div class="col-span-11 flex flex-wrap gap-4">
         <URadio
           v-model="settings.selectedServer"
           :label="settings.selectedDataCenter" help="显示全区数据"

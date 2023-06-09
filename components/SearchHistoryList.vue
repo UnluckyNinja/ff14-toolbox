@@ -64,22 +64,22 @@ function handleDelete() {
         </UPopover>
       </div>
     </header>
-    <main class="rounded relative border flex flex-col min-h-60 justify-start even:children:bg-bluegray/20 mt-4">
+    <main class="relative mt-4 min-h-60 flex flex-col justify-start border rounded even:children:bg-bluegray/20">
       <div
         v-for="item, i in list"
         :key="item.id" class="flex p-1"
         :class="isSearching ? 'cursor-default' : 'cursor-pointer'"
         @click="onClick(item)"
       >
-        <div class="flex-none mx-2">
+        <div class="mx-2 flex-none">
           {{ i + 1 }}
         </div>
         <div>
           {{ item.name }}
         </div>
       </div>
-      <div v-if="isSearching" class="flex items-center absolute inset-0 bg-gray/20">
-        <UIcon name="i-heroicons-arrow-path" class="text-3xl animate-spin m-auto" />
+      <div v-if="isSearching" class="absolute inset-0 flex items-center bg-gray/20">
+        <UIcon name="i-heroicons-arrow-path" class="m-auto animate-spin text-3xl" />
       </div>
     </main>
   </section>

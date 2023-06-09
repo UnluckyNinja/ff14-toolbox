@@ -34,7 +34,7 @@ const links = reactive(useItemExternalLink(item))
     <UButton class="mx-2" icon="i-heroicons-clipboard-document-list-20-solid" variant="outline" @click="copyName">
       复制
     </UButton>
-    <div class="underline children:mx-2 dark:text-blue-3 text-blue-7">
+    <div class="text-blue-7 underline children:mx-2 dark:text-blue-3">
       <UButton
         color="blue" trailing-icon="i-heroicons-arrow-top-right-on-square-20-solid"
         :to="links.huiji" target="_blank" variant="link"

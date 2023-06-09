@@ -28,7 +28,7 @@ function onItemClick(item: any) {
 </script>
 
 <template>
-  <div class="container mx-auto mt-10">
+  <div class="mx-auto mt-10 container">
     <DBLoading v-if="!db" />
     <div v-else>
       <SearchBar

@@ -48,7 +48,7 @@ watch([selectedItem, () => settings.value.selectedServer, () => settings.value.o
       >
         该物品可能无法交易
       </div>
-      <div v-else class="text-sm text-center grid grid-cols-1 divide-x md:grid-cols-2">
+      <div v-else class="grid grid-cols-1 text-center text-sm md:grid-cols-2 divide-x">
         <!-- on sale -->
         <div>
           <h2 class="m-2 text-2xl">
@@ -113,7 +113,7 @@ watch([selectedItem, () => settings.value.selectedServer, () => settings.value.o
             <tbody>
               <tr
                 v-for="item, i in marketInfo.recentHistory" :key="i"
-                class="divide-x odd:bg-gray/10 children:py-2 children:px-2 dark:divide-gray"
+                class="divide-x odd:bg-gray/10 children:px-2 children:py-2 dark:divide-gray"
               >
                 <td>{{ i + 1 }}</td>
                 <td v-if="isSearchingDataCenter">
