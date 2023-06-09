@@ -1,0 +1,9 @@
+dist/
+.nuxt/
+node_modules
+node_modules/
+types/
+cache/
+!/.eslintrc
+!.test
+.temp
