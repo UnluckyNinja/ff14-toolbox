@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { notNullish } from '@vueuse/core'
 import { tokens } from '~/data/tokens'
 
 const props = defineProps<{
@@ -13,7 +14,8 @@ async function fetchCurrency() {
   if (tokens.length === 0)
     return
 
-  return await fetchItems(tokens)
+  const items = await fetchItems(tokens)
+  return tokens.map(id => items.find(it => it.ID === id)).filter(notNullish)
 }
 
 const base = EndPoint.base()
