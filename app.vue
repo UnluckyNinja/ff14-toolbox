@@ -3,6 +3,9 @@ const route = useRoute()
 
 const colorMode = useColorMode()
 
+if (colorMode.preference === 'system')
+  colorMode.preference = 'light'
+
 function toggle() {
   colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
 }
@@ -11,18 +14,18 @@ function toggle() {
 <template>
   <div>
     <nav>
-      <UContainer class="items-center flex mt-4 py-2 border rounded-lg shadow dark:bg-gray-800 bg-gray-200">
+      <UContainer class="mt-4 flex items-center border rounded-lg bg-gray-200 py-2 shadow dark:bg-gray-800">
         <NuxtLink to="/">
           <UButton icon="i-heroicons-home" size="lg" variant="ghost" />
         </NuxtLink>
-        <h1 class="inline mx-2">
+        <h1 class="mx-2 inline">
           {{ route.meta.title }}
         </h1>
         <UButton class="ml-auto" :icon="colorMode.value === 'dark' ? 'i-heroicons-moon' : 'i-heroicons-sun' " @click="toggle" />
       </UContainer>
     </nav>
     <NuxtPage />
-    <footer class="flex mt-10 container mx-auto justify-center py-10 border-t text-2xl">
+    <footer class="mx-auto mt-10 flex justify-center border-t py-10 text-2xl container">
       <UButton size="xl" variant="link" color="white" to="https://github.com/UnluckyNinja/ff14-toolbox" target="_blank" icon="i-carbon-logo-github" />
     </footer>
     <UNotifications />

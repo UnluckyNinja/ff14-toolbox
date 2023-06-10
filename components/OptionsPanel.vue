@@ -9,20 +9,20 @@ const props = withDefaults(defineProps<{
   }),
 })
 const servers = reactive(useServerInfo())
-const settings = useSettings()
+const settings = reactive(useSettings())
 
-if (settings.value.selectedRegion === '') {
+if (settings.selectedRegion === '') {
   nextTick(() => {
     const stop = watch(servers, () => {
-      if (settings.value.selectedRegion !== '') {
+      if (settings.selectedRegion !== '') {
         stop()
         return
       }
       if (servers.regions.length > 0) {
         if (servers.regions.includes('中国'))
-          settings.value.selectedRegion = '中国'
+          settings.selectedRegion = '中国'
         else
-          settings.value.selectedRegion = servers.regions[0]
+          settings.selectedRegion = servers.regions[0]
 
         stop()
       }
@@ -31,25 +31,26 @@ if (settings.value.selectedRegion === '') {
 }
 
 // when selected region change, automatically change selected data center
-watch(() => settings.value.selectedRegion, (newVal) => {
+watch(() => settings.selectedRegion, (newVal) => {
   const dcs = servers.dataCenters?.filter(it => it.region === newVal)
   if (!dcs || dcs.length === 0)
     return
 
-  settings.value.selectedDataCenter = dcs[0].name
+  settings.selectedDataCenter = dcs[0].name
+  settings.selectedServer = dcs[0].name
 })
 
 const dataCenterObj = computed(() => {
-  return servers.dataCenters?.find(it => it.name === settings.value.selectedDataCenter)
+  return servers.dataCenters?.find(it => it.name === settings.selectedDataCenter)
 })
 
 // when selected data center change, automatically change selected server to that data center
-watch(() => settings.value.selectedDataCenter, (newVal) => {
-  settings.value.selectedServer = newVal
+watch(() => settings.selectedDataCenter, (newVal) => {
+  settings.selectedServer = newVal
 })
 
 const dataCenterOptions = computed(() => {
-  return servers.dataCenters?.filter(it => it.region === settings.value.selectedRegion) ?? []
+  return servers.dataCenters?.filter(it => it.region === settings.selectedRegion) ?? []
 })
 
 const serverOptions = computed(() => {

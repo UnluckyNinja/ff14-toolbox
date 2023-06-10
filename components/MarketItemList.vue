@@ -16,7 +16,7 @@ const items = ref<({
   iconURL: string
 } | null)[]>([])
 
-const settings = useSettings()
+const settings = reactive(useSettings())
 
 const toast = useToast()
 
@@ -46,7 +46,7 @@ const includedFields = [
 ]
 
 // fetch prices from universalis into `marketData`
-watch([() => props.ids, () => settings.value.selectedServer], async ([newIDs, newServer]) => {
+watch([() => props.ids, () => settings.selectedServer], async ([newIDs, newServer]) => {
   if (newIDs.length === 0) {
     marketData.value = []
     return
