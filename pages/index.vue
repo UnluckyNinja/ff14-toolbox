@@ -36,7 +36,7 @@ useHead({
     <div class="m-4 mx-auto flex justify-center gap-4">
       <NuxtLink to="/name-to-id">
         <UButton size="xl" icon="i-heroicons-document-magnifying-glass" variant="solid">
-          数据库批量查询
+          数据库批量查询(需加载5MB+)
         </UButton>
       </NuxtLink>
     </div>

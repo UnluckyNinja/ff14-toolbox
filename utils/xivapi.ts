@@ -48,6 +48,7 @@ export async function fetchItems<T extends string | number>(ids: T[]): Promise<X
   const json = await $fetch<XAContent<XAItem>>(EndPoint.items(), {
     query: {
       ids: ids.join(','),
+      limit: ids.length,
     },
   })
   return json.Results
