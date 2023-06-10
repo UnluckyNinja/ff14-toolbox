@@ -35,9 +35,6 @@
     "d3-dsv": "^3.0.1",
     "fflate": "^0.8.0"
   },
-  "overrides": {
-    "nuxt": "3.5.0"
-  },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"
   },
