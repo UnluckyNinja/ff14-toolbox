@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { formatTimeAgo, notNullish } from '@vueuse/core'
+import { garlandDataLink, huijiLink, universalisLink } from '~/composables/useItemExternalLink'
 
 const props = withDefaults(defineProps<{
   ids: number[]
@@ -192,6 +193,22 @@ const columns = [
 
 const time = formatTimeAgo
 const maximumFractionDigits = computed(() => props.costMode ? 2 : 0)
+function getLinks(id: number, name: string) {
+  return [
+    {
+      label: '灰机wiki',
+      url: huijiLink(id, name),
+    },
+    {
+      label: 'Universalis',
+      url: universalisLink(id),
+    },
+    {
+      label: 'GarlandData',
+      url: garlandDataLink(id),
+    },
+  ]
+}
 </script>
 
 <template>
@@ -200,12 +217,25 @@ const maximumFractionDigits = computed(() => props.costMode ? 2 : 0)
       <UniImage class="inline-block min-h-12 min-w-12" :src="row.iconURL" alt="" :title="`ID: ${row.id}`" />
     </template>
     <template #name-data="{ row }">
-      <div class="whitespace-normal">
-        {{ row.name }}
-      </div>
-      <div v-if="row.cost !== 1" class="mt-1 text-xs text-gray">
-        兑换价格：{{ row.cost }}
-      </div>
+      <UPopover>
+        <UButton block color="gray" trailing-icon="i-heroicons-ellipsis-vertical" variant="ghost">
+          <div class="w-full text-left">
+            <div class="whitespace-normal">
+              {{ row.name }}
+            </div>
+            <div v-if="row.cost !== 1" class="mt-1 text-xs text-gray">
+              兑换价格：{{ row.cost }}
+            </div>
+          </div>
+        </UButton>
+        <template #panel>
+          <UButton v-for="link, i in getLinks(row.id, row.name)" :key="i" block color="gray" variant="link" :to="link.url" target="_blank">
+            <span class="text-sm">
+              {{ link.label }}
+            </span>
+          </UButton>
+        </template>
+      </UPopover>
     </template>
     <template #lowestPrice-data="{ row }">
       <div class="text-right">

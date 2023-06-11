@@ -1,15 +1,15 @@
 import type { MaybeRef } from '@vueuse/core'
 
 // utils to generate links
-function huijiLink(id: string, name: string) {
-  const _id = Number.parseInt(id)
+export function huijiLink(id: string | number, name: string) {
+  const _id = typeof id === 'number' ? id : Number.parseInt(id)
   const isItem = _id > 1000 || _id < 20 // skip tomestone
   return `https://ff14.huijiwiki.com/wiki/${isItem ? '物品:' : ''}${name}`
 }
-function universalisLink(id: string) {
+export function universalisLink(id: string | number) {
   return `https://universalis.app/market/${id}`
 }
-function garlandDataLink(id: string) {
+export function garlandDataLink(id: string | number) {
   return `https://www.garlandtools.cn/db/#item/${id}`
 }
 
