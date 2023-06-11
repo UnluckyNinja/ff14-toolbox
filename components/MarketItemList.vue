@@ -229,8 +229,8 @@ function getLinks(id: number, name: string) {
           </div>
         </UButton>
         <template #panel>
-          <UButton v-for="link, i in getLinks(row.id, row.name)" :key="i" block color="gray" variant="link" :to="link.url" target="_blank">
-            <span class="text-sm">
+          <UButton v-for="link, i in getLinks(row.id, row.name)" :key="i" block color="gray" variant="link" :to="link.url" target="_blank" trailing-icon="i-heroicons-arrow-top-right-on-square-20-solid">
+            <span class="w-full text-sm">
               {{ link.label }}
             </span>
           </UButton>
