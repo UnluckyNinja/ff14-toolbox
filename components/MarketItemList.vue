@@ -121,36 +121,30 @@ const data = computed(() => {
 
     const mitem = marketData.value[idx]
     const cost = props.costs?.[item.id]
+    const result = {
+      ...item,
+      cost: props.costs ? props.costs[item.id] : 1,
+      currentAveragePrice: mitem?.currentAveragePrice ?? -1,
+      averagePrice: mitem?.averagePrice ?? -1,
+      regularSaleVelocity: mitem?.regularSaleVelocity ?? -1,
+      lowestPrice: mitem?.listings[0]?.pricePerUnit ?? -1,
+      lowestWorld: mitem?.listings[0]?.worldName ?? '',
+      lowestHQ: mitem?.listings[0]?.hq ?? false,
+      recentPrice: mitem?.recentHistory[0]?.pricePerUnit ?? -1,
+      recentWorld: mitem?.recentHistory[0]?.worldName ?? '',
+      recentHQ: mitem?.recentHistory[0]?.hq ?? false,
+      recentTimestamp: mitem?.recentHistory[0]?.timestamp ?? -1,
+    }
     if (!props.costMode || !cost) {
-      return {
-        ...item,
-        cost: props.costs ? props.costs[item.id] : 1,
-        currentAveragePrice: mitem?.currentAveragePrice ?? -1,
-        averagePrice: mitem?.averagePrice ?? -1,
-        regularSaleVelocity: mitem?.regularSaleVelocity ?? -1,
-        lowestPrice: mitem?.listings[0]?.pricePerUnit ?? -1,
-        lowestWorld: mitem?.listings[0]?.worldName ?? '',
-        lowestHQ: mitem?.listings[0]?.hq ?? false,
-        recentPrice: mitem?.recentHistory[0]?.pricePerUnit ?? -1,
-        recentWorld: mitem?.recentHistory[0]?.worldName ?? '',
-        recentHQ: mitem?.recentHistory[0]?.hq ?? false,
-        recentTimestamp: mitem?.recentHistory[0]?.timestamp ?? -1,
-      }
+      return result
     }
     else {
       return {
-        ...item,
-        cost,
-        currentAveragePrice: (mitem?.currentAveragePrice ?? -1) / cost,
-        averagePrice: (mitem?.averagePrice ?? -1) / cost,
-        regularSaleVelocity: mitem?.regularSaleVelocity ?? -1,
-        lowestPrice: (mitem?.listings[0]?.pricePerUnit ?? -1) / cost,
-        lowestWorld: mitem?.listings[0]?.worldName ?? '',
-        lowestHQ: mitem?.listings[0]?.hq ?? false,
-        recentPrice: (mitem?.recentHistory[0]?.pricePerUnit ?? -1) / cost,
-        recentWorld: mitem?.recentHistory[0]?.worldName ?? '',
-        recentHQ: mitem?.recentHistory[0]?.hq ?? false,
-        recentTimestamp: mitem?.recentHistory[0]?.timestamp ?? -1,
+        ...result,
+        currentAveragePrice: result.currentAveragePrice / cost,
+        averagePrice: result.averagePrice / cost,
+        lowestPrice: result.lowestPrice / cost,
+        recentPrice: result.recentPrice / cost,
       }
     }
   }).filter(notNullish)
