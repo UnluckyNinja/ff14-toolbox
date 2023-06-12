@@ -223,14 +223,14 @@ function getLinks(id: number, name: string) {
             <div class="whitespace-normal">
               {{ row.name }}
             </div>
-            <div v-if="row.cost !== 1" class="mt-1 text-xs text-gray">
+            <div v-if="props.costMode !== undefined" class="mt-1 text-xs text-gray">
               兑换价格：{{ row.cost }}
             </div>
           </div>
         </UButton>
         <template #panel>
           <UButton v-for="link, i in getLinks(row.id, row.name)" :key="i" block color="gray" variant="link" :to="link.url" target="_blank" trailing-icon="i-heroicons-arrow-top-right-on-square-20-solid">
-            <span class="w-full text-sm">
+            <span class="w-max text-sm">
               {{ link.label }}
             </span>
           </UButton>
@@ -238,11 +238,11 @@ function getLinks(id: number, name: string) {
       </UPopover>
     </template>
     <template #lowestPrice-data="{ row }">
-      <div class="text-right">
+      <div class="min-w-max w-full text-right">
         <div class="mb-1 text-xs text-gray">
           当前最低价
         </div>
-        <span v-if="row.lowestWorld" class="float-left mr-2 text-gray">
+        <span v-if="row.lowestWorld" class="float-left pr-2 text-gray">
           {{ row.lowestWorld }}
         </span>
         <span v-if="row.lowestPrice >= 0">
@@ -254,7 +254,7 @@ function getLinks(id: number, name: string) {
       </div>
     </template>
     <template #currentAveragePrice-data="{ row }">
-      <div class="text-right">
+      <div class="min-w-max w-full text-right">
         <div class="mb-1 text-xs text-gray">
           平均标价
         </div>
@@ -267,7 +267,7 @@ function getLinks(id: number, name: string) {
       </div>
     </template>
     <template #recentPrice-data="{ row }">
-      <div class="text-right" :title="row.recentTimestamp > 0 ? time(new Date(row.recentTimestamp * 1000), { max: 'day' }) : undefined">
+      <div class="min-w-max w-full text-right" :title="row.recentTimestamp > 0 ? time(new Date(row.recentTimestamp * 1000), { max: 'day' }) : undefined">
         <div class="mb-1 text-xs text-gray">
           最近成交
         </div>
@@ -283,7 +283,7 @@ function getLinks(id: number, name: string) {
       </div>
     </template>
     <template #averagePrice-data="{ row }">
-      <div class="text-right">
+      <div class="min-w-max w-full text-right">
         <div class="mb-1 text-xs text-gray">
           平均成交价
         </div>
@@ -296,7 +296,7 @@ function getLinks(id: number, name: string) {
       </div>
     </template>
     <template #regularSaleVelocity-data="{ row }">
-      <div class="text-right">
+      <div class="min-w-max w-full text-right">
         {{ row.regularSaleVelocity.toFixed(2) }}
       </div>
     </template>

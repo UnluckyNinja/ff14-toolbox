@@ -28,9 +28,9 @@ const costMode = ref(false)
 <template>
   <div class="mx-auto mt-10 container">
     <OptionsPanel :display="{ hq: false }" />
-    <div class="grid grid-cols-7 mt-4">
+    <div class="grid grid-cols-12 mt-4">
       <Suspense>
-        <div class="col-span-2 text-center">
+        <div class="col-span-3 text-center">
           <div>
             计价方式：
             金币
@@ -40,12 +40,12 @@ const costMode = ref(false)
           <CurrencyList v-model="selectedCurrency" />
         </div>
         <template #fallback>
-          <div class="col-span-2 p-2 text-center">
+          <div class="col-span-3 p-2 text-center">
             加载货币列表中
           </div>
         </template>
       </Suspense>
-      <div v-if="selectedCurrency > 0" class="col-span-5">
+      <div v-if="selectedCurrency > 0" class="col-span-9">
         <MarketItemList v-if="ids && ids.length > 0" :ids="ids" :costs="costs" :cost-mode="costMode" />
         <div class="m-2 text-center text-gray/80">
           <div v-if="!ids">
