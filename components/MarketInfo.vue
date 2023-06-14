@@ -1,22 +1,22 @@
 <script lang="ts" setup>
 const selectedItem = inject<any>('selected-item')
-const settings = useSettings()
+const settings = reactive(useSettings())
 
 const marketInfo = ref<any>(null)
 const updating = ref(false)
 
 const isSearchingDataCenter = computed(() => {
-  return settings.value.selectedDataCenter === settings.value.selectedServer
+  return settings.selectedDataCenter === settings.selectedServer
 })
 
 const toast = useToast()
 
-watch([selectedItem, () => settings.value.selectedServer, () => settings.value.onlyHQ], async ([item, market, HQ]) => {
+watch([selectedItem, () => settings.selectedServer, () => settings.onlyHQ], async ([item, market, HQ]) => {
   if (!item || !market)
     return {}
   updating.value = true
   const options: any = {
-    listings: settings.value.numberPerPage,
+    listings: settings.numberPerPage,
     entries: 10,
   }
   if (item.canBeHQ && HQ)
