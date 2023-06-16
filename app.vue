@@ -28,7 +28,7 @@ function toggle() {
     <footer class="mx-auto mt-10 flex justify-center border-t py-10 text-2xl container">
       <UButton size="xl" variant="link" color="white" to="https://github.com/UnluckyNinja/ff14-toolbox" target="_blank" icon="i-carbon-logo-github" />
     </footer>
-    <UNotifications />
+    <UNotifications class="sm:w-96" />
   </div>
 </template>
 

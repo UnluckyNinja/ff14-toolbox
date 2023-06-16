@@ -46,12 +46,15 @@ const includedFields = [
   'recentHistory.hq',
 ]
 
+const isFetching = ref(false)
+
 // fetch prices from universalis into `marketData`
 watch([() => props.ids, () => settings.selectedServer], async ([newIDs, newServer]) => {
   if (newIDs.length === 0) {
     marketData.value = []
     return
   }
+  isFetching.value = true
   marketData.value = []
   const toFetch = newIDs.slice(0)
   async function batchAdd(ids: number[]) {
@@ -82,6 +85,7 @@ watch([() => props.ids, () => settings.selectedServer], async ([newIDs, newServe
       return
     await batchAdd(toFetch.splice(0, 100))
   }
+  isFetching.value = false
 
   // console.log(items)
 }, { immediate: true })
@@ -203,6 +207,13 @@ function getLinks(id: number, name: string) {
     },
   ]
 }
+
+function copy(text: string) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text)
+    toast.add({ title: '已复制', timeout: 2000 })
+  }
+}
 </script>
 
 <template>
@@ -223,75 +234,138 @@ function getLinks(id: number, name: string) {
           </div>
         </UButton>
         <template #panel>
+          <div>
+            <UButton block color="gray" variant="ghost" trailing-icon="i-heroicons-document-duplicate" @click="copy(row.id)">
+              <div class="w-full text-left">
+                ID: {{ row.id }}
+              </div>
+            </UButton>
+            <UButton block color="gray" variant="ghost" trailing-icon="i-heroicons-document-duplicate" @click="copy(row.name)">
+              <div class="w-full text-left">
+                {{ row.name }}
+              </div>
+            </UButton>
+          </div>
+          <hr class="my-2">
           <UButton v-for="link, i in getLinks(row.id, row.name)" :key="i" block color="gray" variant="link" :to="link.url" target="_blank" trailing-icon="i-heroicons-arrow-top-right-on-square-20-solid">
-            <span class="w-max text-sm">
+            <div class="w-full text-sm">
               {{ link.label }}
-            </span>
+            </div>
           </UButton>
         </template>
       </UPopover>
     </template>
     <template #lowestPrice-data="{ row }">
-      <div class="min-w-max w-full text-right">
-        <div class="mb-1 text-xs text-gray">
+      <div v-if="isFetching" class="i-heroicons-ellipsis-horizontal animate-pulse" />
+      <div v-else class="min-w-max text-right">
+        <div v-if="row.lowestPrice >= 0" class="mb-1 text-xs text-gray">
           当前最低价
         </div>
         <span v-if="row.lowestWorld" class="float-left pr-2 text-gray">
           {{ row.lowestWorld }}
         </span>
         <span v-if="row.lowestPrice >= 0">
-          {{ row.lowestHQ ? '' : '' }} {{ row.lowestPrice.toLocaleString(undefined, { maximumFractionDigits }) }} G
+          {{ row.lowestHQ ? '' : '' }}
+          <UniRichNumber :value="row.lowestPrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
+            <template #whole="{ num }">
+              <span>
+                {{ num }}
+              </span>
+            </template>
+            <template #fraction="{ num, decimalPoint }">
+              <span class="text-xs">
+                {{ num ? decimalPoint : '' }}{{ num }}
+              </span>
+            </template>
+          </UniRichNumber>
+          <span class="text-amber-500"> G</span>
         </span>
-        <span v-else>
-          -
-        </span>
+        <div v-else class="i-heroicons-minus" />
       </div>
     </template>
     <template #currentAveragePrice-data="{ row }">
-      <div class="min-w-max w-full text-right">
-        <div class="mb-1 text-xs text-gray">
+      <div v-if="isFetching" class="i-heroicons-ellipsis-horizontal animate-pulse" />
+      <div v-else class="min-w-max text-right">
+        <div v-if="row.currentAveragePrice >= 0" class="mb-1 text-xs text-gray">
           平均标价
         </div>
         <span v-if="row.currentAveragePrice >= 0">
-          {{ row.currentAveragePrice.toLocaleString(undefined, { maximumFractionDigits }) }} G
+          <UniRichNumber :value="row.currentAveragePrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
+            <template #whole="{ num }">
+              <span>
+                {{ num }}
+              </span>
+            </template>
+            <template #fraction="{ num, decimalPoint }">
+              <span class="text-xs">
+                {{ num ? decimalPoint : '' }}{{ num }}
+              </span>
+            </template>
+          </UniRichNumber>
+          <span class="text-amber-500"> G</span>
         </span>
-        <span v-else>
-          -
-        </span>
+        <div v-else class="i-heroicons-minus" />
       </div>
     </template>
     <template #recentPrice-data="{ row }">
-      <div class="min-w-max w-full text-right" :title="row.recentTimestamp > 0 ? time(new Date(row.recentTimestamp * 1000), { max: 'day' }) : undefined">
-        <div class="mb-1 text-xs text-gray">
+      <div v-if="isFetching" class="i-heroicons-ellipsis-horizontal animate-pulse" />
+      <div v-else class="min-w-max text-right" :title="row.recentTimestamp > 0 ? time(new Date(row.recentTimestamp * 1000), { max: 'day' }) : undefined">
+        <div v-if="row.recentPrice >= 0" class="mb-1 text-xs text-gray">
           最近成交
         </div>
         <span v-if="row.recentWorld" class="float-left mr-2 text-gray">
           {{ row.recentWorld }}
         </span>
         <span v-if="row.recentPrice >= 0">
-          {{ row.recentHQ ? '' : '' }} {{ row.recentPrice.toLocaleString(undefined, { maximumFractionDigits }) }} G
+          {{ row.recentHQ ? '' : '' }}
+          <UniRichNumber :value="row.recentPrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
+            <template #whole="{ num }">
+              <span>
+                {{ num }}
+              </span>
+            </template>
+            <template #fraction="{ num, decimalPoint }">
+              <span class="text-xs">
+                {{ num ? decimalPoint : '' }}{{ num }}
+              </span>
+            </template>
+          </UniRichNumber>
+          <span class="text-amber-500"> G</span>
         </span>
-        <span v-else>
-          -
-        </span>
+        <div v-else class="i-heroicons-minus" />
       </div>
     </template>
     <template #averagePrice-data="{ row }">
-      <div class="min-w-max w-full text-right">
-        <div class="mb-1 text-xs text-gray">
+      <div v-if="isFetching" class="i-heroicons-ellipsis-horizontal animate-pulse" />
+      <div v-else class="min-w-max text-right">
+        <div v-if="row.averagePrice >= 0" class="mb-1 text-xs text-gray">
           平均成交价
         </div>
         <span v-if="row.averagePrice >= 0">
-          {{ row.averagePrice.toLocaleString(undefined, { maximumFractionDigits }) }} G
+          <UniRichNumber :value="row.averagePrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
+            <template #whole="{ num }">
+              <span>
+                {{ num }}
+              </span>
+            </template>
+            <template #fraction="{ num, decimalPoint }">
+              <span class="text-xs">
+                {{ num ? decimalPoint : '' }}{{ num }}
+              </span>
+            </template>
+          </UniRichNumber>
+          <span class="text-amber-500"> G</span>
         </span>
-        <span v-else>
-          -
-        </span>
+        <div v-else class="i-heroicons-minus" />
       </div>
     </template>
     <template #regularSaleVelocity-data="{ row }">
-      <div class="min-w-max w-full text-right">
+      <div v-if="isFetching" class="i-heroicons-ellipsis-horizontal animate-pulse" />
+      <div v-else-if="row.regularSaleVelocity >= 0" class="min-w-max text-right">
         {{ row.regularSaleVelocity.toFixed(2) }}
+      </div>
+      <div v-else class="text-center">
+        -
       </div>
     </template>
   </UTable>
