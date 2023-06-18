@@ -7,3 +7,4 @@ cache/
 !/.eslintrc
 !.test
 .temp
+pnpm-lock.yaml
