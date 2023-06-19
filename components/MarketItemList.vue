@@ -10,6 +10,10 @@ const props = withDefaults(defineProps<{
   costMode: false,
 })
 
+const displayCost = computed(() => {
+  return !!props.costs
+})
+
 const marketData = ref<any[]>([])
 const items = ref<({
   id: number
@@ -228,7 +232,7 @@ function copy(text: string) {
             <div class="whitespace-normal">
               {{ row.name }}
             </div>
-            <div v-if="props.costMode !== undefined" class="mt-1 text-xs text-gray">
+            <div v-if="displayCost" class="mt-1 text-xs text-gray">
               兑换价格：{{ row.cost }}
             </div>
           </div>
