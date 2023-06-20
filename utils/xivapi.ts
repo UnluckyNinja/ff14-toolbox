@@ -23,13 +23,16 @@ const BASE_ZH = 'https://cafemaker.wakingsands.com'
 
 let base: typeof BASE_EN | typeof BASE_ZH = BASE_ZH
 
+function endpointBase() {
+  return base
+}
+function items() {
+  return new URL('item', base).href
+}
+
 export const EndPoint = {
-  base() {
-    return base
-  },
-  items(): `${typeof base}/item` {
-    return `${base}/item`
-  },
+  base: endpointBase,
+  items,
 }
 
 export function changeBase(type: 'zh' | 'en') {

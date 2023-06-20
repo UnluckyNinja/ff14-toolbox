@@ -20,13 +20,3 @@ export function useServerInfo() {
     worlds,
   }
 }
-
-export async function fetchMarket(server: string | number, items: (string | number)[] | string, options?: Record<string, any>) {
-  const url = `https://universalis.app/api/v2/${server}/${Array.isArray(items) ? items.join(',') : items}`
-  const queries = {
-    ...options,
-  }
-  const querystring = new URLSearchParams(queries).toString()
-  const response = await fetch(`${url}?${querystring}`)
-  return response
-}

@@ -46,8 +46,8 @@ export function getItemExternalLink(item: { id: string; name: string }) {
 
 const base = 'https://cafemaker.wakingsands.com'
 
-export function itemIconUrl(id: string | number) {
-  const _id = `${id}`.padStart(6, '0')
+export function itemIconUrl(iconID: string | number) {
+  const _id = `${iconID}`.padStart(6, '0')
   const folder = _id.substring(0, 3).padEnd(6, '0')
   return `${base}/i/${folder}/${_id}.png`
 }

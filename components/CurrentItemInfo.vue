@@ -5,18 +5,18 @@ const props = defineProps<{
   item: {
     id: string
     name: string
-    imageID: string
+    iconID: string
   }
 }>()
 
 const item = computed(() => {
   return props.item
 })
-
+const toast = useToast()
 // handy nametag
-function copyName() {
-  if (navigator.clipboard)
-    navigator.clipboard.writeText(item.value.name)
+function copyText(text: string) {
+  if (copy(text))
+    toast.add({ title: '已复制', timeout: 2000 })
 }
 
 const links = reactive(useItemExternalLink(item))
@@ -24,15 +24,19 @@ const links = reactive(useItemExternalLink(item))
 
 <template>
   <div class="my-2 flex items-center">
-    已选择物品：
-    <div
-      class="flex items-center rounded"
-      @click="copyName"
+    <UniImage class="inline-block min-h-8 min-w-8" :src="itemIconUrl(item.iconID)" alt="item icon" />
+    <UButton
+      class="mx-2"
+      color="gray" size="xl" variant="ghost" @click="copyText(item.id)"
+    >
+      ID: {{ item.id }}
+    </UButton>
+    <!-- hover:bg-gray-50 -->
+    <UButton
+      class="mx-2" trailing-icon="i-heroicons-clipboard-document-list-20-solid"
+      color="gray" size="xl" variant="ghost" @click="copyText(item.name)"
     >
       {{ item.name }}
-    </div>
-    <UButton class="mx-2" icon="i-heroicons-clipboard-document-list-20-solid" variant="outline" @click="copyName">
-      复制
     </UButton>
     <div class="text-blue-7 underline children:mx-2 dark:text-blue-3">
       <UButton

@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   typescript: {
     shim: false,
   },
-
+  ssr: false,
   modules: [
     '@nuxt/devtools',
     '@vueuse/nuxt',

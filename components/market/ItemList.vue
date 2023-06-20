@@ -25,31 +25,6 @@ const settings = reactive(useSettings())
 
 const toast = useToast()
 
-const includedFields = [
-  // when multiple items
-  'items.listings.pricePerUnit',
-  'items.listings.worldName',
-  'items.listings.hq',
-  'items.currentAveragePrice',
-  'items.averagePrice',
-  'items.regularSaleVelocity',
-  'items.recentHistory.pricePerUnit',
-  'items.recentHistory.worldName',
-  'items.recentHistory.timestamp',
-  'items.recentHistory.hq',
-  // when only one item
-  'listings.pricePerUnit',
-  'listings.worldName',
-  'listings.hq',
-  'currentAveragePrice',
-  'averagePrice',
-  'regularSaleVelocity',
-  'recentHistory.pricePerUnit',
-  'recentHistory.worldName',
-  'recentHistory.timestamp',
-  'recentHistory.hq',
-]
-
 const isFetching = ref(false)
 
 // fetch prices from universalis into `marketData`
@@ -62,24 +37,20 @@ watch([() => props.ids, () => settings.selectedServer], async ([newIDs, newServe
   marketData.value = []
   const toFetch = newIDs.slice(0)
   async function batchAdd(ids: number[]) {
-    const response = await fetchMarket(newServer, ids, {
-      listings: 1,
-      entries: 1,
-      fields: includedFields,
+    const promise = fetchMarket(newServer, ids).catch((e) => {
+      toast.add({ title: '请求 Universalis 数据失败，请检查网络', description: e, color: 'red', icon: 'i-heroicons-exclamation-circle' })
+      return null
     })
+    const data = await promise
 
-    if (!response.ok) {
-      toast.add({ title: 'Universalis 当前不可用', description: response.statusText, color: 'red', icon: 'i-heroicons-exclamation-circle' })
+    if (data === null)
       return
-    }
-
-    const data = await response.json()
 
     if (props.ids !== newIDs) // fast fail if it is changed to another list of items
       return
 
     if (ids.length > 1)
-      marketData.value.push(...ids.map(it => data.items[it]))
+      marketData.value.push(...ids.map(it => data.items?.[it]).filter(it => it))
     else
       marketData.value.push(data)
   }
@@ -212,16 +183,18 @@ function getLinks(id: number, name: string) {
   ]
 }
 
-function copy(text: string) {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text)
+function copyText(text: string) {
+  if (copy(text))
     toast.add({ title: '已复制', timeout: 2000 })
-  }
 }
 </script>
 
 <template>
-  <UTable :rows="data" :columns="columns">
+  <UTable
+    :rows="data" :columns="columns" :loading="isFetching"
+    :loading-state="{ icon: 'i-heroicons-arrow-path', label: '加载中' }"
+    :empty-state="{ icon: 'i-carbon-circle-dash', label: '空' }"
+  >
     <template #icon-data="{ row }">
       <UniImage class="inline-block min-h-12 min-w-12" :src="row.iconURL" alt="" :title="`ID: ${row.id}`" />
     </template>
@@ -239,12 +212,12 @@ function copy(text: string) {
         </UButton>
         <template #panel>
           <div>
-            <UButton block color="gray" variant="ghost" trailing-icon="i-heroicons-document-duplicate" @click="copy(row.id)">
+            <UButton block color="gray" variant="ghost" trailing-icon="i-heroicons-document-duplicate" @click="copyText(row.id)">
               <div class="w-full text-left">
                 ID: {{ row.id }}
               </div>
             </UButton>
-            <UButton block color="gray" variant="ghost" trailing-icon="i-heroicons-document-duplicate" @click="copy(row.name)">
+            <UButton block color="gray" variant="ghost" trailing-icon="i-heroicons-document-duplicate" @click="copyText(row.name)">
               <div class="w-full text-left">
                 {{ row.name }}
               </div>
@@ -262,29 +235,40 @@ function copy(text: string) {
     <template #lowestPrice-data="{ row }">
       <div v-if="isFetching" class="i-heroicons-ellipsis-horizontal animate-pulse" />
       <div v-else class="min-w-max text-right">
-        <div v-if="row.lowestPrice >= 0" class="mb-1 text-xs text-gray">
-          当前最低价
-        </div>
-        <span v-if="row.lowestWorld" class="float-left pr-2 text-gray">
-          {{ row.lowestWorld }}
-        </span>
-        <span v-if="row.lowestPrice >= 0">
-          {{ row.lowestHQ ? '' : '' }}
-          <UniRichNumber :value="row.lowestPrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
-            <template #whole="{ num }">
-              <span>
-                {{ num }}
+        <UPopover>
+          <UButton block color="gray" variant="ghost">
+            <div class="w-full text-right">
+              <div v-if="row.lowestPrice >= 0" class="mb-1 text-xs text-gray">
+                当前最低价
+              </div>
+              <span v-if="row.lowestWorld" class="float-left pr-2 text-gray">
+                {{ row.lowestWorld }}
               </span>
-            </template>
-            <template #fraction="{ num, decimalPoint }">
-              <span class="text-xs">
-                {{ num ? decimalPoint : '' }}{{ num }}
+              <span v-if="row.lowestPrice >= 0">
+                {{ row.lowestHQ ? '' : '' }}
+                <UniRichNumber :value="row.lowestPrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
+                  <template #whole="{ num }">
+                    <span>
+                      {{ num }}
+                    </span>
+                  </template>
+                  <template #fraction="{ num, decimalPoint }">
+                    <span class="text-xs">
+                      {{ num ? decimalPoint : '' }}{{ num }}
+                    </span>
+                  </template>
+                </UniRichNumber>
+                <span class="text-amber-500"></span>
               </span>
-            </template>
-          </UniRichNumber>
-          <span class="text-amber-500"> G</span>
-        </span>
-        <div v-else class="i-heroicons-minus" />
+              <div v-else class="i-heroicons-minus" />
+            </div>
+          </UButton>
+          <template #panel>
+            <div class="max-h-50vh overflow-auto">
+              <MarketListings :id="row.id" />
+            </div>
+          </template>
+        </UPopover>
       </div>
     </template>
     <template #currentAveragePrice-data="{ row }">
@@ -306,7 +290,7 @@ function copy(text: string) {
               </span>
             </template>
           </UniRichNumber>
-          <span class="text-amber-500"> G</span>
+          <span class="text-amber-500"></span>
         </span>
         <div v-else class="i-heroicons-minus" />
       </div>
@@ -314,29 +298,40 @@ function copy(text: string) {
     <template #recentPrice-data="{ row }">
       <div v-if="isFetching" class="i-heroicons-ellipsis-horizontal animate-pulse" />
       <div v-else class="min-w-max text-right" :title="row.recentTimestamp > 0 ? time(new Date(row.recentTimestamp * 1000), { max: 'day' }) : undefined">
-        <div v-if="row.recentPrice >= 0" class="mb-1 text-xs text-gray">
-          最近成交
-        </div>
-        <span v-if="row.recentWorld" class="float-left mr-2 text-gray">
-          {{ row.recentWorld }}
-        </span>
-        <span v-if="row.recentPrice >= 0">
-          {{ row.recentHQ ? '' : '' }}
-          <UniRichNumber :value="row.recentPrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
-            <template #whole="{ num }">
-              <span>
-                {{ num }}
+        <UPopover>
+          <UButton block color="gray" variant="ghost">
+            <div class="w-full text-right">
+              <div v-if="row.recentPrice >= 0" class="mb-1 text-xs text-gray">
+                最近成交
+              </div>
+              <span v-if="row.recentWorld" class="float-left mr-2 text-gray">
+                {{ row.recentWorld }}
               </span>
-            </template>
-            <template #fraction="{ num, decimalPoint }">
-              <span class="text-xs">
-                {{ num ? decimalPoint : '' }}{{ num }}
+              <span v-if="row.recentPrice >= 0">
+                {{ row.recentHQ ? '' : '' }}
+                <UniRichNumber :value="row.recentPrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
+                  <template #whole="{ num }">
+                    <span>
+                      {{ num }}
+                    </span>
+                  </template>
+                  <template #fraction="{ num, decimalPoint }">
+                    <span class="text-xs">
+                      {{ num ? decimalPoint : '' }}{{ num }}
+                    </span>
+                  </template>
+                </UniRichNumber>
+                <span class="text-amber-500"></span>
               </span>
-            </template>
-          </UniRichNumber>
-          <span class="text-amber-500"> G</span>
-        </span>
-        <div v-else class="i-heroicons-minus" />
+              <div v-else class="i-heroicons-minus" />
+            </div>
+          </UButton>
+          <template #panel>
+            <div class="max-h-50vh overflow-auto">
+              <MarketHistory :id="row.id" />
+            </div>
+          </template>
+        </UPopover>
       </div>
     </template>
     <template #averagePrice-data="{ row }">
@@ -358,7 +353,7 @@ function copy(text: string) {
               </span>
             </template>
           </UniRichNumber>
-          <span class="text-amber-500"> G</span>
+          <span class="text-amber-500"></span>
         </span>
         <div v-else class="i-heroicons-minus" />
       </div>
