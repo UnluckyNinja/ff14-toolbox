@@ -340,7 +340,9 @@ export async function fetchMarket(server: string | number, items: string | numbe
   let res
 
   if (Array.isArray(items))
-    res = await $fetch<CurrentlyShownMultiViewV2>(Endpoint.marketCurrently(server, [0, 1, ...items]), fetchOptions)
+    // put 0, 1 at the end will make response alway become multi view, and avoid 100 limt lost
+    // caller still needs to care about 100 limit though
+    res = await $fetch<CurrentlyShownMultiViewV2>(Endpoint.marketCurrently(server, [...items, 0, 1]), fetchOptions)
   else
     res = await $fetch<CurrentlyShownView>(Endpoint.marketCurrently(server, items), options)
 
