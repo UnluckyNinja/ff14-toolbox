@@ -1,7 +1,8 @@
 # FF14 便捷查价工具
 
 市场数据来自 Universalis  
-使用的库：Nuxt 3, Nuxtlabs UI, DuckDB, [CafeMaker](https://github.com/thewakingsands/cafemaker)
+使用的库：Nuxt 3, Unocss, Vueuse, Nuxtlabs UI, DuckDB, [CafeMaker](https://github.com/thewakingsands/cafemaker)  
+掉落数据来自 [最终幻想XIV中文维基 - 灰机wiki](https://ff14.huijiwiki.com/wiki/Project:%E6%89%8B%E5%B7%A5%E6%9B%B4%E6%96%B0%E6%95%B0%E6%8D%AE)
 
 ## 功能
 ### 市场价格物品搜索查询
