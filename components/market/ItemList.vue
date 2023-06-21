@@ -206,7 +206,7 @@ function copyText(text: string) {
               {{ row.name }}
             </div>
             <div v-if="displayCost" class="mt-1 text-xs text-gray">
-              兑换价格：{{ row.cost }}
+              兑换价格：{{ row.cost.toLocaleString(undefined, { maximumFractionDigits: 2 }) }}
             </div>
           </div>
         </UButton>
