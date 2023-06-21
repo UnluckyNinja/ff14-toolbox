@@ -49,6 +49,10 @@ watch([() => props.id, selectedServer, () => props.hq], () => {
   refresh()
 })
 
+onBeforeMount(() => {
+  data.value = []
+})
+
 watch(error, (newVal) => {
   if (newVal) {
     toast.add({
