@@ -9,7 +9,15 @@ useHead({
   title: route.meta.title as string,
 })
 
-const selectedCurrency = ref(0)
+const id = route.query.currency && typeof route.query.currency === 'string'
+  ? Number.parseInt(route.query.currency)
+  : 0
+
+const selectedCurrency = ref(tokenRewards[id] ? id : 0)
+
+async function updateURL(value: number | string) {
+  navigateTo(`${route.path}?currency=${value}`)
+}
 
 const ids = computed(() => {
   if (!tokenRewards[selectedCurrency.value])
@@ -37,7 +45,7 @@ const costMode = ref(false)
             <UToggle v-model="costMode" />
             金币/每单位兑换货币
           </div>
-          <CurrencyList v-model="selectedCurrency" />
+          <CurrencyList v-model="selectedCurrency" @update:model-value="updateURL" />
         </div>
         <template #fallback>
           <div class="col-span-3 p-2 text-center">
