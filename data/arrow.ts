@@ -6,16 +6,16 @@ import type { Field, Table } from 'apache-arrow'
 // https://arrow.apache.org/docs/7.0/js/classes/Arrow_dom.Table.html
 export function isArrowTable(value: any): boolean {
   return (
-    value &&
-    typeof value.getChild === "function" &&
-    typeof value.toArray === "function" &&
-    value.schema &&
-    Array.isArray(value.schema.fields)
-  );
+    value
+    && typeof value.getChild === 'function'
+    && typeof value.toArray === 'function'
+    && value.schema
+    && Array.isArray(value.schema.fields)
+  )
 }
 
 export function getArrowTableSchema(table: Table) {
-  return table.schema.fields.map(getArrowFieldSchema);
+  return table.schema.fields.map(getArrowFieldSchema)
 }
 
 function getArrowFieldSchema(field: Field) {
@@ -23,38 +23,38 @@ function getArrowFieldSchema(field: Field) {
     name: field.name,
     type: getArrowType(field.type),
     nullable: field.nullable,
-    databaseType: String(field.type)
-  };
+    databaseType: String(field.type),
+  }
 }
 
 // https://github.com/apache/arrow/blob/89f9a0948961f6e94f1ef5e4f310b707d22a3c11/js/src/enum.ts#L140-L141
-function getArrowType(type: {typeId: number}) {
+function getArrowType(type: { typeId: number }) {
   switch (type.typeId) {
     case 2: // Int
-      return "integer";
+      return 'integer'
     case 3: // Float
     case 7: // Decimal
-      return "number";
+      return 'number'
     case 4: // Binary
     case 15: // FixedSizeBinary
-      return "buffer";
+      return 'buffer'
     case 5: // Utf8
-      return "string";
+      return 'string'
     case 6: // Bool
-      return "boolean";
+      return 'boolean'
     case 8: // Date
     case 9: // Time
     case 10: // Timestamp
-      return "date";
+      return 'date'
     case 12: // List
     case 16: // FixedSizeList
-      return "array";
+      return 'array'
     case 13: // Struct
     case 14: // Union
-      return "object";
+      return 'object'
     case 11: // Interval
     case 17: // Map
     default:
-      return "other";
+      return 'other'
   }
 }
