@@ -43,15 +43,3 @@ export function getItemExternalLink(item: { id: string; name: string }) {
     garlandData: garlandDataLink(item.id),
   }
 }
-
-const base = 'https://cafemaker.wakingsands.com'
-
-export function itemIconUrl(iconID: string | number) {
-  const _id = `${iconID}`.padStart(6, '0')
-  const folder = _id.substring(0, 3).padEnd(6, '0')
-  return `${base}/i/${folder}/${_id}.png`
-}
-
-export function itemUrl(id: string | number) {
-  return `${base}/item/${id}`
-}

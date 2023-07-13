@@ -5,6 +5,9 @@ const props = defineProps<{
 }>()
 
 const [isLoaded, setLoaded] = useToggle(false)
+watch(() => props.src, () => {
+  setLoaded(false)
+})
 </script>
 
 <template>

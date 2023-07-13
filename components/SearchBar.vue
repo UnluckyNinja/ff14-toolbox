@@ -89,7 +89,7 @@ function select(index: number) {
       class="absolute top-full z-10 mt-px max-h-300px w-full overflow-auto border border-yellow-600 rounded bg-white p-2 shadow-lg dark:bg-black"
     >
       <div v-bind="wrapperProps">
-        <div v-for="i, idx in list" :key="idx" class="grid grid-cols-3" style="height: 60px">
+        <div v-for="i in list" :key="i.index" class="grid grid-cols-3" style="height: 60px">
           <ItemInfoListItem v-if="i.index * 3 < results.length" class="hover:cursor-pointer hover:bg-dark/20 hover:brightness-110" :item="results[i.index * 3]" @click="select(i.index * 3)" />
           <ItemInfoListItem v-if="i.index * 3 + 1 < results.length" class="hover:cursor-pointer hover:bg-dark/20 hover:brightness-110" :item="results[i.index * 3 + 1]" @click="select(i.index * 3 + 1)" />
           <ItemInfoListItem v-if="i.index * 3 + 2 < results.length" class="hover:cursor-pointer hover:bg-dark/20 hover:brightness-110" :item="results[i.index * 3 + 2]" @click="select(i.index * 3 + 2)" />

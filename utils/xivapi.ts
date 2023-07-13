@@ -18,16 +18,16 @@ export interface XAItem {
   Url: string // URL
 }
 
-const BASE_EN = 'https://xivapi.com'
-const BASE_ZH = 'https://cafemaker.wakingsands.com'
+export const BASE_EN = 'https://xivapi.com'
+export const BASE_ZH = 'https://cafemaker.wakingsands.com'
 
-let base: typeof BASE_EN | typeof BASE_ZH = BASE_ZH
+const base = useState('xivapi-base', () => BASE_ZH)
 
 function endpointBase() {
-  return base
+  return base.value
 }
 function items() {
-  return new URL('item', base).href
+  return new URL('item', base.value).href
 }
 
 export const EndPoint = {
@@ -38,10 +38,10 @@ export const EndPoint = {
 export function changeBase(type: 'zh' | 'en') {
   switch (type) {
     case 'zh':
-      base = BASE_ZH
+      base.value = BASE_ZH
       return
     case 'en':
-      base = BASE_EN
+      base.value = BASE_EN
       return // eslint-disable-line no-useless-return
   }
 }
@@ -56,3 +56,15 @@ export async function fetchItems<T extends string | number>(ids: T[]): Promise<X
   })
   return json.Results
 }
+
+export function itemIconUrl(iconID: string | number, base = BASE_ZH) {
+  const _id = `${iconID}`.padStart(6, '0')
+  const folder = _id.substring(0, 3).padEnd(6, '0')
+  return `${base}/i/${folder}/${_id}.png`
+}
+
+export function itemUrl(id: string | number, base = BASE_ZH) {
+  return `${base}/item/${id}`
+}
+
+export const failedIcons = useState('failed-icons', () => new Set<number | string>())
