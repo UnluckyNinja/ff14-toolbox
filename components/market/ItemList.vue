@@ -50,7 +50,7 @@ watch([() => props.ids, () => settings.selectedServer], async ([newIDs, newServe
       return
 
     if (ids.length > 1)
-      marketData.value.push(...ids.map(it => data.items?.[it]).filter(it => it))
+      marketData.value.push(...ids.map(it => data.items?.[it]))
     else
       marketData.value.push(data)
   }
@@ -94,6 +94,10 @@ watch(() => props.ids, async (newVal) => {
 const data = computed(() => {
   if (items.value.length === 0)
     return []
+  if (marketData.value.length !== items.value.length)
+    /* eslint-disable-next-line no-console */
+    console.log('[FF14工具] 市场数据条目数量和传入数据对不上，可能会显示错误数据')
+
   return items.value.map((item, idx) => {
     if (!item)
       return null
