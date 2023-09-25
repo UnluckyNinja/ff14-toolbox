@@ -8,7 +8,7 @@ export default defineNuxtConfig({
     '@nuxt/devtools',
     '@vueuse/nuxt',
     '@unocss/nuxt',
-    '@nuxthq/ui',
+    '@nuxt/ui',
   ],
 
   vite: {

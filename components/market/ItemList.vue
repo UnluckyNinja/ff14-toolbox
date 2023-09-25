@@ -94,9 +94,9 @@ watch(() => props.ids, async (newVal) => {
 const data = computed(() => {
   if (items.value.length === 0)
     return []
-  if (marketData.value.length !== items.value.length)
+  // if (marketData.value.length !== items.value.length)
     /* eslint-disable-next-line no-console */
-    console.log('[FF14工具] 市场数据条目数量和传入数据对不上，可能会显示错误数据')
+    // console.log('[FF14工具] 市场数据条目数量和传入数据对不上，可能会显示错误数据')
 
   return items.value.map((item, idx) => {
     if (!item)
