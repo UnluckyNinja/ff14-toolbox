@@ -1,0 +1,8 @@
+/manifest.webmanifest
+  Content-Type: application/manifest+json
+
+/_nuxt/*
+  Cache-Control: max-age=7776000,immutable
+
+/_nuxt/build/*
+  ! Cache-Control
