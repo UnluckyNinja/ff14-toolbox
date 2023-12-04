@@ -29,6 +29,8 @@ export default defineNuxtConfig({
   },
   
   pwa: {
+    registerType: 'autoUpdate',
+    strategies: 'generateSW',
     manifest: {
       name: 'FF14 速查',
       short_name: 'FF14速查',

@@ -15,7 +15,11 @@ const { $pwa } = useNuxtApp()
 const toast = useToast()
 
 onMounted(() => {
-  if ($pwa?.offlineReady) {
+  if (!$pwa){
+    return
+  }
+  let handle = watch(()=>$pwa.offlineReady, (ready) => {
+    if (!ready) return
     toast.add({
       id: 'update_pwa',
       title: '网站内容有变化，点击刷新按钮以更新',
@@ -27,7 +31,8 @@ onMounted(() => {
         }
       }]
     })
-  }
+    handle()
+  })
 })
 </script>
 
