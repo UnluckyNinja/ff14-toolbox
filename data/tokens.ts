@@ -20,8 +20,8 @@ export const tokens = [
   37549, // 谢尔达莱青船币
   37550, // 谢尔达莱绿岛币
   25, // 狼印战绩
-  39984, // 六根山遗物
-  39986, // 六根山书籍
+  39884, // 六根山遗物
+  39886, // 六根山书籍
 ]
 
 export const tokenRewards: Record<string, Record<string, number>> = {
@@ -959,7 +959,7 @@ export const tokenRewards: Record<string, Record<string, number>> = {
     "33250": 20,
     "37412": 50
   },
-  39984: {
+  39884: {
     "40363": 9,
     "40364": 3,
     "40441": 9,
@@ -972,7 +972,7 @@ export const tokenRewards: Record<string, Record<string, number>> = {
     "40601": 6,
     "40713": 9
   },
-  39986: {
+  39886: {
     "33930": 1,
     "33931": 1,
     "33932": 1,
