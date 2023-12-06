@@ -65,77 +65,78 @@ const serverOptions = computed(() => {
     <!-- settings -->
     <div
       v-if="settings.showOptions"
-      class="flex flex-wrap items-center gap-2 p-2"
+      class="options-panel max-w-screen grid grid-flow-row items-baseline gap-2 p-2 overflow-hidden"
     >
-      <div>
+      <div class="col-start-1">
         运营地区
-        <div class="inline-block">
-          <UPopover class="mr-10">
-            <UButton class="min-w-30" color="white" trailing-icon="i-heroicons-chevron-down-20-solid">
-              <span class="flex-1">
-                {{ settings.selectedRegion }}
+      </div>
+      <div class="col-start-2">
+        <UPopover class="inline-block">
+          <UButton class="min-w-30" color="white" trailing-icon="i-heroicons-chevron-down-20-solid">
+            <span class="flex-1">
+              {{ settings.selectedRegion }}
+            </span>
+          </UButton>
+          <template #panel="{ close }">
+            <UButton v-for="region in servers.regions" :key="region" block color="gray" variant="ghost" tabindex="0" @click="close(); settings.selectedRegion = region">
+              <span class="text-sm">
+                {{ region }}
               </span>
             </UButton>
-            <template #panel="{ close }">
-              <UButton v-for="region in servers.regions" :key="region" block color="gray" variant="ghost" tabindex="0" @click="close(); settings.selectedRegion = region">
-                <span class="text-sm">
-                  {{ region }}
-                </span>
-              </UButton>
-            </template>
-          </UPopover>
-        </div>
+          </template>
+        </UPopover>
       </div>
-      <div>
+      <div class="col-start-1">
         大区
-        <div class="inline-block">
-          <UPopover class="mr-10">
-            <UButton class="min-w-30" color="white" trailing-icon="i-heroicons-chevron-down-20-solid">
-              <span class="flex-1">
-                {{ settings.selectedDataCenter }}
+      </div>
+      <div class="col-start-2">
+        <UPopover class="inline-block">
+          <UButton class="min-w-30" color="white" trailing-icon="i-heroicons-chevron-down-20-solid">
+            <span class="flex-1">
+              {{ settings.selectedDataCenter }}
+            </span>
+          </UButton>
+          <template #panel="{ close }">
+            <UButton v-for="dc in dataCenterOptions" :key="dc.name" block color="gray" variant="ghost" tabindex="0" @click="close(); settings.selectedDataCenter = dc.name">
+              <span class="text-sm">
+                {{ dc.name }}
               </span>
             </UButton>
-            <template #panel="{ close }">
-              <UButton v-for="dc in dataCenterOptions" :key="dc.name" block color="gray" variant="ghost" tabindex="0" @click="close(); settings.selectedDataCenter = dc.name">
-                <span class="text-sm">
-                  {{ dc.name }}
-                </span>
-              </UButton>
-            </template>
-          </UPopover>
-        </div>
+          </template>
+        </UPopover>
       </div>
-      <div>
+      <div class="col-start-1">
         条目数量
-        <div class="inline-block">
-          <UInput v-model="settings.numberPerPage" type="number" name="npp-input" />
-        </div>
       </div>
-    </div>
-    <!-- servers -->
-    <div v-if="settings.selectedDataCenter" class="grid grid-cols-12 gap-y-2 p-2">
-      <div class="col-span-1">
+      <div class="col-start-2">
+        <UInput class="inline-block" v-model="settings.numberPerPage" type="number" name="npp-input" />
+      </div>
+      <!-- servers -->
+      <div v-if="settings.selectedDataCenter" class="whitespace-nowrap col-start-1">
         市场服务器
       </div>
-      <div class="col-span-11 flex flex-wrap gap-4">
-        <URadio
+      <div class="col-start-2">
+        <div class="w-full flex flex-wrap gap-4">
+          <URadio
           v-model="settings.selectedServer"
           :label="settings.selectedDataCenter" help="显示全区数据"
           :value="settings.selectedDataCenter"
           @click="settings.selectedServer = settings.selectedDataCenter"
-        />
-        <URadio
+          />
+          <URadio
           v-for="sv in serverOptions"
           :key="sv"
           v-model="settings.selectedServer" :label="sv"
           :value="sv"
           @click="settings.selectedServer = sv"
-        />
+          />
+        </div>
       </div>
       <div v-if="props.display.hq" class="col-span-1">
         仅HQ
       </div>
       <UToggle v-if="props.display.hq" v-model="settings.onlyHQ" />
+      <slot />
       <!-- workaround for UToggle tailwind class conflict -->
       <!-- <div class="translate-x-4" /> -->
     </div>
@@ -145,5 +146,8 @@ const serverOptions = computed(() => {
   </div>
 </template>
 
-<style lang="postcss" scoped>
+<style lang="pcss" scoped>
+.options-panel {
+  grid-auto-columns: min-content auto;
+}
 </style>

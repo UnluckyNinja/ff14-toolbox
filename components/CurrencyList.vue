@@ -2,17 +2,21 @@
 import { notNullish } from '@vueuse/core'
 import { tokens } from '~/data/tokens'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   modelValue: number
-}>()
+  header?: boolean
+}>(), {
+  header: true
+})
 
 const emits = defineEmits<{
   (event: 'update:modelValue', value: number): void
+  (event: 'currencyName', value: string): void
 }>()
 
 async function fetchCurrency() {
   if (tokens.length === 0)
-    return
+    return []
 
   const items = await fetchItems(tokens)
   return tokens.map(id => items.find(it => it.ID === id)).filter(notNullish)
@@ -20,21 +24,28 @@ async function fetchCurrency() {
 
 const base = EndPoint.base()
 const list = await fetchCurrency()
+
+emits('currencyName', list.find(it=>it.ID === props.modelValue)?.Name ?? '')
+
+function currencyChange(item: XAItem){
+  emits('update:modelValue', item.ID)
+  emits('currencyName', item.Name)
+}
 </script>
 
 <template>
-  <div class="m-2 flex flex-col gap-2 border rounded p-2">
+  <div class="m-2 flex flex-col gap-2 p-2">
     <!-- header -->
-    <div class="text-center">
+    <div v-if="header" class="text-center">
       货币列表
     </div>
     <!-- instances list -->
-    <div class="flex flex-col overflow-hidden">
+    <div class="flex flex-col">
       <div class="min-h-120 flex flex-col gap-1">
         <UButton
           v-for="item in list" :key="item.ID"
           color="gray" block variant="ghost" size="xl"
-          @click="emits('update:modelValue', item.ID)"
+          @click="currencyChange(item)"
         >
           <div class="w-full flex items-center gap-1 text-left text-base">
             <!-- icon -->
