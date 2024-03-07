@@ -3,10 +3,9 @@ const props = defineProps<{
   item: any
 }>()
 
+const failedIcons = useFailedIcons()
 const base = ref(failedIcons.value.has(props.item.iconID) ? BASE_EN : BASE_ZH)
-const iconUrl = computed(() => {
-  return itemIconUrl(props.item.iconID, base.value)
-})
+const iconUrl = itemIconUrl(props.item.iconID, base.value)
 </script>
 
 <template>

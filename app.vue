@@ -1,15 +1,4 @@
 <script lang="ts" setup>
-const route = useRoute()
-
-const colorMode = useColorMode()
-
-if (colorMode.preference === 'system')
-  colorMode.preference = 'light'
-
-function toggle() {
-  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
-}
-
 const { $pwa } = useNuxtApp()
 
 const toast = useToast()

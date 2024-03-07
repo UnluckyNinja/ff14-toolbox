@@ -22,7 +22,7 @@ async function fetchCurrency() {
   return tokens.map(id => items.find(it => it.ID === id)).filter(notNullish)
 }
 
-const base = EndPoint.base()
+const { base } = useXABase()
 const list = await fetchCurrency()
 
 emits('currencyName', list.find(it=>it.ID === props.modelValue)?.Name ?? '')
@@ -49,7 +49,7 @@ function currencyChange(item: XAItem){
         >
           <div class="w-full flex items-center gap-1 text-left text-base">
             <!-- icon -->
-            <img class="inline-block h-4 w-4" :src="base + item.Icon">
+            <img class="inline-block h-4 w-4" :src="base.icon + item.Icon">
             <!-- name -->
             <div class="flex-grow truncate" :title="item.Name">
               {{ item.Name }}

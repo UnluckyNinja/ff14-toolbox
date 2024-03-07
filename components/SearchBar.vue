@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ShallowRef } from 'nuxt/dist/app/compat/capi'
+import type { ShallowRef } from 'vue'
 import type { DuckDBClient } from '~/data/duckDB'
 
 const emits = defineEmits<{
@@ -90,9 +90,9 @@ function select(index: number) {
     >
       <div v-bind="wrapperProps">
         <div v-for="i in list" :key="i.index" class="grid grid-cols-3" style="height: 60px">
-          <ItemInfoListItem v-if="i.index * 3 < results.length" class="hover:cursor-pointer hover:bg-dark/20 hover:brightness-110" :item="results[i.index * 3]" @click="select(i.index * 3)" />
-          <ItemInfoListItem v-if="i.index * 3 + 1 < results.length" class="hover:cursor-pointer hover:bg-dark/20 hover:brightness-110" :item="results[i.index * 3 + 1]" @click="select(i.index * 3 + 1)" />
-          <ItemInfoListItem v-if="i.index * 3 + 2 < results.length" class="hover:cursor-pointer hover:bg-dark/20 hover:brightness-110" :item="results[i.index * 3 + 2]" @click="select(i.index * 3 + 2)" />
+          <SearchBarItem v-if="i.index * 3 < results.length" class="hover:cursor-pointer hover:bg-dark/20 hover:brightness-110" :item="results[i.index * 3]" @click="select(i.index * 3)" />
+          <SearchBarItem v-if="i.index * 3 + 1 < results.length" class="hover:cursor-pointer hover:bg-dark/20 hover:brightness-110" :item="results[i.index * 3 + 1]" @click="select(i.index * 3 + 1)" />
+          <SearchBarItem v-if="i.index * 3 + 2 < results.length" class="hover:cursor-pointer hover:bg-dark/20 hover:brightness-110" :item="results[i.index * 3 + 2]" @click="select(i.index * 3 + 2)" />
         </div>
       </div>
     </div>

@@ -8,6 +8,15 @@ if (colorMode.preference === 'system')
 function toggle() {
   colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
 }
+
+const {baseSetting, toggleBase} = useXABase()
+
+function toggleIcon() {
+  toggleBase('icon')
+}
+function toggleItem() {
+  toggleBase('item')
+}
 </script>
 <template>
   <div class="min-h-screen">
@@ -25,7 +34,9 @@ function toggle() {
           <h1 class="mx-2 inline">
             {{ route.meta.title }}
           </h1>
-          <UButton class="ml-auto" :icon="colorMode.value === 'dark' ? 'i-heroicons-moon' : 'i-heroicons-sun'"
+          <UButton class="ml-auto" @click="toggleIcon">图标：{{ baseSetting.icon === 'en' ? 'xivapi' : 'ffcafe' }}</UButton>
+          <UButton class="ml-2" @click="toggleItem">物品：{{ baseSetting.item === 'en' ? 'xivapi' : 'ffcafe' }}（需刷新页面）</UButton>
+          <UButton class="ml-2" :icon="colorMode.value === 'dark' ? 'i-heroicons-moon' : 'i-heroicons-sun'"
             @click="toggle" />
         </UContainer>
       </nav>
@@ -44,4 +55,4 @@ function toggle() {
         icon="i-carbon-logo-github" />
     </footer>
   </div>
-</template>
+</template>~/utils/itemDataSource

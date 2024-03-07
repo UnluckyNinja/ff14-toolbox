@@ -27,6 +27,8 @@ const toast = useToast()
 
 const isFetching = ref(false)
 
+const { base } = useXABase()
+
 // fetch prices from universalis into `marketData`
 watch([() => props.ids, () => settings.selectedServer], async ([newIDs, newServer]) => {
   if (newIDs.length === 0) {
@@ -77,7 +79,6 @@ watch(() => props.ids, async (newVal) => {
   if (props.ids !== newVal)
     return
 
-  const base = EndPoint.base()
   items.value = newVal.map((id) => {
     const item = results.find(it => it.ID === id)
     if (!item)
@@ -85,7 +86,7 @@ watch(() => props.ids, async (newVal) => {
     return {
       id: item.ID,
       name: item.Name,
-      iconURL: base + item.Icon,
+      iconURL: item.Icon,
     }
   })
 }, { immediate: true })
@@ -200,7 +201,7 @@ function copyText(text: string) {
     :empty-state="{ icon: 'i-carbon-circle-dash', label: '空' }"
   >
     <template #icon-data="{ row }">
-      <UniImage class="inline-block min-h-12 min-w-12" :src="row.iconURL" alt="" :title="`ID: ${row.id}`" />
+      <UniImage class="inline-block min-h-12 min-w-12" :src="base.icon + row.iconURL" alt="" :title="`ID: ${row.id}`" />
     </template>
     <template #name-data="{ row }">
       <UPopover>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ShallowRef } from 'nuxt/dist/app/compat/capi'
+import type { ShallowRef } from 'vue'
 import type { HistoryItem } from '~/composables/searchHistory'
 import type { DuckDBClient } from '~/data/duckDB'
 

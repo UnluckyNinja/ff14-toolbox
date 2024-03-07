@@ -43,7 +43,7 @@ const imgUrl = itemIconUrl
         <InstanceList class="col-span-2" @update:model-value="selectedInstance = $event" />
         <div v-if="selectedInstance" class="col-span-5">
           <h2 class="text-center text-xl font-bold">
-            <img class="inline-block h-8 w-8" :src="imgUrl(selectedInstance.c.toString())">
+            <img class="inline-block h-8 w-8" :src="imgUrl(selectedInstance.c.toString()).value">
             {{ selectedInstance.n }}
           </h2>
           <MarketItemList v-if="loots.length > 0" :ids="loots" />

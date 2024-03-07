@@ -22,6 +22,7 @@ export const tokens = [
   25, // 狼印战绩
   39884, // 六根山遗物
   39886, // 六根山书籍
+  41668, // 猫耳小员的票据
 ]
 
 export const tokenRewards: Record<string, Record<string, number>> = {
@@ -980,5 +981,8 @@ export const tokenRewards: Record<string, Record<string, number>> = {
     "33934": 1,
     "33941": 1,
     "33942": 1
-  }  
+  },
+  41668: {
+    "41709": 10
+  }
 }

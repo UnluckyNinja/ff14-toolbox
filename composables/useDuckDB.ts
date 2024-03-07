@@ -1,4 +1,4 @@
-import type { ShallowRef } from 'nuxt/dist/app/compat/capi'
+import type { ShallowRef } from 'vue'
 import { loadItemData } from '~/data'
 import type { DuckDBClient } from '~/data/duckDB'
 
