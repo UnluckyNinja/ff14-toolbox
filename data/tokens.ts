@@ -1,6 +1,6 @@
 // search what tokens can buy here: https://observablehq.com/d/618dcf86d688669a
 export const tokens = [
-  39919, // 稀少外典神典石
+  // 39919, // 稀少外典神典石
   20, // 黑涡团军票
   21, // 双蛇党军票
   22, // 恒辉队军票
