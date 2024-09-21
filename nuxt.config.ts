@@ -21,15 +21,11 @@ export default defineNuxtConfig({
   },
 
   devtools: {
-    enabled: false,
+    enabled: true,
   },
 
-  ui: {
-    icons: ['carbon', 'mdi'],
-  },
-  
   pwa: {
-    registerType: 'autoUpdate',
+    registerType: 'prompt',
     strategies: 'generateSW',
     manifest: {
       name: 'FF14 速查',
@@ -65,10 +61,12 @@ export default defineNuxtConfig({
       installPrompt: true,
     },
     devOptions: {
-      enabled: false,
+      enabled: true,
       suppressWarnings: true,
       navigateFallbackAllowlist: [/^\/$/],
       type: 'module',
     },
   },
+
+  compatibilityDate: '2024-09-21',
 })

@@ -21,8 +21,8 @@ function copyText(text: string) {
 
 const links = reactive(useItemExternalLink(item))
 const failedIcons = useFailedIcons()
-const base = ref(failedIcons.value.has(props.item.iconID) ? BASE_EN : BASE_ZH)
-const iconUrl = computed(()=>itemIconUrl(item.value.iconID, base.value).value)
+const base = ref(failedIcons.value.has(props.item.iconID) ? BASE_EN : null)
+const iconUrl = computed(()=>itemIconUrl(item.value.iconID, base.value ?? undefined).value)
 </script>
 
 <template>

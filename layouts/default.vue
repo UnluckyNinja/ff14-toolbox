@@ -55,4 +55,4 @@ function toggleItem() {
         icon="i-carbon-logo-github" />
     </footer>
   </div>
-</template>~/utils/itemDataSource
+</template>

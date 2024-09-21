@@ -4,8 +4,8 @@ const props = defineProps<{
 }>()
 
 const failedIcons = useFailedIcons()
-const base = ref(failedIcons.value.has(props.item.iconID) ? BASE_EN : BASE_ZH)
-const iconUrl = itemIconUrl(props.item.iconID, base.value)
+const base = ref(failedIcons.value.has(props.item.iconID) ? BASE_EN : null)
+const iconUrl = itemIconUrl(props.item.iconID, base.value ?? undefined)
 </script>
 
 <template>

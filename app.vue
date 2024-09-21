@@ -7,7 +7,7 @@ onMounted(() => {
   if (!$pwa) {
     return
   }
-  let handle = watch(() => $pwa.offlineReady, (ready) => {
+  watch(() => $pwa.needRefresh, (ready) => {
     if (!ready) return
     toast.add({
       id: 'update_pwa',
@@ -20,7 +20,6 @@ onMounted(() => {
         }
       }]
     })
-    handle()
   })
 })
 </script>
