@@ -12,6 +12,13 @@ export default defineNuxtConfig({
     '@nuxt/ui',
   ],
 
+  components: [
+    {
+      path: '~/components',
+      pathPrefix: false,
+    }
+  ],
+
   vite: {
     assetsInclude: ['**/*.wasm'],
   },

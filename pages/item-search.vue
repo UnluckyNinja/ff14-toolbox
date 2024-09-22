@@ -42,7 +42,7 @@ function onItemClick(item: any) {
         <SearchHistoryList class="col-span-1 hidden md:block" />
         <div class="col-span-6 md:col-span-5">
           <CurrentItemInfo v-if="selectedItem" class="ml-4" :item="selectedItem" />
-          <MarketInfo />
+          <SearchMarketInfo />
         </div>
       </div>
     </div>
