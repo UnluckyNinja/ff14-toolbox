@@ -12,7 +12,7 @@ import mvp_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?ur
 import duckdb_wasm_next from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url'
 import eh_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url'
 
-import type { ArrowInsertOptions } from '@duckdb/duckdb-wasm/dist/types/src/bindings'
+import type { ArrowInsertOptions } from '@duckdb/duckdb-wasm/blocking'
 import { getArrowTableSchema, isArrowTable } from './arrow'
 
 // Adapted from https://github.com/observablehq/stdlib/blob/main/src/duckdb.js
@@ -144,6 +144,8 @@ async function insertArrowTable(database: duckdb.AsyncDuckDB, name: string, tabl
       schema: 'main',
       ...options,
     })
+  } catch (e){
+    console.log(`error: ${e}`)
   }
   finally {
     await connection.close()
@@ -159,8 +161,27 @@ async function insertArrowTable(database: duckdb.AsyncDuckDB, name: string, tabl
 // }
 
 async function insertArray(database: duckdb.AsyncDuckDB, name: string, array: any[], options?: any) {
-  const table = tableFromJSON(array)
-  return await insertArrowTable(database, name, table, options)
+  const connection = await database.connect()
+  // const table = tableFromJSON(array)
+  try {
+    const filename = `${name}.json`
+    await database.registerFileText(
+      filename,
+      JSON.stringify(array),
+    );
+    await connection.insertJSONFromPath(filename, {
+      name,
+      // schema: 'main',
+      ...options,
+    })
+  } catch (e){
+    console.error(`error when inserting table:`)
+    console.error(e)
+  }
+  finally {
+    await connection.close()
+  }
+  // return await insertArrowTable(database, name, table, options)
 }
 
 async function loadDuckDB() {
