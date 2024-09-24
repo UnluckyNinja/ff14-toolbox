@@ -34,7 +34,8 @@ export function useXABase(){
         item: 'zh',
         icon: 'en'
       }
-    }
+    },
+    sameSite: 'lax'
   })
 
   const base = computed(()=>{
