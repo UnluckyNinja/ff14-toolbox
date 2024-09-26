@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@duckdb/duckdb-wasm':
-        specifier: 1.28.1-dev106.0
-        version: 1.28.1-dev106.0
+        specifier: ^1.28.0
+        version: 1.28.0
       '@floating-ui/vue':
         specifier: ^1.1.5
         version: 1.1.5(vue@3.5.7(typescript@5.6.2))
@@ -799,8 +799,8 @@ packages:
     peerDependencies:
       postcss-selector-parser: ^6.0.13
 
-  '@duckdb/duckdb-wasm@1.28.1-dev106.0':
-    resolution: {integrity: sha512-HcA9q/Yq1t8nAIg2rl8DmOTjKy1tAHSdBGHlCcWAm5StsfAjcm+f0STBEH3hmWPk0qEtOJF30OR+GfeyUOP+hA==}
+  '@duckdb/duckdb-wasm@1.28.0':
+    resolution: {integrity: sha512-YaswpEmxr1Sp20/FZbWR7bZBJqj6xQXX2m4LLzYBnA02g4K1yrpxsBWmkxQyMbrH6AHKhcUUqAlaXfA2Rvaa3w==}
 
   '@es-joy/jsdoccomment@0.48.0':
     resolution: {integrity: sha512-G6QUWIcC+KvSwXNsJyDTHvqUdNoAVJPPgkc3+Uk4WBKqZvoXhlvazOgm9aL0HwihJLQf0l+tOE2UFzXBqCqgDw==}
@@ -2489,8 +2489,8 @@ packages:
     resolution: {integrity: sha512-KMReFUr0B4t+D+OBkjR3KYqvocp2XaSzO55UcB6mgQMd3KbcE+mWTyvVV7D/zsdEbNnV6acZUutkiHQXvTr1Rw==}
     engines: {node: '>= 8'}
 
-  apache-arrow@14.0.2:
-    resolution: {integrity: sha512-EBO2xJN36/XoY81nhLcwCJgFwkboDZeyNQ+OPsG7bCoQjc2BT0aTyH/MR6SrL+LirSNz+cYqjGRlupMMlP1aEg==}
+  apache-arrow@13.0.0:
+    resolution: {integrity: sha512-3gvCX0GDawWz6KFNC28p65U+zGh/LZ6ZNKWNu74N6CQlKzxeoWHpi4CgEQsgRSEMuyrIIXi1Ea2syja7dwcHvw==}
     hasBin: true
 
   apache-arrow@17.0.0:
@@ -7499,9 +7499,9 @@ snapshots:
     dependencies:
       postcss-selector-parser: 6.1.2
 
-  '@duckdb/duckdb-wasm@1.28.1-dev106.0':
+  '@duckdb/duckdb-wasm@1.28.0':
     dependencies:
-      apache-arrow: 14.0.2
+      apache-arrow: 13.0.0
 
   '@es-joy/jsdoccomment@0.48.0':
     dependencies:
@@ -9519,7 +9519,7 @@ snapshots:
       normalize-path: 3.0.0
       picomatch: 2.3.1
 
-  apache-arrow@14.0.2:
+  apache-arrow@13.0.0:
     dependencies:
       '@types/command-line-args': 5.2.0
       '@types/command-line-usage': 5.0.2
@@ -13520,7 +13520,7 @@ snapshots:
       '@75lb/deep-merge': 1.1.2
       array-back: 6.2.2
       command-line-args: 5.2.1
-      command-line-usage: 7.0.1
+      command-line-usage: 7.0.3
       stream-read-all: 3.0.1
       typical: 7.2.0
       wordwrapjs: 5.1.0

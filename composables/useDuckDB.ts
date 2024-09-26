@@ -71,7 +71,10 @@ export function useQueries(db: ShallowRef<DuckDBClient | null>) {
         ...columns,
       ]
     } else {
-      list = defaultQueries
+      list = [
+        ...necessaryQueries,
+        ...(flag ? defaultQueries : []),
+      ]
     }
     return list
   }

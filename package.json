@@ -37,7 +37,7 @@
     "simple-git-hooks": "^2.11.1"
   },
   "dependencies": {
-    "@duckdb/duckdb-wasm": "1.28.1-dev106.0",
+    "@duckdb/duckdb-wasm": "^1.28.0",
     "@floating-ui/vue": "^1.1.5",
     "apache-arrow": "^17.0.0",
     "d3": "^7.9.0",
