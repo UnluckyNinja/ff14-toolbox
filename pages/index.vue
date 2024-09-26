@@ -22,6 +22,11 @@ const gameTools = [
     icon: 'i-heroicons-shopping-cart',
     label: '艾欧泽亚什么值得卖',
   },
+  {
+    link: '/quest-gear-box',
+    icon: 'i-game-icons-chest-armor',
+    label: '主线装备箱可筹备查询',
+  },
 ]
 const devTools = [
   {

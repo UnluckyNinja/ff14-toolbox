@@ -33,6 +33,9 @@ importers:
       '@iconify-json/carbon':
         specifier: ^1.2.1
         version: 1.2.1
+      '@iconify-json/game-icons':
+        specifier: ^1.2.0
+        version: 1.2.0
       '@iconify-json/heroicons':
         specifier: ^1.2.0
         version: 1.2.0
@@ -1311,6 +1314,9 @@ packages:
 
   '@iconify-json/carbon@1.2.1':
     resolution: {integrity: sha512-dIMY6OOY9LnwR3kOqAtfz4phGFG+KNfESEwSL6muCprBelSlSPpRXtdqvEEO/qWhkf5AJ9hWrOV3Egi5Z2IuKA==}
+
+  '@iconify-json/game-icons@1.2.0':
+    resolution: {integrity: sha512-9M0VrC2P9HOcGWyRwbpt2W9kBaZ8CBWKvLp9UCiKN8CmCpKxXJ15jL4yTOMAjEQMGt5yTv/uuMKgSuzKUNedpA==}
 
   '@iconify-json/heroicons@1.2.0':
     resolution: {integrity: sha512-EmvGN0L9EUJCmQ82rkLGZ4tkz0YGQfZV7ugKT6UvHni/bxNitQrD0gLj6NJj2W9zsSoXyNHyCX236+EJmO4pmA==}
@@ -7805,6 +7811,10 @@ snapshots:
   '@humanwhocodes/retry@0.3.0': {}
 
   '@iconify-json/carbon@1.2.1':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/game-icons@1.2.0':
     dependencies:
       '@iconify/types': 2.0.0
 

@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div class="grid grid-rows-2 place-content-center items-center gap-4 text-center text-3xl">
+  <div class="p-2 grid grid-rows-2 place-content-center items-center gap-4 text-center text-3xl">
     <div class="row-span-1">
       加载数据中，请稍候<br>
       <span class="text-base">

@@ -25,7 +25,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="md:px-2">
+  <div class="md:px-2 dark:bg-slate-900">
     <NuxtPwaManifest />
     <NuxtLoadingIndicator />
     <NuxtLayout>

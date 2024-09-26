@@ -20,12 +20,12 @@ function toggleItem() {
 </script>
 <template>
   <div class="min-h-screen">
-    <header>
+    <header class="md:sticky md:top-0 md:z-100">
       <nav class="md:pt-4">
         <UContainer class="
           py-2
           flex items-center
-          bg-gray-200 dark:bg-gray-800
+          bg-slate-100 dark:bg-slate-800
           md:(border rounded-lg shadow)
         ">
           <NuxtLink to="/">
@@ -41,7 +41,7 @@ function toggleItem() {
         </UContainer>
       </nav>
     </header>
-    <main>
+    <main class="md:mt-10">
       <slot />
     </main>
     <footer class="
