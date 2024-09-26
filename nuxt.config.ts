@@ -12,6 +12,12 @@ export default defineNuxtConfig({
     '@nuxt/ui',
   ],
 
+  icon: {
+    clientBundle: {
+      scan: true
+    }
+  },
+
   components: [
     {
       path: '~/components',
