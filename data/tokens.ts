@@ -339,6 +339,12 @@ export const tokenRewards: Record<string, Record<string, number>> = {
     39716: 20
   },
   46: {
+    44141: 20,
+    44142: 20,
+    44143: 20,
+    44144: 20,
+    44145: 20,
+    44146: 20
   },
   10307: {
     12670: 300,
