@@ -7,33 +7,33 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
+    "postinstall": "nuxt prepare && pnpm dlx simple-git-hooks",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "generate-pwa-assets": "pwa-assets-generator --preset minimal public/maskable_icon_x192.png"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "3.7.1",
-    "@iconify-json/carbon": "^1.2.1",
+    "@antfu/eslint-config": "3.11.2",
+    "@iconify-json/carbon": "^1.2.4",
     "@iconify-json/game-icons": "^1.2.0",
-    "@iconify-json/heroicons": "^1.2.0",
-    "@iconify-json/line-md": "^1.2.1",
-    "@iconify-json/logos": "^1.2.0",
-    "@iconify-json/mdi": "^1.2.0",
-    "@nuxt/devtools": "^1.5.1",
-    "@nuxt/ui": "^2.18.6",
+    "@iconify-json/heroicons": "^1.2.1",
+    "@iconify-json/line-md": "^1.2.3",
+    "@iconify-json/logos": "^1.2.3",
+    "@iconify-json/mdi": "^1.2.1",
+    "@nuxt/devtools": "^1.6.3",
+    "@nuxt/ui": "^2.20.0",
     "@types/d3": "^7.4.3",
-    "@types/node": "^20.16.6",
-    "@unocss/eslint-config": "^0.62.4",
-    "@unocss/nuxt": "^0.62.4",
-    "@unocss/transformer-variant-group": "^0.62.4",
+    "@types/node": "^22.10.2",
+    "@unocss/eslint-config": "^0.65.1",
+    "@unocss/nuxt": "^0.65.1",
+    "@unocss/transformer-variant-group": "^0.65.1",
     "@vite-pwa/assets-generator": "^0.2.6",
-    "@vite-pwa/nuxt": "^0.10.5",
-    "@vueuse/core": "^11.1.0",
-    "@vueuse/nuxt": "^11.1.0",
-    "eslint": "^9.11.1",
-    "lint-staged": "^15.2.10",
-    "nuxt": "^3.13.2",
+    "@vite-pwa/nuxt": "^0.10.6",
+    "@vueuse/core": "^12.0.0",
+    "@vueuse/nuxt": "^12.0.0",
+    "eslint": "^9.16.0",
+    "nano-staged": "^0.8.0",
+    "nuxt": "^3.14.1592",
     "simple-git-hooks": "^2.11.1"
   },
   "dependencies": {
@@ -45,12 +45,12 @@
     "fflate": "^0.8.2"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged"
+    "pre-commit": "./node_modules/.bin/nano-staged"
   },
-  "lint-staged": {
+  "nano-staged": {
     "{components,composables,data,pages,utils}/**/*.{js,ts,tsx,vue,md}": [
       "eslint --fix"
     ]
   },
-  "packageManager": "pnpm@9.8.0+sha512.8e4c3550fb500e808dbc30bb0ce4dd1eb614e30b1c55245f211591ec2cdf9c611cabd34e1364b42f564bd54b3945ed0f49d61d1bbf2ec9bd74b866fcdc723276"
+  "packageManager": "pnpm@9.15.0+sha512.76e2379760a4328ec4415815bcd6628dee727af3779aaa4c914e3944156c4299921a89f976381ee107d41f12cfa4b66681ca9c718f0668fa0831ed4c6d8ba56c"
 }
