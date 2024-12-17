@@ -1,12 +1,13 @@
 import { decompressSync } from 'fflate'
 import { csvParseRows } from 'd3'
 import item_cn_compressed from '~/assets/data/Item_cn_compressed.csv?url'
+import item_en_compressed from '~/assets/data/Item_compressed.csv?url'
 
-async function loadItemCSV(): Promise<string> {
-  if (process.server)
+async function loadItemCSV(fileURL: string): Promise<string> {
+  if (import.meta.server)
     throw (new Error('this code should never be run on server'))
 
-  const blob = await $fetch<Blob>(item_cn_compressed, {
+  const blob = await $fetch<Blob>(fileURL, {
     responseType: 'blob',
   })
 
@@ -17,7 +18,8 @@ async function loadItemCSV(): Promise<string> {
   return await new Blob([result]).text()
 }
 
-let data: Record<string, any>[] = []
+let data_cn: Record<string, any>[] = []
+let data_en: Record<string, any>[] = []
 
 function parseItemCSV(text: string) {
   const lineend0 = text.indexOf('\n') // key,0,1 ...
@@ -32,12 +34,13 @@ function parseItemCSV(text: string) {
 }
 
 export async function loadItemData() {
-  if (data.length === 0)
-    data = parseItemCSV(await loadItemCSV())
+  if (data_cn.length === 0)
+    data_cn = parseItemCSV(await loadItemCSV(item_cn_compressed))
+  if (data_en.length === 0)
+    data_en = parseItemCSV(await loadItemCSV(item_en_compressed))
 
-  return data
-}
-
-export function getItemData() {
-  return data
+  return {
+    cn: data_cn,
+    en: data_en,
+  }
 }

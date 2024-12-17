@@ -10,11 +10,12 @@ export function useDuckDB() {
     // should be run only once in client
     if (db.value)
       return
-    const text = await loadItemData()
+    const data = await loadItemData()
 
     const { DuckDBClient } = await import('~/data/duckDB')
     db.value = await DuckDBClient.of({
-      items: text,
+      items_cn: data.cn,
+      items_en: data.en
     })
   }
   if (import.meta.client && !promise)
@@ -26,7 +27,7 @@ export function useDuckDB() {
 export const necessaryQueries = [
   'id',
   'name',
-] satisfies (keyof typeof columnTable)[]
+] satisfies (keyof typeof columnTable_cn)[]
 
 export const defaultQueries = [
   'iconID',
@@ -35,25 +36,38 @@ export const defaultQueries = [
   // 'shopPrice',
   // 'description',
   'canBeHQ',
-] satisfies (keyof typeof columnTable)[]
+] satisfies (keyof typeof columnTable_cn)[]
 
-const columnTable = {
-  id: 'items."key: #" as id',
-  name: '"9: Name" as name',
-  iconID: '"10: Icon" as iconID',
-  itemLevel: '"11: Level{Item}" as itemLevel',
-  isUntradable: '"22: IsUntradable" as isUntradable',
-  shopPrice: '"25: Price{Mid}" as shopPrice',
-  description: '"8: Description" as description',
-  canBeHQ: 'IF("27: CanBeHq" = \'False\', false, true) as canBeHQ',
-  classJobCategory: '"43: ClassJobCategory" as classJobCategory',
-  equipSlotCategory: '"17: EquipSlotCategory" as equipSlotCategory',
+const columnTable_cn = {
+  id: 'items_cn."key: #" as id',
+  name: 'items_cn."9: Name" as name',
+  iconID: 'items_cn."10: Icon" as iconID',
+  itemLevel: 'items_cn."11: Level{Item}" as itemLevel',
+  isUntradable: 'items_cn."22: IsUntradable" as isUntradable',
+  shopPrice: 'items_cn."25: Price{Mid}" as shopPrice',
+  description: 'items_cn."8: Description" as description',
+  canBeHQ: 'IF(items_cn."27: CanBeHq" = \'False\', false, true) as canBeHQ',
+  classJobCategory: 'items_cn."43: ClassJobCategory" as classJobCategory',
+  equipSlotCategory: 'items_cn."17: EquipSlotCategory" as equipSlotCategory',
 }
 
-type UnionOfColumns<T extends keyof typeof columnTable, D extends boolean> = 
+const columnTable_en = {
+  id: 'items_en."key: #" as id',
+  name: 'items_en."9: Name" as name',
+  iconID: 'items_en."10: Icon" as iconID',
+  itemLevel: 'items_en."11: Level{Item}" as itemLevel',
+  isUntradable: 'items_en."22: IsUntradable" as isUntradable',
+  shopPrice: 'items_en."25: Price{Mid}" as shopPrice',
+  description: 'items_en."8: Description" as description',
+  canBeHQ: 'IF(items_en."27: CanBeHq" = \'False\', false, true) as canBeHQ',
+  classJobCategory: 'items_en."43: ClassJobCategory" as classJobCategory',
+  equipSlotCategory: 'items_en."17: EquipSlotCategory" as equipSlotCategory',
+}
+
+type UnionOfColumns<T extends keyof typeof columnTable_cn, D extends boolean> = 
   T | (typeof necessaryQueries[number]) | (D extends true ? typeof defaultQueries[number] : never)
 
-type QueryResult<T extends keyof typeof columnTable, D extends boolean> = {
+type QueryResult<T extends keyof typeof columnTable_cn, D extends boolean> = {
   [key in UnionOfColumns<T, D>]: string
 }
 
@@ -61,7 +75,7 @@ type QueryResult<T extends keyof typeof columnTable, D extends boolean> = {
 
 export function useQueries(db: ShallowRef<DuckDBClient | null>) {
 
-  function defuList<T extends keyof typeof columnTable, D extends boolean>(columns: T[], defaulQuery?: D){
+  function defuList<T extends keyof typeof columnTable_cn, D extends boolean>(columns: T[], defaulQuery?: D){
     const flag = defaulQuery === undefined ? true : defaulQuery
     let list
     if (columns.length > 0) {
@@ -79,48 +93,86 @@ export function useQueries(db: ShallowRef<DuckDBClient | null>) {
     return list
   }
 
-  async function queryExactName<T extends keyof typeof columnTable, D extends boolean = true>(name: string, columns: T[] = [], defaulQuery?: D): Promise<QueryResult<T, D>> {
+  async function queryExactName<T extends keyof typeof columnTable_cn, D extends boolean = true>(name: string, columns: T[] = [], defaulQuery?: D): Promise<QueryResult<T, D>> {
     if (!db.value)
       throw new Error('No valid DuckDBClient when querying.')
 
     const list = defuList(columns, defaulQuery)
-    const cols = list.map(it=>columnTable[it])
+    const colsCN = list.map(it=>columnTable_cn[it])
+    const colsEN = list.map(it=>columnTable_en[it])
 
     // "ilike" is case-insensitive
-    const query = `select ${cols.join(', ')} from items where name != '' and name like ?`
-    const results = await db.value.query(query, [name])
+    const queryCN = `SELECT ${colsCN.join(', ')} FROM items_cn WHERE name != '' AND name LIKE ?`
+    const queryEN = `SELECT ${colsEN.join(', ')} 
+      FROM items_cn RIGHT JOIN items_en 
+        ON items_cn."key: #" = items_en."key: #"
+      WHERE (items_cn."key: #" IS NULL OR items_cn."9: Name" = '') AND items_en."9: Name" != '' AND items_en."9: Name" LIKE ?`
+
+    const query = `${queryCN} UNION ALL ${queryEN}`
+
+    const results = await db.value.query(query, [name, name])
     return results[0]
   }
-  async function queryNames<T extends keyof typeof columnTable, D extends boolean = true>(words: string[], columns: T[] = [], defaulQuery?: D): Promise<QueryResult<T, D>[]> {
+
+  async function queryNames<T extends keyof typeof columnTable_cn, D extends boolean = true>(words: string[], columns: T[] = [], defaulQuery?: D): Promise<QueryResult<T, D>[]> {
     if (!db.value)
       throw new Error('No valid DuckDBClient when querying.')
 
     const list = defuList(columns, defaulQuery)
-    const cols = list.map(it=>columnTable[it])
+    const colsCN = list.map(it=>columnTable_cn[it])
+    const colsEN = list.map(it=>columnTable_en[it])
 
     // "ilike" is case-insensitive
-    const query = `select ${cols.join(', ')} from items where name != '' and ${Array(words.length).fill('name ilike ?').join(' and ')}`
-    return await db.value.query(query, words.map(it => `%${it}%`))
+    const queryCN = `SELECT ${colsCN.join(', ')} FROM items_cn WHERE name != '' AND ${Array(words.length).fill('name ilike ?').join(' and ')}`
+    const queryEN = `SELECT ${colsEN.join(', ')} 
+      FROM items_cn RIGHT JOIN items_en 
+        ON items_cn."key: #" = items_en."key: #"
+      WHERE (items_cn."key: #" IS NULL OR items_cn."9: Name" = '') AND items_en."9: Name" != '' AND ${Array(words.length).fill('items_en."9: Name" ILIKE ?').join(' and ')}`
+
+    const query = `${queryCN} UNION ALL ${queryEN}`
+
+    const params = words.map(it => `%${it}%`)
+    return await db.value.query(query, params.concat(params))
   }
-  async function queryIDs<T extends keyof typeof columnTable, D extends boolean = true>(ids: string[] | number[], columns: T[] = [], defaulQuery?: D): Promise<QueryResult<T, D>[]> {
+
+  async function queryIDs<T extends keyof typeof columnTable_cn, D extends boolean = true>(ids: string[] | number[], columns: T[] = [], defaulQuery?: D): Promise<QueryResult<T, D>[]> {
     if (!db.value)
       throw new Error('No valid DuckDBClient when querying.')
 
     const list = defuList(columns, defaulQuery)
-    const cols = list.map(it=>columnTable[it])
+    const colsCN = list.map(it=>columnTable_cn[it])
+    const colsEN = list.map(it=>columnTable_en[it])
 
-    const query = `select ${cols.join(', ')} from items where name != '' and ${Array(ids.length).fill('id = ?').join(' or ')}`
-    return await db.value.query(query, ids)
+    const queryCN = `SELECT ${colsCN.join(', ')} FROM items_cn WHERE name != '' AND ${Array(ids.length).fill('id = ?').join(' or ')}`
+    const queryEN = `SELECT ${colsEN.join(', ')} 
+      FROM items_cn RIGHT JOIN items_en 
+        ON items_cn."key: #" = items_en."key: #"
+      WHERE (items_cn."key: #" IS NULL OR items_cn."9: Name" = '') AND items_en."9: Name" != '' AND ${Array(ids.length).fill('items_en."key: #" = ?').join(' or ')}`
+
+    const query = `${queryCN} UNION ALL ${queryEN}`
+
+    return await db.value.query(query, ids.concat(ids))
   }
-  async function queryID<T extends keyof typeof columnTable, D extends boolean = true>(id: string | number, columns: T[] = [], defaulQuery?: D): Promise<QueryResult<T, D>[]> {
+
+  async function queryID<T extends keyof typeof columnTable_cn, D extends boolean = true>(id: string | number, columns: T[] = [], defaulQuery?: D): Promise<QueryResult<T, D>[]> {
     if (!db.value)
       throw new Error('No valid DuckDBClient when querying.')
 
     const list = defuList(columns, defaulQuery)
-    const cols = list.map(it=>columnTable[it])
+    const colsCN = list.map(it=>columnTable_cn[it])
+    const colsEN = list.map(it=>columnTable_en[it])
 
-    const query = `select ${cols.join(', ')} from items where id = ?`
-    return (await db.value.query(query, [id]))[0]
+    // const query = `select ${cols.join(', ')} from items where id = ?`
+    
+    const queryCN = `SELECT ${colsCN.join(', ')} FROM items_cn where id = ?`
+    const queryEN = `SELECT ${colsEN.join(', ')} 
+      FROM items_cn RIGHT JOIN items_en 
+        ON items_cn."key: #" = items_en."key: #"
+      WHERE items_cn."key: #" IS NULL AND items_en."key: #" = ?`
+
+    const query = `${queryCN} UNION ALL ${queryEN}`
+
+    return (await db.value.query(query, [id, id]))[0]
   }
 
   return {
