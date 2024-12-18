@@ -14,7 +14,7 @@
     "generate-pwa-assets": "pwa-assets-generator --preset minimal public/maskable_icon_x192.png"
   },
   "dependencies": {
-    "@duckdb/duckdb-wasm": "^1.28.0",
+    "@duckdb/duckdb-wasm": "~1.28.0",
     "@floating-ui/vue": "^1.1.5",
     "apache-arrow": "^17.0.0",
     "d3": "^7.9.0",
