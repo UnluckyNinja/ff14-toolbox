@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       '@duckdb/duckdb-wasm':
-        specifier: ^1.28.0
+        specifier: ~1.28.0
         version: 1.28.0
       '@floating-ui/vue':
         specifier: ^1.1.5
