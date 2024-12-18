@@ -17,15 +17,15 @@ onMounted(() => {
         label: '刷新',
         click: () => {
           $pwa.updateServiceWorker()
-        }
-      }]
+        },
+      }],
     })
   })
 })
 </script>
 
 <template>
-  <div class="md:px-2 dark:bg-slate-900">
+  <div class="dark:bg-slate-900 md:px-2">
     <NuxtPwaManifest />
     <NuxtLoadingIndicator />
     <NuxtLayout>

@@ -41,7 +41,7 @@ onClickOutside(compRoot, () => {
 
 // each item/row in the virtual list represents 3 search results
 const rowsAsArray = computed(() => {
-  const array = Array.from(Array(Math.ceil(results.value.length / 3)).keys())
+  const array = Array.from(new Array(Math.ceil(results.value.length / 3)).keys())
   return array
 })
 

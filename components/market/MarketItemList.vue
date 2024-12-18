@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { formatTimeAgo, notNullish } from '@vueuse/core'
-import { garlandDataLink, huijiLink, universalisLink } from '~/composables/useItemExternalLink'
+import { garlandDataCNLink, huijiLink, universalisLink } from '~/composables/useItemExternalLink'
 
 const props = withDefaults(defineProps<{
   ids: number[]
@@ -96,8 +96,8 @@ const data = computed(() => {
   if (items.value.length === 0)
     return []
   // if (marketData.value.length !== items.value.length)
-    /* eslint-disable-next-line no-console */
-    // console.log('[FF14工具] 市场数据条目数量和传入数据对不上，可能会显示错误数据')
+
+  // console.log('[FF14工具] 市场数据条目数量和传入数据对不上，可能会显示错误数据')
 
   return items.value.map((item, idx) => {
     if (!item)
@@ -183,7 +183,7 @@ function getLinks(id: number, name: string) {
     },
     {
       label: 'GarlandData',
-      url: garlandDataLink(id),
+      url: garlandDataCNLink(id),
     },
   ]
 }

@@ -1,7 +1,8 @@
 {
   "name": "ffxiv-itemkit",
-  "private": true,
   "type": "module",
+  "private": true,
+  "packageManager": "pnpm@9.15.0+sha512.76e2379760a4328ec4415815bcd6628dee727af3779aaa4c914e3944156c4299921a89f976381ee107d41f12cfa4b66681ca9c718f0668fa0831ed4c6d8ba56c",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
@@ -11,6 +12,14 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "generate-pwa-assets": "pwa-assets-generator --preset minimal public/maskable_icon_x192.png"
+  },
+  "dependencies": {
+    "@duckdb/duckdb-wasm": "^1.28.0",
+    "@floating-ui/vue": "^1.1.5",
+    "apache-arrow": "^17.0.0",
+    "d3": "^7.9.0",
+    "d3-dsv": "^3.0.1",
+    "fflate": "^0.8.2"
   },
   "devDependencies": {
     "@antfu/eslint-config": "3.12.0",
@@ -36,14 +45,6 @@
     "nuxt": "^3.14.1592",
     "simple-git-hooks": "^2.11.1"
   },
-  "dependencies": {
-    "@duckdb/duckdb-wasm": "^1.28.0",
-    "@floating-ui/vue": "^1.1.5",
-    "apache-arrow": "^17.0.0",
-    "d3": "^7.9.0",
-    "d3-dsv": "^3.0.1",
-    "fflate": "^0.8.2"
-  },
   "simple-git-hooks": {
     "pre-commit": "./node_modules/.bin/nano-staged"
   },
@@ -51,6 +52,5 @@
     "{components,composables,data,pages,utils}/**/*.{js,ts,tsx,vue,md}": [
       "eslint --fix"
     ]
-  },
-  "packageManager": "pnpm@9.15.0+sha512.76e2379760a4328ec4415815bcd6628dee727af3779aaa4c914e3944156c4299921a89f976381ee107d41f12cfa4b66681ca9c718f0668fa0831ed4c6d8ba56c"
+  }
 }

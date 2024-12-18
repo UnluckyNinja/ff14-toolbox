@@ -8,8 +8,6 @@ const selectedItem = inject<ShallowRef<any>>('selected-item', shallowRef(null))
 
 const db = inject<ShallowRef<DuckDBClient>>('duckDB')
 
-const { queryID } = useQueries(db!)
-
 const isSearching = ref(false)
 
 function onClick(item: HistoryItem) {
@@ -19,11 +17,11 @@ function onClick(item: HistoryItem) {
     return
   if (selectedItem.value?.id === item.id)
     return
-  isSearching.value = true
-  queryID(item.id).then((result) => {
-    selectedItem.value = result
-    isSearching.value = false
-  })
+  // isSearching.value = true
+  selectedItem.value = item
+  // queryID(item.id).then((result) => {
+  //   isSearching.value = false
+  // })
 }
 
 const list = computed(() => {

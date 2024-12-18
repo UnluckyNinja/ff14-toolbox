@@ -2,17 +2,16 @@
 // import {FileAttachment} from "./fileAttachment.js";
 // import {cdn} from "./require.js";
 
+import type { ArrowInsertOptions } from '@duckdb/duckdb-wasm/blocking'
 import type { Table } from 'apache-arrow'
-import { tableFromJSON } from 'apache-arrow'
 
 import * as duckdb from '@duckdb/duckdb-wasm'
 
-import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url'
+import eh_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url'
 import mvp_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url'
 import duckdb_wasm_next from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url'
-import eh_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url'
+import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url'
 
-import type { ArrowInsertOptions } from '@duckdb/duckdb-wasm/blocking'
 import { getArrowTableSchema, isArrowTable } from './arrow'
 
 // Adapted from https://github.com/observablehq/stdlib/blob/main/src/duckdb.js
@@ -144,8 +143,8 @@ async function insertArrowTable(database: duckdb.AsyncDuckDB, name: string, tabl
       schema: 'main',
       ...options,
     })
-  } catch (e){
-    console.log(`error: ${e}`)
+  } catch (e) {
+    console.error(`error: ${e}`)
   }
   finally {
     await connection.close()
@@ -168,13 +167,13 @@ async function insertArray(database: duckdb.AsyncDuckDB, name: string, array: an
     await database.registerFileText(
       filename,
       JSON.stringify(array),
-    );
+    )
     await connection.insertJSONFromPath(filename, {
       name,
       // schema: 'main',
       ...options,
     })
-  } catch (e){
+  } catch (e) {
     console.error(`error when inserting table:`)
     console.error(e)
   }
@@ -211,6 +210,7 @@ async function createDuckDB() {
 }
 
 // https://duckdb.org/docs/sql/data_types/overview
+// eslint-disable-next-line unused-imports/no-unused-vars
 function getDuckDBType(type: string) {
   switch (type) {
     case 'BIGINT':

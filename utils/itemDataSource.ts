@@ -27,24 +27,24 @@ interface BaseSetting {
   icon: LangOption
 }
 
-export function useXABase(){
+export function useXABase() {
   const baseSetting = useCookie<BaseSetting>('xivapi-base', {
     default: () => {
       return {
         item: 'zh',
-        icon: 'en'
+        icon: 'en',
       }
     },
-    sameSite: 'lax'
+    sameSite: 'lax',
   })
 
-  const base = computed(()=>{
+  const base = computed(() => {
     return {
       item: baseSetting.value.item === 'zh' ? BASE_ZH : BASE_EN,
-      icon: baseSetting.value.icon === 'zh' ? BASE_ZH : BASE_EN
+      icon: baseSetting.value.icon === 'zh' ? BASE_ZH : BASE_EN,
     }
   })
-  function toggleBase(type: keyof BaseSetting, value?: LangOption){
+  function toggleBase(type: keyof BaseSetting, value?: LangOption) {
     baseSetting.value[type] = value ?? (baseSetting.value[type] === 'zh' ? 'en' : 'zh')
   }
 
@@ -73,15 +73,15 @@ export async function fetchItems<T extends string | number>(ids: T[]): Promise<X
 }
 
 export function itemIconUrl(iconID: string | number, base?: string) {
-  let defaultBase = useXABase().base
+  const defaultBase = useXABase().base
   const _id = `${iconID}`.padStart(6, '0')
   const folder = _id.substring(0, 3).padEnd(6, '0')
-  return computed(()=>`${base || defaultBase.value.icon}/i/${folder}/${_id}.png`)
+  return computed(() => `${base || defaultBase.value.icon}/i/${folder}/${_id}.png`)
 }
 
 export function itemUrl(id: string | number, base?: string) {
-  let defaultBase = useXABase().base
-  return computed(()=>`${base || defaultBase.value.item}/item/${id}`)
+  const defaultBase = useXABase().base
+  return computed(() => `${base || defaultBase.value.item}/item/${id}`)
 }
 
 export function useFailedIcons() {

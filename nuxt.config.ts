@@ -14,15 +14,15 @@ export default defineNuxtConfig({
 
   icon: {
     clientBundle: {
-      scan: true
-    }
+      scan: true,
+    },
   },
 
   components: [
     {
       path: '~/components',
       pathPrefix: false,
-    }
+    },
   ],
 
   vite: {
@@ -69,6 +69,7 @@ export default defineNuxtConfig({
         '_nuxt\/*.csv',
         // '_nuxt\/*.wasm' // too large, "Configure maximumFileSizeToCacheInBytes to change this limit."
       ],
+      maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
     },
     client: {
       installPrompt: true,

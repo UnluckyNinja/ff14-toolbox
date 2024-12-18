@@ -20,9 +20,7 @@ const { add } = useSearchHistory()
 function onItemClick(item: any) {
   selectedItem.value = item
   add({
-    id: item.id,
-    name: item.name,
-    iconID: item.iconID,
+    ...item,
   })
 }
 </script>

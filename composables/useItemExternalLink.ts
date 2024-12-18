@@ -9,24 +9,31 @@ export function huijiLink(id: string | number, name: string) {
 export function universalisLink(id: string | number) {
   return `https://universalis.app/market/${id}`
 }
-export function garlandDataLink(id: string | number) {
+export function garlandDataCNLink(id: string | number) {
   return `https://www.garlandtools.cn/db/#item/${id}`
 }
+export function garlandDataEnLink(id: string | number) {
+  return `https://www.garlandtools.org/db/#item/${id}`
+}
 
-export function useItemExternalLink(item: MaybeRef<{ id: string; name: string }>) {
+export function useItemExternalLink(item: MaybeRef<{ id: string, name: string, dataSource: 'en' | 'cn' }>) {
   const huiji = ref('')
   const universalis = ref('')
   const garlandData = ref('')
 
-  function update(id: string, name: string) {
+  function update(id: string, name: string, dataSource: 'en' | 'cn') {
     huiji.value = huijiLink(id, name)
     universalis.value = universalisLink(id)
-    garlandData.value = garlandDataLink(id)
+    if (dataSource === 'cn') {
+      garlandData.value = garlandDataCNLink(id)
+    } else {
+      garlandData.value = garlandDataEnLink(id)
+    }
   }
 
   watch(item, (newVal) => {
-    const { id, name } = unref(newVal)
-    update(id, name)
+    const { id, name, dataSource } = unref(newVal)
+    update(id, name, dataSource)
   }, { immediate: true })
 
   return {
@@ -36,10 +43,10 @@ export function useItemExternalLink(item: MaybeRef<{ id: string; name: string }>
   }
 }
 
-export function getItemExternalLink(item: { id: string; name: string }) {
+export function getItemExternalLink(item: { id: string, name: string }) {
   return {
     huiji: huijiLink(item.id, item.name),
     universalis: universalisLink(item.id),
-    garlandData: garlandDataLink(item.id),
+    garlandData: garlandDataCNLink(item.id),
   }
 }

@@ -1,6 +1,6 @@
 import type { ShallowRef } from 'vue'
-import { loadItemData } from '~/data/itemData'
 import type { DuckDBClient } from '~/data/duckDB'
+import { loadItemData } from '~/data/itemData'
 
 const db = shallowRef<DuckDBClient | null>(null)
 let promise: Promise<void> | null = null
@@ -15,8 +15,10 @@ export function useDuckDB() {
     const { DuckDBClient } = await import('~/data/duckDB')
     db.value = await DuckDBClient.of({
       items_cn: data.cn,
-      items_en: data.en
+      items_en: data.en,
     })
+    // eslint-disable-next-line no-console
+    console.debug('duckdb loaded')
   }
   if (import.meta.client && !promise)
     promise = initialize()
@@ -26,6 +28,7 @@ export function useDuckDB() {
 
 export const necessaryQueries = [
   'id',
+  'dataSource',
   'name',
 ] satisfies (keyof typeof columnTable_cn)[]
 
@@ -40,6 +43,7 @@ export const defaultQueries = [
 
 const columnTable_cn = {
   id: 'items_cn."key: #" as id',
+  dataSource: '\'cn\' as dataSource',
   name: 'items_cn."9: Name" as name',
   iconID: 'items_cn."10: Icon" as iconID',
   itemLevel: 'items_cn."11: Level{Item}" as itemLevel',
@@ -53,6 +57,7 @@ const columnTable_cn = {
 
 const columnTable_en = {
   id: 'items_en."key: #" as id',
+  dataSource: '\'en\' as dataSource',
   name: 'items_en."9: Name" as name',
   iconID: 'items_en."10: Icon" as iconID',
   itemLevel: 'items_en."11: Level{Item}" as itemLevel',
@@ -64,7 +69,7 @@ const columnTable_en = {
   equipSlotCategory: 'items_en."17: EquipSlotCategory" as equipSlotCategory',
 }
 
-type UnionOfColumns<T extends keyof typeof columnTable_cn, D extends boolean> = 
+type UnionOfColumns<T extends keyof typeof columnTable_cn, D extends boolean> =
   T | (typeof necessaryQueries[number]) | (D extends true ? typeof defaultQueries[number] : never)
 
 type QueryResult<T extends keyof typeof columnTable_cn, D extends boolean> = {
@@ -74,8 +79,7 @@ type QueryResult<T extends keyof typeof columnTable_cn, D extends boolean> = {
 // const query = `select items."key: #" as id, "9: Name" as name, "11: Level{Item}" as itemLevel, "25: Price{Mid}" as shopPrice, "8: Description" as description, IF(shop_items."0: Item" is null, false, true) as inShop, IF("27: CanBeHq" = 'False', false, true) as canBeHQ from items left join ( select "0: Item" from shop_items group by shop_items."0: Item" ) as shop_items on items."key: #" = shop_items."0: Item" where name != '' and "22: IsUntradable" = 'False' and ${Array(words.length).fill('name like ?').join(' and ')}`
 
 export function useQueries(db: ShallowRef<DuckDBClient | null>) {
-
-  function defuList<T extends keyof typeof columnTable_cn, D extends boolean>(columns: T[], defaulQuery?: D){
+  function defuList<T extends keyof typeof columnTable_cn, D extends boolean>(columns: T[], defaulQuery?: D) {
     const flag = defaulQuery === undefined ? true : defaulQuery
     let list
     if (columns.length > 0) {
@@ -98,14 +102,14 @@ export function useQueries(db: ShallowRef<DuckDBClient | null>) {
       throw new Error('No valid DuckDBClient when querying.')
 
     const list = defuList(columns, defaulQuery)
-    const colsCN = list.map(it=>columnTable_cn[it])
-    const colsEN = list.map(it=>columnTable_en[it])
+    const colsCN = list.map(it => columnTable_cn[it])
+    const colsEN = list.map(it => columnTable_en[it])
 
     // "ilike" is case-insensitive
     const queryCN = `SELECT ${colsCN.join(', ')} FROM items_cn WHERE name != '' AND name LIKE ?`
     const queryEN = `SELECT ${colsEN.join(', ')} 
       FROM items_cn RIGHT JOIN items_en 
-        ON items_cn."key: #" = items_en."key: #"
+        ON items_cn."key: #" = items_en."key: #" 
       WHERE (items_cn."key: #" IS NULL OR items_cn."9: Name" = '') AND items_en."9: Name" != '' AND items_en."9: Name" LIKE ?`
 
     const query = `${queryCN} UNION ALL ${queryEN}`
@@ -119,15 +123,15 @@ export function useQueries(db: ShallowRef<DuckDBClient | null>) {
       throw new Error('No valid DuckDBClient when querying.')
 
     const list = defuList(columns, defaulQuery)
-    const colsCN = list.map(it=>columnTable_cn[it])
-    const colsEN = list.map(it=>columnTable_en[it])
+    const colsCN = list.map(it => columnTable_cn[it])
+    const colsEN = list.map(it => columnTable_en[it])
 
     // "ilike" is case-insensitive
-    const queryCN = `SELECT ${colsCN.join(', ')} FROM items_cn WHERE name != '' AND ${Array(words.length).fill('name ilike ?').join(' and ')}`
+    const queryCN = `SELECT ${colsCN.join(', ')} FROM items_cn WHERE name != '' AND ${new Array(words.length).fill('name ilike ?').join(' and ')}`
     const queryEN = `SELECT ${colsEN.join(', ')} 
       FROM items_cn RIGHT JOIN items_en 
-        ON items_cn."key: #" = items_en."key: #"
-      WHERE (items_cn."key: #" IS NULL OR items_cn."9: Name" = '') AND items_en."9: Name" != '' AND ${Array(words.length).fill('items_en."9: Name" ILIKE ?').join(' and ')}`
+        ON items_cn."key: #" = items_en."key: #" 
+      WHERE (items_cn."key: #" IS NULL OR items_cn."9: Name" = '') AND items_en."9: Name" != '' AND ${new Array(words.length).fill('items_en."9: Name" ILIKE ?').join(' and ')}`
 
     const query = `${queryCN} UNION ALL ${queryEN}`
 
@@ -140,17 +144,16 @@ export function useQueries(db: ShallowRef<DuckDBClient | null>) {
       throw new Error('No valid DuckDBClient when querying.')
 
     const list = defuList(columns, defaulQuery)
-    const colsCN = list.map(it=>columnTable_cn[it])
-    const colsEN = list.map(it=>columnTable_en[it])
+    const colsCN = list.map(it => columnTable_cn[it])
+    const colsEN = list.map(it => columnTable_en[it])
 
-    const queryCN = `SELECT ${colsCN.join(', ')} FROM items_cn WHERE name != '' AND ${Array(ids.length).fill('id = ?').join(' or ')}`
+    const queryCN = `SELECT ${colsCN.join(', ')} FROM items_cn WHERE name != '' AND id IN (${new Array(ids.length).fill('?').join(',')})`
     const queryEN = `SELECT ${colsEN.join(', ')} 
       FROM items_cn RIGHT JOIN items_en 
-        ON items_cn."key: #" = items_en."key: #"
-      WHERE (items_cn."key: #" IS NULL OR items_cn."9: Name" = '') AND items_en."9: Name" != '' AND ${Array(ids.length).fill('items_en."key: #" = ?').join(' or ')}`
+        ON items_cn."key: #" = items_en."key: #" 
+      WHERE (items_cn."key: #" IS NULL OR items_cn."9: Name" = '') AND items_en."9: Name" != '' AND items_en."key: #" IN (${new Array(ids.length).fill('?').join(',')})`
 
     const query = `${queryCN} UNION ALL ${queryEN}`
-
     return await db.value.query(query, ids.concat(ids))
   }
 
@@ -159,11 +162,11 @@ export function useQueries(db: ShallowRef<DuckDBClient | null>) {
       throw new Error('No valid DuckDBClient when querying.')
 
     const list = defuList(columns, defaulQuery)
-    const colsCN = list.map(it=>columnTable_cn[it])
-    const colsEN = list.map(it=>columnTable_en[it])
+    const colsCN = list.map(it => columnTable_cn[it])
+    const colsEN = list.map(it => columnTable_en[it])
 
     // const query = `select ${cols.join(', ')} from items where id = ?`
-    
+
     const queryCN = `SELECT ${colsCN.join(', ')} FROM items_cn where id = ?`
     const queryEN = `SELECT ${colsEN.join(', ')} 
       FROM items_cn RIGHT JOIN items_en 

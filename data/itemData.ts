@@ -1,5 +1,5 @@
-import { decompressSync } from 'fflate'
 import { csvParseRows } from 'd3'
+import { decompressSync } from 'fflate'
 import item_cn_compressed from '~/assets/data/Item_cn_compressed.csv?url'
 import item_en_compressed from '~/assets/data/Item_compressed.csv?url'
 
@@ -28,7 +28,7 @@ function parseItemCSV(text: string) {
   const lineend3 = text.indexOf('\n', lineend2 + 1) // 0, '', ...
   const idxes = text.slice(0, lineend0).split(',')
   const labels = text.slice(lineend0 + 1, lineend1).split(',')
-  return csvParseRows(text.slice(lineend3 + 1), (d, i) => {
+  return csvParseRows(text.slice(lineend3 + 1), (d) => {
     return Object.fromEntries(d.map((it, idx) => [`${idxes[idx]}: ${labels[idx]}`, it]))
   })
 }

@@ -5,6 +5,7 @@ const props = defineProps<{
   item: {
     id: string
     name: string
+    dataSource: 'en' | 'cn'
     iconID: string
   }
 }>()
@@ -21,8 +22,8 @@ function copyText(text: string) {
 
 const links = reactive(useItemExternalLink(item))
 const failedIcons = useFailedIcons()
-const base = computed(()=>failedIcons.value.has(props.item.iconID) ? BASE_EN : null)
-const iconUrl = computed(()=>itemIconUrl(item.value.iconID, base.value ?? undefined).value)
+const base = computed(() => failedIcons.value.has(props.item.iconID) ? BASE_EN : null)
+const iconUrl = computed(() => itemIconUrl(item.value.iconID, base.value ?? undefined).value)
 </script>
 
 <template>
@@ -43,10 +44,11 @@ const iconUrl = computed(()=>itemIconUrl(item.value.iconID, base.value ?? undefi
     </UButton>
     <div class="text-blue-7 underline children:mx-2 dark:text-blue-3">
       <UButton
-        color="blue" trailing-icon="i-heroicons-arrow-top-right-on-square-20-solid"
+        color="blue" :trailing-icon="item.dataSource === 'en' ? '' : 'i-heroicons-arrow-top-right-on-square-20-solid'"
         :to="links.huiji" target="_blank" variant="link"
+        :disabled="item.dataSource === 'en'"
       >
-        灰机Wiki
+        灰机Wiki{{ item.dataSource === 'en' ? '(国际服数据)' : '' }}
       </UButton>
       <UButton
         color="blue" trailing-icon="i-heroicons-arrow-top-right-on-square-20-solid"

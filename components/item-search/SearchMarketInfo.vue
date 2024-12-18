@@ -1,18 +1,22 @@
 <script lang="ts" setup>
-const selectedItem = inject<any>('selected-item')
+const selectedItem = inject<Ref<any>>('selected-item')
 const settings = reactive(useSettings())
 const hq = computed(() => {
-  if (selectedItem.value.canBeHQ && settings.onlyHQ)
+  if (selectedItem?.value.canBeHQ && settings.onlyHQ)
     return true
 
   return undefined
+})
+
+const isUntradable = computed(() => {
+  return selectedItem && selectedItem.value.isUntradable === 'True'
 })
 </script>
 
 <template>
   <div>
-    <!-- prices -->
-    <div v-if="selectedItem">
+    <!-- 物品可交易 -->
+    <div v-if="selectedItem && !isUntradable">
       <div class="grid grid-cols-1 text-center text-sm md:grid-cols-2 divide-x">
         <!-- on sale -->
         <div>
@@ -30,6 +34,15 @@ const hq = computed(() => {
         </div>
       </div>
     </div>
+    <!-- 物品不可交易 -->
+    <div v-else-if="selectedItem">
+      <div class="text-center">
+        <div class="text-lg">
+          当前物品不可交易
+        </div>
+      </div>
+    </div>
+    <!-- 未选择物品时 -->
     <div v-else>
       <div class="text-center">
         <div class="text-lg">

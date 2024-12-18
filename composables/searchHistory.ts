@@ -2,6 +2,7 @@ export interface HistoryItem {
   id: string
   name: string
   iconID: string
+  [key: string]: any
 }
 
 export function useSearchHistory() {
