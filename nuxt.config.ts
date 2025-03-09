@@ -25,10 +25,6 @@ export default defineNuxtConfig({
     },
   ],
 
-  vite: {
-    assetsInclude: ['**/*.wasm'],
-  },
-
   nitro: {
     preset: 'cloudflare-pages',
   },
