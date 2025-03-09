@@ -28,8 +28,14 @@ function parseItemCSV(text: string) {
   const lineend3 = text.indexOf('\n', lineend2 + 1) // 0, '', ...
   const idxes = text.slice(0, lineend0).split(',')
   const labels = text.slice(lineend0 + 1, lineend1).split(',')
+  const keys = idxes.map((it, idx) => `${it}: ${labels[idx]}`)
+
   return csvParseRows(text.slice(lineend3 + 1), (d) => {
-    return Object.fromEntries(d.map((it, idx) => [`${idxes[idx]}: ${labels[idx]}`, it]))
+    const row: Record<string, any> = {}
+    d.forEach((it, idx) => {
+      row[keys[idx]] = it
+    })
+    return row
   })
 }
 
