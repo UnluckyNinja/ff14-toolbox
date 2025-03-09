@@ -1,30 +1,4 @@
-import type { ShallowRef } from 'vue'
-import type { DuckDBClient } from '~/data/duckDB'
-import { loadItemData } from '~/data/itemData'
-
-const db = shallowRef<DuckDBClient | null>(null)
-let promise: Promise<void> | null = null
-
-export function useDuckDB() {
-  async function initialize() {
-    // should be run only once in client
-    if (db.value)
-      return
-    const data = await loadItemData()
-
-    const { DuckDBClient } = await import('~/data/duckDB')
-    db.value = await DuckDBClient.of({
-      items_cn: data.cn,
-      items_en: data.en,
-    })
-    // eslint-disable-next-line no-console
-    console.debug('duckdb loaded')
-  }
-  if (import.meta.client && !promise)
-    promise = initialize()
-
-  return { db }
-}
+import { useDuckDB } from '~/lib/duckDB'
 
 export const necessaryQueries = [
   'id',
@@ -78,7 +52,9 @@ type QueryResult<T extends keyof typeof columnTable_cn, D extends boolean> = {
 
 // const query = `select items."key: #" as id, "9: Name" as name, "11: Level{Item}" as itemLevel, "25: Price{Mid}" as shopPrice, "8: Description" as description, IF(shop_items."0: Item" is null, false, true) as inShop, IF("27: CanBeHq" = 'False', false, true) as canBeHQ from items left join ( select "0: Item" from shop_items group by shop_items."0: Item" ) as shop_items on items."key: #" = shop_items."0: Item" where name != '' and "22: IsUntradable" = 'False' and ${Array(words.length).fill('name like ?').join(' and ')}`
 
-export function useQueries(db: ShallowRef<DuckDBClient | null>) {
+export function useQueries() {
+  const db = useDuckDB()
+
   function defuList<T extends keyof typeof columnTable_cn, D extends boolean>(columns: T[], defaulQuery?: D) {
     const flag = defaulQuery === undefined ? true : defaulQuery
     let list

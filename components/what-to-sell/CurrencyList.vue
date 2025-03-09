@@ -6,7 +6,7 @@ const props = withDefaults(defineProps<{
   modelValue: number
   header?: boolean
 }>(), {
-  header: true
+  header: true,
 })
 
 const emits = defineEmits<{
@@ -25,9 +25,9 @@ async function fetchCurrency() {
 const { base } = useXABase()
 const list = await fetchCurrency()
 
-emits('currencyName', list.find(it=>it.ID === props.modelValue)?.Name ?? '')
+emits('currencyName', list.find(it => it.ID === props.modelValue)?.Name ?? '')
 
-function currencyChange(item: XAItem){
+function currencyChange(item: XAItem) {
   emits('update:modelValue', item.ID)
   emits('currencyName', item.Name)
 }

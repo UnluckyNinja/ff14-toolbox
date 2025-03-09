@@ -37,13 +37,14 @@ const mobileOpenCurrencyList = ref(false)
 </script>
 
 <template>
-  <div ref="compRoot" class="mx-auto mt-10 container">
+  <div class="mx-auto mt-10 container">
     <OptionsPanel :display="{ hq: false }">
       <div class="col-start-1">
-        计价方式：</div>
+        计价方式：
+      </div>
       <div class="flex items-center whitespace-nowrap">
         金币
-        <UToggle class="m-1" v-model="costMode" />
+        <UToggle v-model="costMode" class="m-1" />
         <span class="whitespace-normal">
           金币/每单位兑换货币
         </span>
@@ -51,22 +52,24 @@ const mobileOpenCurrencyList = ref(false)
     </OptionsPanel>
     <div class="grid grid-cols-12 mt-4">
       <Suspense>
-        <div class="col-span-12 md:col-span-3 text-center">
+        <div class="col-span-12 text-center md:col-span-3">
           <div class="hidden md:block">
             <CurrencyList v-model="selectedCurrency" @update:model-value="updateURL" @currency-name="selectedCurrencyName = $event" />
           </div>
-          <div class="md:hidden mx-2" @click="mobileOpenCurrencyList = true">
+          <div class="mx-2 md:hidden" @click="mobileOpenCurrencyList = true">
             <UButton block>
-              选择货币 {{ selectedCurrencyName !== '' ? `当前已选择：${selectedCurrencyName}`: '' }}
+              选择货币 {{ selectedCurrencyName !== '' ? `当前已选择：${selectedCurrencyName}` : '' }}
             </UButton>
           </div>
-          <USlideover v-model="mobileOpenCurrencyList" class="md:hidden text-center" side="left">
-            <UCard class="flex flex-col flex-1 h-full"
-              :ui="{ body: { base: 'flex-1 overflow-auto' }, ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+          <USlideover v-model="mobileOpenCurrencyList" class="text-center md:hidden" side="left">
+            <UCard
+              class="h-full flex flex-1 flex-col"
+              :ui="{ body: { base: 'flex-1 overflow-auto' }, ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }"
+            >
               <template #header>
                 货币列表
               </template>
-              <CurrencyList :header="false" v-model="selectedCurrency" @update:model-value="updateURL" @currency-name="selectedCurrencyName = $event" />
+              <CurrencyList v-model="selectedCurrency" :header="false" @update:model-value="updateURL" @currency-name="selectedCurrencyName = $event" />
               <template #footer>
                 <UButton variant="soft" size="xl" block @click="mobileOpenCurrencyList = false">
                   关闭
@@ -76,7 +79,7 @@ const mobileOpenCurrencyList = ref(false)
           </USlideover>
         </div>
         <template #fallback>
-          <div class="col-span-12 md:col-span-3 p-2 text-center">
+          <div class="col-span-12 p-2 text-center md:col-span-3">
             加载货币列表中
           </div>
         </template>
@@ -92,7 +95,7 @@ const mobileOpenCurrencyList = ref(false)
           </div>
         </div>
       </div>
-      <div v-else class="col-span-12 md:col-span-9 pt-4">
+      <div v-else class="col-span-12 pt-4 md:col-span-9">
         <div class="text-center">
           请先选择货币
         </div>

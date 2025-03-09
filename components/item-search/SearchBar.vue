@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { ShallowRef } from 'vue'
-import type { DuckDBClient } from '~/data/duckDB'
+import type { DuckDBClient } from '~/lib/duckDB'
 
 const emits = defineEmits<{
   (event: 'itemClick', value: any): void
@@ -15,10 +15,10 @@ const showSearchResult = ref(false)
 const search = ref('')
 const results = shallowRef<any[]>([])
 
-const { queryNames } = useQueries(db!)
+const { queryNames } = useQueries()
 
 async function searchDB(value: string) {
-  if (!value || !db)
+  if (!value || !db?.value)
     return []
   const words = value.split(/\s+/)
   return await queryNames(words)

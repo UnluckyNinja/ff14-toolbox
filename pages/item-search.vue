@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { useDuckDB } from '~/lib/duckDB'
+
 definePageMeta({
   title: 'FF14 市场物品价格速查',
 })
@@ -7,7 +9,7 @@ useHead({
   title: route.meta.title as string,
 })
 
-const { db } = useDuckDB()
+const db = useDuckDB()
 
 provide('duckDB', db)
 

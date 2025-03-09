@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { useDuckDB } from '~/lib/duckDB'
+
 definePageMeta({
   title: '数据库批量查询',
 })
@@ -7,11 +9,11 @@ useHead({
   title: route.meta.title as string,
 })
 
-const { db } = useDuckDB()
+const db = useDuckDB()
 
 provide('duckDB', db)
 
-const { queryID, queryExactName } = useQueries(db)
+const { queryID, queryExactName } = useQueries()
 
 const input = ref('')
 const output = ref('')

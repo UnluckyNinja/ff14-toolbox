@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { classJobCategory, equipSlotCategory } from '~/data/classJobCategory'
 import supplyJSON from '~/data/GCSupplyDuty.json'
+import { useDuckDB } from '~/lib/duckDB'
 
 definePageMeta({
   title: '主线装备箱可筹备查询',
@@ -10,9 +11,9 @@ useHead({
   title: route.meta.title as string,
 })
 
-const { db } = useDuckDB()
+const db = useDuckDB()
 
-const { queryIDs } = useQueries(db)
+const { queryIDs } = useQueries()
 
 const items = Object.entries(supplyJSON).flatMap(([job, itemsByLevel]) => {
   return Object.entries(itemsByLevel).flatMap(([level, item]) => item.map((it) => {

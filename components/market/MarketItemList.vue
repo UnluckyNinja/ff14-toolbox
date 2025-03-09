@@ -25,7 +25,9 @@ const settings = reactive(useSettings())
 
 const toast = useToast()
 
-const isFetching = ref(false)
+const isFetchingMarket = ref(false)
+const isFetchingXIV = ref(false)
+const isFetching = computed(() => isFetchingMarket.value || isFetchingXIV.value)
 
 const { base } = useXABase()
 
@@ -35,7 +37,7 @@ watch([() => props.ids, () => settings.selectedServer], async ([newIDs, newServe
     marketData.value = []
     return
   }
-  isFetching.value = true
+  isFetchingMarket.value = true
   marketData.value = []
   const toFetch = newIDs.slice(0)
   async function batchAdd(ids: number[]) {
@@ -62,14 +64,15 @@ watch([() => props.ids, () => settings.selectedServer], async ([newIDs, newServe
       return
     await batchAdd(toFetch.splice(0, 100))
   }
-  isFetching.value = false
 
-  // console.log(items)
+  isFetchingMarket.value = false
 }, { immediate: true })
 
 // fetch item info from xivapi/thewakingsands into `items`
 watch(() => props.ids, async (newVal) => {
   items.value.splice(0)
+
+  isFetchingXIV.value = true
 
   if (newVal.length === 0)
     return
@@ -89,6 +92,8 @@ watch(() => props.ids, async (newVal) => {
       iconURL: item.Icon,
     }
   })
+
+  isFetchingXIV.value = false
 }, { immediate: true })
 
 // generate data for table
@@ -192,12 +197,20 @@ function copyText(text: string) {
   if (copy(text))
     toast.add({ title: '已复制', timeout: 2000 })
 }
+
+const uTableloadingState = computed(() => {
+  return {
+    icon: 'i-heroicons-arrow-path',
+    label: `物品数据 ${isFetchingXIV.value ? '⌛️' : '✔️'}，\
+      市场数据 ${isFetchingMarket.value ? '⌛️' : '✔️'}`,
+  }
+})
 </script>
 
 <template>
   <UTable
     :rows="data" :columns="columns" :loading="isFetching"
-    :loading-state="{ icon: 'i-heroicons-arrow-path', label: '加载中' }"
+    :loading-state="uTableloadingState"
     :empty-state="{ icon: 'i-carbon-circle-dash', label: '空' }"
   >
     <template #icon-data="{ row }">
@@ -277,7 +290,7 @@ function copyText(text: string) {
       </div>
     </template>
     <template #currentAveragePrice-data="{ row }">
-      <div v-if="isFetching" class="i-heroicons-ellipsis-horizontal animate-pulse" />
+      <div v-if="isFetchingMarket" class="i-heroicons-ellipsis-horizontal animate-pulse" />
       <div v-else class="min-w-max text-right">
         <div v-if="row.currentAveragePrice >= 0" class="mb-1 text-xs text-gray">
           平均标价
@@ -301,7 +314,7 @@ function copyText(text: string) {
       </div>
     </template>
     <template #recentPrice-data="{ row }">
-      <div v-if="isFetching" class="i-heroicons-ellipsis-horizontal animate-pulse" />
+      <div v-if="isFetchingMarket" class="i-heroicons-ellipsis-horizontal animate-pulse" />
       <div v-else class="min-w-max text-right" :title="row.recentTimestamp > 0 ? time(new Date(row.recentTimestamp * 1000), { max: 'day' }) : undefined">
         <UPopover>
           <UButton block color="gray" variant="ghost">
@@ -340,7 +353,7 @@ function copyText(text: string) {
       </div>
     </template>
     <template #averagePrice-data="{ row }">
-      <div v-if="isFetching" class="i-heroicons-ellipsis-horizontal animate-pulse" />
+      <div v-if="isFetchingMarket" class="i-heroicons-ellipsis-horizontal animate-pulse" />
       <div v-else class="min-w-max text-right">
         <div v-if="row.averagePrice >= 0" class="mb-1 text-xs text-gray">
           平均成交价
@@ -364,7 +377,7 @@ function copyText(text: string) {
       </div>
     </template>
     <template #regularSaleVelocity-data="{ row }">
-      <div v-if="isFetching" class="i-heroicons-ellipsis-horizontal animate-pulse" />
+      <div v-if="isFetchingMarket" class="i-heroicons-ellipsis-horizontal animate-pulse" />
       <div v-else-if="row.regularSaleVelocity >= 0" class="min-w-max text-right">
         {{ row.regularSaleVelocity.toFixed(2) }}
       </div>
