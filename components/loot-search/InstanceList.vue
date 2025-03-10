@@ -53,12 +53,12 @@ const list = computed(() => {
 
   // subcategory
   if (['dungeons', 'trials', 'raids'].includes(selectedCategory.value)) {
-    const types = [90, 80, 70, 60, 50]
+    const types = [100, 90, 80, 70, 60, 50]
     const result = filteredInstances.reduce((arr, ins) => {
-      const id = types.findLastIndex(lvl => lvl >= (ins.max_lvl ?? 90))
+      const id = types.findLastIndex(lvl => lvl >= (ins.max_lvl ?? 100))
       arr[id].children.push(ins)
       return arr
-    }, ['等级 81~90', '等级 71~80', '等级 61~70', '等级 51~60', '等级 1~50'].map((it) => {
+    }, ['等级 91~100', '等级 81~90', '等级 71~80', '等级 61~70', '等级 51~60', '等级 1~50'].map((it) => {
       return {
         name: it,
         children: [] as Instance[],
