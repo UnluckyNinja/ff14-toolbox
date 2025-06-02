@@ -37,22 +37,22 @@ const mobileOpenCurrencyList = ref(false)
 </script>
 
 <template>
-  <div class="mx-auto mt-10 container">
+  <UContainer class="mt-10">
     <OptionsPanel :display="{ hq: false }">
       <div class="col-start-1">
         计价方式：
       </div>
-      <div class="flex items-center whitespace-nowrap">
+      <div class="flex whitespace-nowrap items-center">
         金币
-        <UToggle v-model="costMode" class="m-1" />
+        <USwitch v-model="costMode" class="m-1" />
         <span class="whitespace-normal">
           金币/每单位兑换货币
         </span>
       </div>
     </OptionsPanel>
-    <div class="grid grid-cols-12 mt-4">
+    <div class="mt-4 grid grid-cols-12">
       <Suspense>
-        <div class="col-span-12 text-center md:col-span-3">
+        <div class="text-center col-span-12 md:col-span-3">
           <div class="hidden md:block">
             <CurrencyList v-model="selectedCurrency" @update:model-value="updateURL" @currency-name="selectedCurrencyName = $event" />
           </div>
@@ -63,8 +63,8 @@ const mobileOpenCurrencyList = ref(false)
           </div>
           <USlideover v-model="mobileOpenCurrencyList" class="text-center md:hidden" side="left">
             <UCard
-              class="h-full flex flex-1 flex-col"
-              :ui="{ body: { base: 'flex-1 overflow-auto' }, ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }"
+              class="flex flex-1 flex-col h-full"
+              :ui="{ body: 'flex-1 overflow-auto divide-y divide-gray-100 dark:divide-gray-800 ring-0' }"
             >
               <template #header>
                 货币列表
@@ -79,14 +79,14 @@ const mobileOpenCurrencyList = ref(false)
           </USlideover>
         </div>
         <template #fallback>
-          <div class="col-span-12 p-2 text-center md:col-span-3">
+          <div class="bg-muted p-2 text-center grid col-span-12 h-40 grid-place-content-center animate-pulse md:col-span-3">
             加载货币列表中
           </div>
         </template>
       </Suspense>
       <div v-if="selectedCurrency > 0" class="col-span-12 md:col-span-9">
         <MarketItemList v-if="ids && ids.length > 0" :ids="ids" :costs="costs" :cost-mode="costMode" />
-        <div class="m-2 text-center text-gray/80">
+        <div class="text-gray/80 m-2 text-center">
           <div v-if="!ids">
             🚧 施工ing... 还未录入数据啦哩 🚧
           </div>
@@ -95,13 +95,13 @@ const mobileOpenCurrencyList = ref(false)
           </div>
         </div>
       </div>
-      <div v-else class="col-span-12 pt-4 md:col-span-9">
+      <div v-else class="pt-4 col-span-12 md:col-span-9">
         <div class="text-center">
           请先选择货币
         </div>
       </div>
     </div>
-  </div>
+  </UContainer>
 </template>
 
 <style lang="postcss" scoped></style>
