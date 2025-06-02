@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import 'virtual:uno.css'
+import '~/assets/css/main.css'
+
 const { $pwa } = useNuxtApp()
 
 const toast = useToast()
@@ -12,10 +15,10 @@ onMounted(() => {
     toast.add({
       id: 'update_pwa',
       title: '网站内容有变化，点击刷新按钮以更新',
-      timeout: 0,
+      duration: 0,
       actions: [{
         label: '刷新',
-        click: () => {
+        onClick: () => {
           $pwa.updateServiceWorker()
         },
       }],
@@ -25,14 +28,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="dark:bg-slate-900 md:px-2">
+  <UApp class="md:px-2 dark:bg-slate-900">
     <NuxtPwaManifest />
     <NuxtLoadingIndicator />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
     <UNotifications class="sm:w-96" />
-  </div>
+  </UApp>
 </template>
 
 <style>

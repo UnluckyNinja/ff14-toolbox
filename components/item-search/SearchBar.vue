@@ -61,7 +61,7 @@ function select(index: number) {
 
 <template>
   <div ref="compRoot" class="relative">
-    <div class="relative my-4">
+    <div class="my-4 grid grid-cols-1 relative">
       <!-- workaround due to nuxtlabs/ui style conflicting with unocss -->
       <!-- <div class="pl-12"></div> -->
       <UInput
@@ -74,7 +74,7 @@ function select(index: number) {
         @update:model-value="isSearching = true"
         @focus="showSearchResult = results.length > 0"
       />
-      <div v-show="search !== ''" class="absolute right-10 top-0 h-full flex items-center">
+      <div v-show="search !== ''" class="flex h-full items-center right-10 top-0 absolute">
         <div v-if="isSearching">
           搜索中
         </div>
@@ -86,13 +86,13 @@ function select(index: number) {
     <div
       v-show="showSearchResult"
       v-bind="containerProps"
-      class="absolute top-full z-10 mt-px max-h-300px w-full overflow-auto border border-yellow-600 rounded bg-white p-2 shadow-lg dark:bg-black"
+      class="bg-default mt-px p-2 border border-yellow-500 rounded max-h-300px w-full shadow-lg top-full absolute z-10 overflow-auto"
     >
       <div v-bind="wrapperProps">
         <div v-for="i in list" :key="i.index" class="grid grid-cols-3" style="height: 60px">
-          <SearchBarItem v-if="i.index * 3 < results.length" class="hover:cursor-pointer hover:bg-dark/20 hover:brightness-110" :item="results[i.index * 3]" @click="select(i.index * 3)" />
-          <SearchBarItem v-if="i.index * 3 + 1 < results.length" class="hover:cursor-pointer hover:bg-dark/20 hover:brightness-110" :item="results[i.index * 3 + 1]" @click="select(i.index * 3 + 1)" />
-          <SearchBarItem v-if="i.index * 3 + 2 < results.length" class="hover:cursor-pointer hover:bg-dark/20 hover:brightness-110" :item="results[i.index * 3 + 2]" @click="select(i.index * 3 + 2)" />
+          <SearchBarItem v-if="i.index * 3 < results.length" class="hover:bg-accented hover:cursor-pointer" :item="results[i.index * 3]" @click="select(i.index * 3)" />
+          <SearchBarItem v-if="i.index * 3 + 1 < results.length" class="hover:bg-accented hover:cursor-pointer" :item="results[i.index * 3 + 1]" @click="select(i.index * 3 + 1)" />
+          <SearchBarItem v-if="i.index * 3 + 2 < results.length" class="hover:bg-accented hover:cursor-pointer" :item="results[i.index * 3 + 2]" @click="select(i.index * 3 + 2)" />
         </div>
       </div>
     </div>

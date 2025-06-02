@@ -33,7 +33,7 @@ const ids = items.map(it => it.id)
 const p = until(db).toBeTruthy().then(() => queryIDs(ids, ['classJobCategory', 'equipSlotCategory']))
 const { state: queryResults, isLoading: _isLoading, isReady } = useAsyncState(p, [])
 
-const searchResult = shallowRef([] as typeof queryResults['value'])
+const searchResult = shallowRef<typeof queryResults['value']>([])
 const searchResultInfo = computed(() => {
   return searchResult.value.map((it) => {
     return {
@@ -43,6 +43,9 @@ const searchResultInfo = computed(() => {
       classJob: classJobCategory[it.classJobCategory],
     }
   })
+})
+const marketItemIDs = computed(() => {
+  return searchResult.value.map(it => Number.parseInt(it.id))
 })
 
 function filterSupply(itemLevel: string | number, equipSlotCategory: string | number) {
@@ -63,7 +66,7 @@ const selectedEquipSlot = ref('1')
 const equipOptions = [Object.entries(equipSlotCategory).map(([k, v]) => {
   return {
     label: v,
-    click: () => {
+    onSelect: () => {
       selectedEquipSlot.value = k
     },
   }
@@ -72,25 +75,22 @@ const equipOptions = [Object.entries(equipSlotCategory).map(([k, v]) => {
 
 <template>
   <DBLoading v-if="!db || !isReady" />
-  <div v-else class="mx-auto container">
+  <UContainer v-else class="mt-10">
     <OptionsPanel />
-    <div class="grid grid-cols-12 gap-2">
+    <div class="gap-2 grid grid-cols-12">
       <div class="col-span-4 space-y-4">
         <UCard>
           <div class="flex justify-between">
             <UInput v-model="selectedItemLevel" type="number" placeholder="物品等级" />
-            <UDropdown :items="equipOptions" :popper="{ placement: 'bottom-start' }">
-              <UButton
-                color="white" :label="equipSlotCategory[selectedEquipSlot]"
-                trailing-icon="i-heroicons-chevron-down-20-solid"
-              />
-            </UDropdown>
-            <UButton color="blue" @click="filterSupply(selectedItemLevel, selectedEquipSlot)">
+            <USelect :items="equipOptions" :popper="{ placement: 'bottom-start' }">
+              {{ equipSlotCategory[selectedEquipSlot] }}
+            </USelect>
+            <UButton color="info" @click="filterSupply(selectedItemLevel, selectedEquipSlot)">
               查询
             </UButton>
           </div>
         </UCard>
-        <div v-if="searchResultInfo.length > 0" class="jobResult items-center gap-2 border rounded p-2 text-center">
+        <div v-if="searchResultInfo.length > 0" class="border-default jobResult p-2 text-center border rounded-lg gap-2 items-center">
           <div class="text-sm">
             物品名
           </div>
@@ -108,7 +108,7 @@ const equipOptions = [Object.entries(equipSlotCategory).map(([k, v]) => {
           </div>
           <template v-for="item in searchResultInfo" :key="item.id">
             <hr class="col-span-6">
-            <div class="line-clamp-2 col-start-1" :title="item.name">
+            <div class="col-start-1 line-clamp-2" :title="item.name">
               {{ item.name }}
             </div>
             <div class="">
@@ -120,20 +120,20 @@ const equipOptions = [Object.entries(equipSlotCategory).map(([k, v]) => {
             <div class="">
               {{ item.jobLevel }}
             </div>
-            <div class="line-clamp-2 text-ellipsis text-xs" :title="item.classJob">
+            <div class="text-xs text-ellipsis line-clamp-2" :title="item.classJob">
               {{ item.classJob }}
             </div>
           </template>
         </div>
       </div>
       <div class="col-span-8">
-        <MarketItemList :ids="searchResult.map(it => parseInt(it.id))" />
+        <MarketItemList :ids="marketItemIDs" />
       </div>
     </div>
-  </div>
+  </UContainer>
 </template>
 
-<style lang="postcss" scoped>
+<style scoped>
 .jobResult {
   display: grid;
   grid-template-columns: auto max-content max-content max-content auto;

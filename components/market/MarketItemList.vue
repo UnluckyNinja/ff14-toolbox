@@ -42,7 +42,7 @@ watch([() => props.ids, () => settings.selectedServer], async ([newIDs, newServe
   const toFetch = newIDs.slice(0)
   async function batchAdd(ids: number[]) {
     const promise = fetchMarket(newServer, ids).catch((e) => {
-      toast.add({ title: '请求 Universalis 数据失败，请检查网络', description: e, color: 'red', icon: 'i-heroicons-exclamation-circle' })
+      toast.add({ title: '请求 Universalis 数据失败，请检查网络', description: e, color: 'error', icon: 'i-heroicons-exclamation-circle' })
       return null
     })
     const data = await promise
@@ -71,6 +71,10 @@ watch([() => props.ids, () => settings.selectedServer], async ([newIDs, newServe
 // fetch item info from xivapi/thewakingsands into `items`
 watch(() => props.ids, async (newVal) => {
   items.value.splice(0)
+
+  if (newVal.length === 0) {
+    return
+  }
 
   isFetchingXIV.value = true
 
@@ -141,36 +145,31 @@ const data = computed(() => {
 
 const columns = [
   {
-    key: 'icon',
+    id: 'icon',
   },
   {
-    key: 'name',
-    label: '物品名',
+    id: 'name',
+    header: '物品名',
   },
   {
-    key: 'lowestPrice',
-    label: '当前最低价',
-    sortable: true,
+    id: 'lowestPrice',
+    header: '当前最低价',
   },
   {
-    key: 'currentAveragePrice',
-    label: '平均标价',
-    sortable: true,
+    id: 'currentAveragePrice',
+    header: '平均标价',
   },
   {
-    key: 'recentPrice',
-    label: '最近成交',
-    sortable: true,
+    id: 'recentPrice',
+    header: '最近成交',
   },
   {
-    key: 'averagePrice',
-    label: '平均成交价',
-    sortable: true,
+    id: 'averagePrice',
+    header: '平均成交价',
   },
   {
-    key: 'regularSaleVelocity',
-    label: '出货速率',
-    sortable: true,
+    id: 'regularSaleVelocity',
+    header: '出货速率',
   },
 ]
 
@@ -193,9 +192,9 @@ function getLinks(id: number, name: string) {
   ]
 }
 
-function copyText(text: string) {
-  if (copy(text))
-    toast.add({ title: '已复制', timeout: 2000 })
+function copyText(text: string | number) {
+  if (copy(`${text}`))
+    toast.add({ title: '已复制', duration: 2000 })
 }
 
 const uTableloadingState = computed(() => {
@@ -209,62 +208,62 @@ const uTableloadingState = computed(() => {
 
 <template>
   <UTable
-    :rows="data" :columns="columns" :loading="isFetching"
+    :data="data" :columns="columns" :loading="isFetching"
     :loading-state="uTableloadingState"
     :empty-state="{ icon: 'i-carbon-circle-dash', label: '空' }"
   >
-    <template #icon-data="{ row }">
-      <UniImage class="inline-block min-h-12 min-w-12" :src="base.icon + row.iconURL" alt="" :title="`ID: ${row.id}`" />
+    <template #icon-cell="{ row }">
+      <UniImage class="min-h-12 min-w-12 inline-block" :src="base.icon + row.original.iconURL" alt="" :title="`ID: ${row.id}`" />
     </template>
-    <template #name-data="{ row }">
+    <template #name-cell="{ row }">
       <UPopover>
-        <UButton block color="gray" trailing-icon="i-heroicons-ellipsis-vertical" variant="ghost">
-          <div class="w-full text-left">
+        <UButton block color="neutral" trailing-icon="i-heroicons-ellipsis-vertical" variant="ghost">
+          <div class="text-left w-full">
             <div class="whitespace-normal">
-              {{ row.name }}
+              {{ row.original.name }}
             </div>
-            <div v-if="displayCost" class="mt-1 text-xs text-gray">
-              兑换价格：{{ row.cost.toLocaleString(undefined, { maximumFractionDigits: 2 }) }}
+            <div v-if="displayCost" class="text-xs text-gray mt-1">
+              兑换价格：{{ row.original.cost.toLocaleString(undefined, { maximumFractionDigits: 2 }) }}
             </div>
           </div>
         </UButton>
-        <template #panel>
-          <div>
-            <UButton block color="gray" variant="ghost" trailing-icon="i-heroicons-document-duplicate" @click="copyText(row.id)">
-              <div class="w-full text-left">
-                ID: {{ row.id }}
+        <template #content>
+          <div class="border-accented border rounded-lg">
+            <UButton class="cursor-pointer" block color="neutral" variant="ghost" trailing-icon="i-heroicons-document-duplicate" @click="copyText(row.original.id)">
+              <div class="text-left w-full">
+                ID: {{ row.original.id }}
               </div>
             </UButton>
-            <UButton block color="gray" variant="ghost" trailing-icon="i-heroicons-document-duplicate" @click="copyText(row.name)">
-              <div class="w-full text-left">
-                {{ row.name }}
+            <UButton class="cursor-pointer" block color="neutral" variant="ghost" trailing-icon="i-heroicons-document-duplicate" @click="copyText(row.original.name)">
+              <div class="text-left w-full">
+                {{ row.original.name }}
+              </div>
+            </UButton>
+            <USeparator class="my-2" />
+            <UButton v-for="link, i in getLinks(row.original.id, row.original.name)" :key="i" block color="neutral" variant="link" :to="link.url" target="_blank" trailing-icon="i-heroicons-arrow-top-right-on-square-20-solid">
+              <div class="text-sm w-full">
+                {{ link.label }}
               </div>
             </UButton>
           </div>
-          <hr class="my-2">
-          <UButton v-for="link, i in getLinks(row.id, row.name)" :key="i" block color="gray" variant="link" :to="link.url" target="_blank" trailing-icon="i-heroicons-arrow-top-right-on-square-20-solid">
-            <div class="w-full text-sm">
-              {{ link.label }}
-            </div>
-          </UButton>
         </template>
       </UPopover>
     </template>
-    <template #lowestPrice-data="{ row }">
+    <template #lowestPrice-cell="{ row }">
       <div v-if="isFetching" class="i-heroicons-ellipsis-horizontal animate-pulse" />
-      <div v-else class="min-w-max text-right">
+      <div v-else class="text-right min-w-max">
         <UPopover>
-          <UButton block color="gray" variant="ghost">
-            <div class="w-full text-right">
-              <div v-if="row.lowestPrice >= 0" class="mb-1 text-xs text-gray">
+          <UButton block color="neutral" variant="ghost">
+            <div class="text-right w-full">
+              <div v-if="row.original.lowestPrice >= 0" class="text-xs text-gray mb-1">
                 当前最低价
               </div>
-              <span v-if="row.lowestWorld" class="float-left pr-2 text-gray">
-                {{ row.lowestWorld }}
+              <span v-if="row.original.lowestWorld" class="text-gray pr-2 float-left">
+                {{ row.original.lowestWorld }}
               </span>
-              <span v-if="row.lowestPrice >= 0">
-                {{ row.lowestHQ ? '' : '' }}
-                <UniRichNumber :value="row.lowestPrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
+              <span v-if="row.original.lowestPrice >= 0">
+                {{ row.original.lowestHQ ? '' : '' }}
+                <UniRichNumber :value="row.original.lowestPrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
                   <template #whole="{ num }">
                     <span>
                       {{ num }}
@@ -281,22 +280,22 @@ const uTableloadingState = computed(() => {
               <div v-else class="i-heroicons-minus" />
             </div>
           </UButton>
-          <template #panel>
-            <div class="max-h-50vh overflow-auto">
-              <MarketListings :id="row.id" />
+          <template #content>
+            <div class="border-accented border rounded-lg max-h-50vh overflow-auto">
+              <MarketListings :id="row.original.id" />
             </div>
           </template>
         </UPopover>
       </div>
     </template>
-    <template #currentAveragePrice-data="{ row }">
+    <template #currentAveragePrice-cell="{ row }">
       <div v-if="isFetchingMarket" class="i-heroicons-ellipsis-horizontal animate-pulse" />
-      <div v-else class="min-w-max text-right">
-        <div v-if="row.currentAveragePrice >= 0" class="mb-1 text-xs text-gray">
+      <div v-else class="text-right min-w-max">
+        <div v-if="row.original.currentAveragePrice >= 0" class="text-xs text-gray mb-1">
           平均标价
         </div>
-        <span v-if="row.currentAveragePrice >= 0">
-          <UniRichNumber :value="row.currentAveragePrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
+        <span v-if="row.original.currentAveragePrice >= 0">
+          <UniRichNumber :value="row.original.currentAveragePrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
             <template #whole="{ num }">
               <span>
                 {{ num }}
@@ -313,21 +312,21 @@ const uTableloadingState = computed(() => {
         <div v-else class="i-heroicons-minus" />
       </div>
     </template>
-    <template #recentPrice-data="{ row }">
+    <template #recentPrice-cell="{ row }">
       <div v-if="isFetchingMarket" class="i-heroicons-ellipsis-horizontal animate-pulse" />
-      <div v-else class="min-w-max text-right" :title="row.recentTimestamp > 0 ? time(new Date(row.recentTimestamp * 1000), { max: 'day' }) : undefined">
+      <div v-else class="text-right min-w-max" :title="row.original.recentTimestamp > 0 ? time(new Date(row.original.recentTimestamp * 1000), { max: 'day' }) : undefined">
         <UPopover>
-          <UButton block color="gray" variant="ghost">
-            <div class="w-full text-right">
-              <div v-if="row.recentPrice >= 0" class="mb-1 text-xs text-gray">
+          <UButton block color="neutral" variant="ghost">
+            <div class="text-right w-full">
+              <div v-if="row.original.recentPrice >= 0" class="text-xs text-gray mb-1">
                 最近成交
               </div>
-              <span v-if="row.recentWorld" class="float-left mr-2 text-gray">
-                {{ row.recentWorld }}
+              <span v-if="row.original.recentWorld" class="text-gray mr-2 float-left">
+                {{ row.original.recentWorld }}
               </span>
-              <span v-if="row.recentPrice >= 0">
-                {{ row.recentHQ ? '' : '' }}
-                <UniRichNumber :value="row.recentPrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
+              <span v-if="row.original.recentPrice >= 0">
+                {{ row.original.recentHQ ? '' : '' }}
+                <UniRichNumber :value="row.original.recentPrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
                   <template #whole="{ num }">
                     <span>
                       {{ num }}
@@ -344,22 +343,22 @@ const uTableloadingState = computed(() => {
               <div v-else class="i-heroicons-minus" />
             </div>
           </UButton>
-          <template #panel>
-            <div class="max-h-50vh overflow-auto">
-              <MarketHistory :id="row.id" />
+          <template #content>
+            <div class="border-accented rounded-lg max-h-50vh overflow-auto">
+              <MarketHistory :id="row.original.id" />
             </div>
           </template>
         </UPopover>
       </div>
     </template>
-    <template #averagePrice-data="{ row }">
+    <template #averagePrice-cell="{ row }">
       <div v-if="isFetchingMarket" class="i-heroicons-ellipsis-horizontal animate-pulse" />
-      <div v-else class="min-w-max text-right">
-        <div v-if="row.averagePrice >= 0" class="mb-1 text-xs text-gray">
+      <div v-else class="text-right min-w-max">
+        <div v-if="row.original.averagePrice >= 0" class="text-xs text-gray mb-1">
           平均成交价
         </div>
-        <span v-if="row.averagePrice >= 0">
-          <UniRichNumber :value="row.averagePrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
+        <span v-if="row.original.averagePrice >= 0">
+          <UniRichNumber :value="row.original.averagePrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
             <template #whole="{ num }">
               <span>
                 {{ num }}
@@ -376,10 +375,10 @@ const uTableloadingState = computed(() => {
         <div v-else class="i-heroicons-minus" />
       </div>
     </template>
-    <template #regularSaleVelocity-data="{ row }">
+    <template #regularSaleVelocity-cell="{ row }">
       <div v-if="isFetchingMarket" class="i-heroicons-ellipsis-horizontal animate-pulse" />
-      <div v-else-if="row.regularSaleVelocity >= 0" class="min-w-max text-right">
-        {{ row.regularSaleVelocity.toFixed(2) }}
+      <div v-else-if="row.original.regularSaleVelocity >= 0" class="text-right min-w-max">
+        {{ row.original.regularSaleVelocity.toFixed(2) }}
       </div>
       <div v-else class="text-center">
         -

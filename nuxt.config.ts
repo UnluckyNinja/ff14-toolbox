@@ -1,16 +1,22 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  typescript: {
-    shim: false,
-  },
   ssr: false,
   modules: [
     '@vite-pwa/nuxt',
     '@nuxt/devtools',
     '@vueuse/nuxt',
-    '@unocss/nuxt',
     '@nuxt/ui',
+    '@unocss/nuxt',
   ],
+
+  // css: ['~/assets/css/main.css'],
+  ui: {
+    fonts: false,
+  },
+
+  unocss: {
+    autoImport: false,
+  },
 
   icon: {
     clientBundle: {

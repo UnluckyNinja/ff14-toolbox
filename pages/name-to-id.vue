@@ -95,53 +95,56 @@ watch(targetProperty, () => {
 </script>
 
 <template>
-  <div class="mx-auto mt-10 container">
+  <UContainer class="">
     <DBLoading v-if="!db" />
     <div v-else>
-      <div class="grid grid-cols-11">
-        <div class="col-span-5">
-          <div class="mb-4 flex items-center gap-2">
-            <UFormGroup label="每n行" help="必须为大于等于1的整数" :error="isPerLinesValid ? '' : '必须为大于等于1的整数'">
+      <div class="my-2 grid grid-cols-11">
+        <div class="border-muted p-2 border rounded-lg col-span-5">
+          <div class="mb-2">
+            数据清理，复制粘贴出现换行问题时使用
+          </div>
+          <div class="flex gap-2 items-center">
+            <UFormField label="每n行" help="必须为大于等于1的整数" :error="isPerLinesValid ? '' : '必须为大于等于1的整数'">
               <UInput v-model.number="perLines" type="number" />
-            </UFormGroup>
-            <UFormGroup label="保留行" hint="从0起" help="必须为大于等于0且小于前者的整数" :error="isKeepLineValid ? '' : '必须为大于等于0且小于前者的整数'">
-              <UInput v-model.number="keepLine" type="number" />
-            </UFormGroup>
+            </UFormField>
+            <UFormField label="保留行" hint="从0起" help="必须为大于等于0且小于前者的整数" :error="isKeepLineValid ? '' : '必须为大于等于0且小于前者的整数'">
+              <UInput v-model.number="keepLine" type="number" class="w-full" />
+            </UFormField>
             <UButton :disabled="!isPerLinesValid || !isKeepLineValid" @click="shrinkTexts">
               处理
             </UButton>
-            <UButton color="red" :disabled="history.length <= 0" variant="soft" @click="clickUndo">
+            <UButton color="error" :disabled="history.length <= 0" variant="soft" @click="clickUndo">
               撤销
             </UButton>
           </div>
         </div>
         <div class="col-span-1" />
-        <div class="col-span-5">
-          <div class="mb-4 flex items-center gap-2">
-            <UFormGroup v-if="results.length > 0" label="转换属性">
-              <USelectMenu v-model="targetProperty" class="min-w-40" :options="options" />
-            </UFormGroup>
+        <div class="flex flex-col col-span-5 justify-end">
+          <div class="mb-4 flex gap-2 items-center">
+            <UFormField v-if="results.length > 0" label="转换属性">
+              <USelectMenu v-model="targetProperty" class="min-w-40" :items="options" />
+            </UFormField>
           </div>
         </div>
       </div>
       <div class="grid grid-cols-11">
         <div class="col-span-5">
-          <UTextarea v-model="input" class="font-mono" variant="outline" :rows="20" />
+          <UTextarea v-model="input" class="font-mono w-full" :ui="{ base: 'resize-none' }" variant="soft" :rows="20" />
         </div>
-        <div class="col-span-1 flex flex-col place-self-center gap-8">
-          <UFormGroup label="源数据类型">
-            <USelectMenu v-model="sourceType" :options="['ID', '名称']" />
-          </UFormGroup>
+        <div class="flex flex-col gap-8 col-span-1 place-self-center">
+          <UFormField label="源数据类型">
+            <USelect v-model="sourceType" class="w-full" :items="['ID', '名称']" />
+          </UFormField>
           <UButton @click="search">
             >> 查询 >>
           </UButton>
         </div>
         <div class="col-span-5">
-          <UTextarea v-model="output" class="font-mono" variant="outline" :rows="20" readonly />
+          <UTextarea v-model="output" class="font-mono w-full" :ui="{ base: 'resize-none' }" variant="soft" :rows="20" readonly />
         </div>
       </div>
     </div>
-  </div>
+  </UContainer>
 </template>
 
 <style lang="postcss" scoped>

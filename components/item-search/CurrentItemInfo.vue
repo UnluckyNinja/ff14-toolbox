@@ -17,7 +17,7 @@ const toast = useToast()
 // handy nametag
 function copyText(text: string) {
   if (copy(text))
-    toast.add({ title: '已复制', timeout: 2000 })
+    toast.add({ title: '已复制', duration: 2000 })
 }
 
 const links = reactive(useItemExternalLink(item))
@@ -28,36 +28,36 @@ const iconUrl = computed(() => itemIconUrl(item.value.iconID, base.value ?? unde
 
 <template>
   <div class="my-2 flex items-center">
-    <UniImage class="inline-block min-h-8 min-w-8" :src="iconUrl" alt="item icon" @error="failedIcons.add(props.item.iconID);base = BASE_EN" />
+    <UniImage class="min-h-8 min-w-8 inline-block" :src="iconUrl" alt="item icon" @error="failedIcons.add(props.item.iconID);base = BASE_EN" />
     <UButton
-      class="mx-2"
-      color="gray" size="xl" variant="ghost" @click="copyText(item.id)"
+      class="mx-2 cursor-pointer"
+      color="neutral" size="xl" variant="ghost" @click="copyText(item.id)"
     >
       ID: {{ item.id }}
     </UButton>
     <!-- hover:bg-gray-50 -->
     <UButton
-      class="mx-2" trailing-icon="i-heroicons-clipboard-document-list-20-solid"
-      color="gray" size="xl" variant="ghost" @click="copyText(item.name)"
+      class="mx-2 cursor-pointer" trailing-icon="i-heroicons-clipboard-document-list-20-solid"
+      color="neutral" size="xl" variant="ghost" @click="copyText(item.name)"
     >
       {{ item.name }}
     </UButton>
-    <div class="text-blue-7 underline children:mx-2 dark:text-blue-3">
+    <div class="text-blue-7 dark:text-blue-3 underline children:mx-2">
       <UButton
-        color="blue" :trailing-icon="item.dataSource === 'en' ? '' : 'i-heroicons-arrow-top-right-on-square-20-solid'"
+        color="info" :trailing-icon="item.dataSource === 'en' ? '' : 'i-heroicons-arrow-top-right-on-square-20-solid'"
         :to="links.huiji" target="_blank" variant="link"
         :disabled="item.dataSource === 'en'"
       >
         灰机Wiki{{ item.dataSource === 'en' ? '(国际服数据)' : '' }}
       </UButton>
       <UButton
-        color="blue" trailing-icon="i-heroicons-arrow-top-right-on-square-20-solid"
+        color="info" trailing-icon="i-heroicons-arrow-top-right-on-square-20-solid"
         :to="links.universalis" target="_blank" variant="link"
       >
         Universalis
       </UButton>
       <UButton
-        color="blue" trailing-icon="i-heroicons-arrow-top-right-on-square-20-solid"
+        color="info" trailing-icon="i-heroicons-arrow-top-right-on-square-20-solid"
         :to="links.garlandData" target="_blank" variant="link"
       >
         GarlandData

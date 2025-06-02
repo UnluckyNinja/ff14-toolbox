@@ -76,7 +76,7 @@ const list = computed(() => {
 </script>
 
 <template>
-  <div class="m-2 flex flex-col gap-2 border rounded p-2">
+  <div class="m-2 p-2 border rounded flex flex-col gap-2">
     <!-- header -->
     <div class="text-center">
       副本列表
@@ -85,8 +85,8 @@ const list = computed(() => {
     <div class="flex justify-around">
       <UButton
         v-for="c in categories" :key="c.name" class="p-1"
-        size="xl"
-        color="gray" square :padded="true"
+        size="xl" variant="soft"
+        color="neutral" square :padded="true"
         :title="c.name"
         @click="chooseCategory(c.type)"
       >
@@ -97,25 +97,25 @@ const list = computed(() => {
     <div class="flex flex-col overflow-hidden">
       <div v-for="item, i in list" :key="item.name">
         <!-- collapse toggle -->
-        <UButton block color="white" variant="solid" size="sm" @click="sublistIndex = i">
+        <UButton block color="secondary" variant="outline" size="sm" @click="sublistIndex = i">
           {{ item.name }}
         </UButton>
         <!-- sublist -->
-        <div class="overflow-auto transition-all duration-500 ease-out" :class="sublistIndex === i ? 'h-120' : 'h-0'">
+        <div class="transition-all duration-500 ease-out overflow-auto" :class="sublistIndex === i ? 'h-120' : 'h-0'">
           <UButton
             v-for="ins in item.children" :key="ins.i"
-            color="gray" block variant="ghost" size="2xs"
+            color="neutral" block variant="ghost" size="xs"
             @click="emits('update:modelValue', ins)"
           >
-            <div class="w-full flex items-center gap-1 text-left text-base">
+            <div class="text-base text-left flex gap-1 w-full items-center">
               <!-- icon -->
-              <img class="inline-block h-4 w-4" :src="imgUrl(`${ins.c}`).value">
+              <img class="h-4 w-4 inline-block" :src="imgUrl(`${ins.c}`).value">
               <!-- name -->
               <div class="flex-grow truncate" :title="ins.n">
                 {{ ins.n }}
               </div>
               <!-- minimum character level -->
-              <div class="text-gray">
+              <div class="text-muted">
                 Lv.{{ ins.min_lvl === 1 ? ins.max_lvl : ins.min_lvl }}
               </div>
             </div>

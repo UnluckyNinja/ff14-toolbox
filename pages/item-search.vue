@@ -28,17 +28,16 @@ function onItemClick(item: any) {
 </script>
 
 <template>
-  <div class="mx-auto mt-10 container">
+  <UContainer class="mt-10">
     <DBLoading v-if="!db" />
     <div v-else>
       <SearchBar
-        class="flex-1"
         @item-click="onItemClick($event)"
       />
       <div>
         <OptionsPanel />
       </div>
-      <div class="grid grid-cols-6 gap-2">
+      <div class="gap-2 grid grid-cols-6">
         <SearchHistoryList class="col-span-1 hidden md:block" />
         <div class="col-span-6 md:col-span-5">
           <CurrentItemInfo v-if="selectedItem" class="ml-4" :item="selectedItem" />
@@ -46,7 +45,7 @@ function onItemClick(item: any) {
         </div>
       </div>
     </div>
-  </div>
+  </UContainer>
 </template>
 
 <style lang="postcss" scoped>

@@ -1,9 +1,4 @@
 {
   // https://nuxt.com/docs/guide/concepts/typescript
-  "extends": "./.nuxt/tsconfig.json",
-  "compilerOptions": {
-    "types": [
-      "vite/client"
-    ]
-  },
+  "extends": "./.nuxt/tsconfig.json"
 }

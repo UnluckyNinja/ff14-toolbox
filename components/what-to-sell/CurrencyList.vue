@@ -34,22 +34,22 @@ function currencyChange(item: XAItem) {
 </script>
 
 <template>
-  <div class="m-2 flex flex-col gap-2 p-2">
+  <div class="border-muted m-2 p-2 border rounded-xl flex flex-col gap-2">
     <!-- header -->
     <div v-if="header" class="text-center">
       货币列表
     </div>
     <!-- instances list -->
     <div class="flex flex-col">
-      <div class="min-h-120 flex flex-col gap-1">
+      <div class="flex flex-col gap-1 min-h-120">
         <UButton
           v-for="item in list" :key="item.ID"
-          color="gray" block variant="ghost" size="xl"
+          color="neutral" block variant="subtle" size="xl"
           @click="currencyChange(item)"
         >
-          <div class="w-full flex items-center gap-1 text-left text-base">
+          <div class="text-base text-left flex gap-1 w-full items-center">
             <!-- icon -->
-            <img class="inline-block h-4 w-4" :src="base.icon + item.Icon">
+            <img class="h-4 w-4 inline-block" :src="base.icon + item.Icon">
             <!-- name -->
             <div class="flex-grow truncate" :title="item.Name">
               {{ item.Name }}

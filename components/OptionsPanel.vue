@@ -65,84 +65,60 @@ const serverOptions = computed(() => {
     <!-- settings -->
     <div
       v-if="settings.showOptions"
-      class="options-panel max-w-screen grid grid-flow-row items-baseline gap-2 p-2 overflow-hidden"
+      class="options-panel border-muted my-2 p-2 border rounded-lg gap-2 grid grid-flow-row max-w-screen items-center overflow-hidden"
     >
-      <div class="col-start-1">
+      <div class="text-right col-start-1">
         运营地区
       </div>
       <div class="col-start-2">
-        <UPopover class="inline-block">
-          <UButton class="min-w-30" color="white" trailing-icon="i-heroicons-chevron-down-20-solid">
-            <span class="flex-1">
-              {{ settings.selectedRegion }}
-            </span>
-          </UButton>
-          <template #panel="{ close }">
-            <UButton v-for="region in servers.regions" :key="region" block color="gray" variant="ghost" tabindex="0" @click="close(); settings.selectedRegion = region">
-              <span class="text-sm">
-                {{ region }}
-              </span>
-            </UButton>
-          </template>
-        </UPopover>
+        <USelectMenu v-model="settings.selectedRegion" :items="servers.regions" class="min-w-48" />
       </div>
-      <div class="col-start-1">
+      <div class="text-right col-start-1">
         大区
       </div>
       <div class="col-start-2">
-        <UPopover class="inline-block">
-          <UButton class="min-w-30" color="white" trailing-icon="i-heroicons-chevron-down-20-solid">
-            <span class="flex-1">
-              {{ settings.selectedDataCenter }}
-            </span>
-          </UButton>
-          <template #panel="{ close }">
-            <UButton v-for="dc in dataCenterOptions" :key="dc.name" block color="gray" variant="ghost" tabindex="0" @click="close(); settings.selectedDataCenter = dc.name">
-              <span class="text-sm">
-                {{ dc.name }}
-              </span>
-            </UButton>
-          </template>
-        </UPopover>
+        <USelectMenu v-model="settings.selectedDataCenter" value-key="name" label-key="name" :items="dataCenterOptions" class="min-w-48" />
       </div>
-      <div class="col-start-1">
+      <div class="text-right col-start-1">
         条目数量
       </div>
       <div class="col-start-2">
-        <UInput class="inline-block" v-model="settings.numberPerPage" type="number" name="npp-input" />
+        <UInput v-model="settings.numberPerPage" class="inline-block" type="number" name="npp-input" />
       </div>
       <!-- servers -->
-      <div v-if="settings.selectedDataCenter" class="whitespace-nowrap col-start-1">
+      <div v-if="settings.selectedDataCenter" class="text-right col-start-1 whitespace-nowrap">
         市场服务器
       </div>
       <div class="col-start-2">
-        <div class="w-full flex flex-wrap gap-4">
-          <URadio
-          v-model="settings.selectedServer"
-          :label="settings.selectedDataCenter" help="显示全区数据"
-          :value="settings.selectedDataCenter"
-          @click="settings.selectedServer = settings.selectedDataCenter"
-          />
-          <URadio
-          v-for="sv in serverOptions"
-          :key="sv"
-          v-model="settings.selectedServer" :label="sv"
-          :value="sv"
-          @click="settings.selectedServer = sv"
+        <div class="flex flex-wrap gap-4 w-full">
+          <URadioGroup
+            v-model="settings.selectedServer"
+            :items="[settings.selectedDataCenter]"
+          >
+            <template #label>
+              显示全区数据
+            </template>
+          </URadioGroup>
+          <URadioGroup
+            v-model="settings.selectedServer"
+            orientation="horizontal"
+            :items="serverOptions"
           />
         </div>
       </div>
-      <div v-if="props.display.hq" class="col-span-1">
+      <div v-if="props.display.hq" class="text-right col-span-1">
         仅HQ
       </div>
-      <UToggle v-if="props.display.hq" v-model="settings.onlyHQ" />
+      <USwitch v-if="props.display.hq" v-model="settings.onlyHQ" />
       <slot />
       <!-- workaround for UToggle tailwind class conflict -->
       <!-- <div class="translate-x-4" /> -->
     </div>
   </div>
-  <div v-else class="p-4">
-    获取Universalis服务器数据中
+  <div v-else>
+    <div class="bg-muted my-2 grid h-40 grid-place-content-center animate-pulse">
+      获取Universalis服务器数据中
+    </div>
   </div>
 </template>
 

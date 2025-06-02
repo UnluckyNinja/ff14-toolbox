@@ -2,8 +2,9 @@
 const selectedItem = inject<Ref<any>>('selected-item')
 const settings = reactive(useSettings())
 const hq = computed(() => {
-  if (selectedItem?.value.canBeHQ && settings.onlyHQ)
+  if (selectedItem?.value.canBeHQ && settings.onlyHQ) {
     return true
+  }
 
   return undefined
 })
@@ -17,17 +18,17 @@ const isUntradable = computed(() => {
   <div>
     <!-- 物品可交易 -->
     <div v-if="selectedItem && !isUntradable">
-      <div class="grid grid-cols-1 text-center text-sm md:grid-cols-2 divide-x">
+      <div class="text-sm text-center grid grid-cols-1 divide-x md:grid-cols-2">
         <!-- on sale -->
         <div>
-          <h2 class="m-2 text-2xl">
+          <h2 class="text-2xl m-2">
             在售列表
           </h2>
           <MarketListings :id="selectedItem.id" :hq="hq" />
         </div>
         <!-- history -->
         <div>
-          <h2 class="m-2 text-2xl">
+          <h2 class="text-2xl m-2">
             历史交易
           </h2>
           <MarketHistory :id="selectedItem.id" :hq="hq" />

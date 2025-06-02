@@ -1,14 +1,20 @@
+import transformerVariantGroup from '@unocss/transformer-variant-group'
 import {
   defineConfig,
-  presetUno,
+  presetIcons,
+  presetWind4,
 } from 'unocss'
-import transformerVariantGroup from '@unocss/transformer-variant-group'
 
 export default defineConfig({
   presets: [
-    presetUno({
-      variablePrefix: 'tw-',
+    presetWind4({
+      // variablePrefix: 'tw-',
+      preflights: {
+        reset: false,
+      },
+
     }),
+    presetIcons(),
   ],
   transformers: [
     transformerVariantGroup(),

@@ -5,7 +5,7 @@ const { msg } = useDuckDBStatus()
 </script>
 
 <template>
-  <div class="grid grid-rows-2 place-content-center items-center gap-4 p-2 text-center text-3xl">
+  <div class="text-3xl p-2 text-center gap-4 grid grid-rows-2 items-center place-content-center">
     <div class="row-span-1">
       当前进度：{{ msg }}<br>
       <span class="text-base">
@@ -15,7 +15,7 @@ const { msg } = useDuckDBStatus()
       </span>
     </div>
     <div class="row-span-1">
-      <UIcon name="i-heroicons-arrow-path" class="mx-auto animate-spin text-3xl" />
+      <UIcon name="i-heroicons-arrow-path" class="text-3xl mx-auto animate-spin" />
     </div>
   </div>
 </template>
