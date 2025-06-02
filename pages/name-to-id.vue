@@ -101,7 +101,7 @@ watch(targetProperty, () => {
       <div class="my-2 grid grid-cols-11">
         <div class="border-muted p-2 border rounded-lg col-span-5">
           <div class="mb-2">
-            数据清理，复制粘贴出现换行问题时使用
+            数据清理，粘贴的数据源需要选择性剔除时使用
           </div>
           <div class="flex gap-2 items-center">
             <UFormField label="每n行" help="必须为大于等于1的整数" :error="isPerLinesValid ? '' : '必须为大于等于1的整数'">
@@ -129,7 +129,7 @@ watch(targetProperty, () => {
       </div>
       <div class="grid grid-cols-11">
         <div class="col-span-5">
-          <UTextarea v-model="input" class="font-mono w-full" :ui="{ base: 'resize-none' }" variant="soft" :rows="20" />
+          <UTextarea v-model="input" placeholder="将数据源粘贴在这里，每行一条数据" class="font-mono w-full" :ui="{ base: 'resize-none' }" variant="subtle" :rows="20" />
         </div>
         <div class="flex flex-col gap-8 col-span-1 place-self-center">
           <UFormField label="源数据类型">
@@ -140,7 +140,7 @@ watch(targetProperty, () => {
           </UButton>
         </div>
         <div class="col-span-5">
-          <UTextarea v-model="output" class="font-mono w-full" :ui="{ base: 'resize-none' }" variant="soft" :rows="20" readonly />
+          <UTextarea v-model="output" placeholder="这里会输出所选属性" class="font-mono w-full" :ui="{ base: 'resize-none' }" variant="subtle" :rows="20" readonly />
         </div>
       </div>
     </div>

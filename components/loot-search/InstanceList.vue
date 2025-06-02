@@ -76,7 +76,7 @@ const list = computed(() => {
 </script>
 
 <template>
-  <div class="m-2 p-2 border rounded flex flex-col gap-2">
+  <div class="border-muted m-2 p-2 border rounded flex flex-col gap-2">
     <!-- header -->
     <div class="text-center">
       副本列表
