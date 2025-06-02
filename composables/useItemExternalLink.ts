@@ -50,3 +50,20 @@ export function getItemExternalLink(item: { id: string, name: string }) {
     garlandData: garlandDataCNLink(item.id),
   }
 }
+
+export function getLinks(id: number, name: string) {
+  return [
+    {
+      label: '灰机wiki',
+      url: huijiLink(id, name),
+    },
+    {
+      label: 'Universalis',
+      url: universalisLink(id),
+    },
+    {
+      label: 'GarlandData',
+      url: garlandDataCNLink(id),
+    },
+  ]
+}

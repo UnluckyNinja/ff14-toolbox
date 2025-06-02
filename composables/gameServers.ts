@@ -4,9 +4,9 @@ interface DataCenter {
   worlds: number[]
 }
 
-export function useServerInfo() {
+export const useServerInfo = createGlobalState(() => {
   const { data: dataCenters } = useFetch<DataCenter[]>('https://universalis.app/api/v2/data-centers', { server: false, responseType: 'json' })
-  const { data: worlds } = useFetch<{ id: number; name: string }[]>('https://universalis.app/api/v2/worlds', { server: false, responseType: 'json' })
+  const { data: worlds } = useFetch<{ id: number, name: string }[]>('https://universalis.app/api/v2/worlds', { server: false, responseType: 'json' })
 
   const regions = computed(() => {
     if (!dataCenters.value)
@@ -19,4 +19,4 @@ export function useServerInfo() {
     dataCenters,
     worlds,
   }
-}
+})

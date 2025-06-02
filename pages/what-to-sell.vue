@@ -85,7 +85,7 @@ const mobileOpenCurrencyList = ref(false)
         </template>
       </Suspense>
       <div v-if="selectedCurrency > 0" class="col-span-12 md:col-span-9">
-        <MarketItemList v-if="ids && ids.length > 0" :ids="ids" :costs="costs" :cost-mode="costMode" />
+        <MarketItemList v-if="ids && ids.length > 0" class="w-fit" :ids="ids" :costs="costs" :cost-mode="costMode" />
         <div class="text-gray/80 m-2 text-center">
           <div v-if="!ids">
             🚧 施工ing... 还未录入数据啦哩 🚧

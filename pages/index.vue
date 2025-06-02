@@ -47,6 +47,13 @@ const gameTools: ToolItem[] = [
     tags: [{ type: 'warning', label: '~10MB' }],
     description: '查看装备箱开出的道具哪些可以用于筹备（注意未包含理符数据）。会下载数据库到本地运行。',
   },
+  {
+    link: '/market-trending',
+    icon: 'i-heroicons:presentation-chart-line',
+    label: '艾欧泽亚什么涨得凶/跌得狠',
+    tags: [],
+    description: '用于对比国际服与国服物品价格，查看因版本差导致的市场供需平衡变化',
+  },
 ]
 const devTools: ToolItem[] = [
   {

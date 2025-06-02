@@ -5,6 +5,7 @@ import type { ListingView } from '~/utils/universalis'
 const props = withDefaults(defineProps<{
   id: number | string
   hq?: boolean
+  server?: string
 }>(), {
   hq: undefined,
 })
@@ -43,9 +44,9 @@ const allColumns: TableColumn<ListingView>[] = [
 const { selectedServer, numberPerPage } = useSettings()
 const toast = useToast()
 
-const { data, error, pending, refresh } = useAsyncData(() => fetchListings(selectedServer.value, props.id, numberPerPage.value, props.hq))
+const { data, error, pending, refresh } = useAsyncData(() => fetchListings(props.server ?? selectedServer.value, props.id, numberPerPage.value, props.hq))
 
-watch([() => props.id, selectedServer, () => props.hq], () => {
+watch([() => props.id, () => (props.server ?? selectedServer), () => props.hq], () => {
   data.value = []
   refresh()
 })

@@ -80,17 +80,19 @@ const equipOptions = [Object.entries(equipSlotCategory).map(([k, v]) => {
     <div class="gap-2 grid grid-cols-12">
       <div class="col-span-4 space-y-4">
         <UCard>
-          <div class="flex justify-between">
-            <UInput v-model="selectedItemLevel" type="number" placeholder="物品等级" />
-            <USelect :items="equipOptions" :popper="{ placement: 'bottom-start' }">
+          <div class="flex items-center justify-between">
+            <UFormField label="物品品级">
+              <UInput v-model="selectedItemLevel" type="number" />
+            </UFormField>
+            <USelect class="mt-auto" :items="equipOptions" :popper="{ placement: 'bottom-start' }">
               {{ equipSlotCategory[selectedEquipSlot] }}
             </USelect>
-            <UButton color="info" @click="filterSupply(selectedItemLevel, selectedEquipSlot)">
+            <UButton class="mt-auto" color="info" @click="filterSupply(selectedItemLevel, selectedEquipSlot)">
               查询
             </UButton>
           </div>
         </UCard>
-        <div v-if="searchResultInfo.length > 0" class="border-default jobResult p-2 text-center border rounded-lg gap-2 items-center">
+        <div v-if="searchResultInfo.length > 0" class="jobResult border-default p-2 text-center border rounded-lg gap-2 items-center">
           <div class="text-sm">
             物品名
           </div>

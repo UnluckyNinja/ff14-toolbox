@@ -67,15 +67,15 @@ export interface CurrentlyShownView {
   // The maximum HQ listing price.
   maxPriceHQ: number // int32
   // A map of quantities to listing counts, representing the number of listings of each quantity.
-  stackSizeHistogram?: Object
+  stackSizeHistogram?: object
   // A map of quantities to NQ listing counts, representing the number of listings of each quantity.
-  stackSizeHistogramNQ?: Object
+  stackSizeHistogramNQ?: object
   // A map of quantities to HQ listing counts, representing the number of listings of each quantity.
-  stackSizeHistogramHQ?: Object
+  stackSizeHistogramHQ?: object
   // The world name, if applicable.
   worldName?: string
   // The last upload times in milliseconds since epoch for each world in the response, if this is a DC request.
-  worldUploadTimes?: Object
+  worldUploadTimes?: object
 }
 
 export interface HistoryMultiViewV2 {
@@ -109,11 +109,11 @@ export interface HistoryView {
   // The region name, if applicable.
   regionName?: string
   // A map of quantities to sale counts, representing the number of sales of each quantity.
-  stackSizeHistogram?: Object
+  stackSizeHistogram?: object
   // A map of quantities to NQ sale counts, representing the number of sales of each quantity.
-  stackSizeHistogramNQ?: Object
+  stackSizeHistogramNQ?: object
   // A map of quantities to HQ sale counts, representing the number of sales of each quantity.
-  stackSizeHistogramHQ?: Object
+  stackSizeHistogramHQ?: object
   // The average number of sales per day, over the past seven days (or the entirety of the shown sales, whichever comes first).
   regularSaleVelocity: number
   // The average number of NQ sales per day, over the past seven days (or the entirety of the shown sales, whichever comes first).

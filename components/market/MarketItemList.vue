@@ -1,6 +1,6 @@
 <script lang="ts" setup>
+import type { TableColumn } from '@nuxt/ui'
 import { formatTimeAgo, notNullish } from '@vueuse/core'
-import { garlandDataCNLink, huijiLink, universalisLink } from '~/composables/useItemExternalLink'
 
 const props = withDefaults(defineProps<{
   ids: number[]
@@ -10,12 +10,15 @@ const props = withDefaults(defineProps<{
   costMode: false,
 })
 
+const UButton = resolveComponent('UButton')
+const UDropdownMenu = resolveComponent('UDropdownMenu')
+
 const displayCost = computed(() => {
   return !!props.costs
 })
 
 const marketData = ref<any[]>([])
-const items = ref<({
+const itemsData = ref<({
   id: number
   name: string
   iconURL: string
@@ -53,10 +56,10 @@ watch([() => props.ids, () => settings.selectedServer], async ([newIDs, newServe
     if (props.ids !== newIDs) // fast fail if it is changed to another list of items
       return
 
-    if (ids.length > 1)
-      marketData.value.push(...ids.map(it => data.items?.[it]))
-    else
-      marketData.value.push(data)
+    // if (ids.length > 1)
+    marketData.value.push(...ids.map(it => data.items?.[it]))
+    // else
+    //   marketData.value.push(data)
   }
 
   for (let i = 0; i < newIDs.length / 100; i++) {
@@ -70,7 +73,7 @@ watch([() => props.ids, () => settings.selectedServer], async ([newIDs, newServe
 
 // fetch item info from xivapi/thewakingsands into `items`
 watch(() => props.ids, async (newVal) => {
-  items.value.splice(0)
+  itemsData.value.splice(0)
 
   if (newVal.length === 0) {
     return
@@ -78,15 +81,12 @@ watch(() => props.ids, async (newVal) => {
 
   isFetchingXIV.value = true
 
-  if (newVal.length === 0)
-    return
-
   const results = await fetchItems(newVal)
 
   if (props.ids !== newVal)
     return
 
-  items.value = newVal.map((id) => {
+  itemsData.value = newVal.map((id) => {
     const item = results.find(it => it.ID === id)
     if (!item)
       return null
@@ -102,13 +102,13 @@ watch(() => props.ids, async (newVal) => {
 
 // generate data for table
 const data = computed(() => {
-  if (items.value.length === 0)
+  if (itemsData.value.length === 0 || isFetching.value)
     return []
   // if (marketData.value.length !== items.value.length)
 
   // console.log('[FF14工具] 市场数据条目数量和传入数据对不上，可能会显示错误数据')
 
-  return items.value.map((item, idx) => {
+  return itemsData.value.map((item, idx) => {
     if (!item)
       return null
 
@@ -149,72 +149,122 @@ const columns = [
   },
   {
     id: 'name',
+    accessorKey: 'name',
     header: '物品名',
   },
   {
     id: 'lowestPrice',
-    header: '当前最低价',
+    accessorKey: 'lowestPrice',
+    header: ({ column }) => getHeader(column, '当前最低价'),
   },
   {
     id: 'currentAveragePrice',
-    header: '平均标价',
+    accessorKey: 'currentAveragePrice',
+    header: ({ column }) => getHeader(column, '平均标价'),
   },
   {
     id: 'recentPrice',
-    header: '最近成交',
+    accessorKey: 'recentPrice',
+    header: ({ column }) => getHeader(column, '最近成交'),
   },
   {
     id: 'averagePrice',
-    header: '平均成交价',
+    accessorKey: 'averagePrice',
+    header: ({ column }) => getHeader(column, '平均成交价'),
   },
   {
     id: 'regularSaleVelocity',
-    header: '出货速率',
+    accessorKey: 'regularSaleVelocity',
+    header: ({ column }) => getHeader(column, '出货速率'),
   },
-]
+] satisfies TableColumn<any>[]
+
+function getHeader(column: any, label: string) {
+  const isSorted = column.getIsSorted()
+
+  return h(
+    UDropdownMenu,
+    {
+      'content': {
+        align: 'start',
+      },
+      'aria-label': 'Actions dropdown',
+      'items': [
+        {
+          label: '升序',
+          type: 'checkbox',
+          icon: 'i-lucide-arrow-up-narrow-wide',
+          checked: isSorted === 'asc',
+          onSelect: () => {
+            if (isSorted === 'asc') {
+              column.clearSorting()
+            } else {
+              column.toggleSorting(false)
+            }
+          },
+        },
+        {
+          label: '降序',
+          icon: 'i-lucide-arrow-down-wide-narrow',
+          type: 'checkbox',
+          checked: isSorted === 'desc',
+          onSelect: () => {
+            if (isSorted === 'desc') {
+              column.clearSorting()
+            } else {
+              column.toggleSorting(true)
+            }
+          },
+        },
+      ],
+    },
+    () =>
+      h(UButton, {
+        'color': 'neutral',
+        'variant': 'ghost',
+        label,
+        'icon': isSorted
+          ? isSorted === 'asc'
+            ? 'i-lucide-arrow-up-narrow-wide'
+            : 'i-lucide-arrow-down-wide-narrow'
+          : 'i-lucide-arrow-up-down',
+        'class': '-mx-2.5 data-[state=open]:bg-elevated',
+        'aria-label': `排序为 ${isSorted === 'asc' ? '升序' : '降序'}`,
+      }),
+  )
+}
 
 const time = formatTimeAgo
 const maximumFractionDigits = computed(() => props.costMode ? 2 : 0)
-function getLinks(id: number, name: string) {
-  return [
-    {
-      label: '灰机wiki',
-      url: huijiLink(id, name),
-    },
-    {
-      label: 'Universalis',
-      url: universalisLink(id),
-    },
-    {
-      label: 'GarlandData',
-      url: garlandDataCNLink(id),
-    },
-  ]
-}
 
 function copyText(text: string | number) {
   if (copy(`${text}`))
     toast.add({ title: '已复制', duration: 2000 })
 }
-
-const uTableloadingState = computed(() => {
-  return {
-    icon: 'i-heroicons-arrow-path',
-    label: `物品数据 ${isFetchingXIV.value ? '⌛️' : '✔️'}，\
-      市场数据 ${isFetchingMarket.value ? '⌛️' : '✔️'}`,
-  }
-})
 </script>
 
 <template>
   <UTable
     :data="data" :columns="columns" :loading="isFetching"
-    :loading-state="uTableloadingState"
-    :empty-state="{ icon: 'i-carbon-circle-dash', label: '空' }"
   >
+    <template #loading>
+      <UIcon name="i-heroicons-arrow-path" class="animate-spin" />
+      <div>
+        {{ `物品数据 ${isFetchingXIV ? '⌛️' : '✔️'}，\
+            市场数据 ${isFetchingMarket ? '⌛️' : '✔️'}` }}
+      </div>
+    </template>
+    <template #empty>
+      <UIcon name="i-carbon-circle-dash" />
+      <div>
+        空
+      </div>
+    </template>
+    <!-- 图标 -->
     <template #icon-cell="{ row }">
       <UniImage class="min-h-12 min-w-12 inline-block" :src="base.icon + row.original.iconURL" alt="" :title="`ID: ${row.id}`" />
     </template>
+    <!-- 物品名 -->
     <template #name-cell="{ row }">
       <UPopover>
         <UButton block color="neutral" trailing-icon="i-heroicons-ellipsis-vertical" variant="ghost">
@@ -249,6 +299,7 @@ const uTableloadingState = computed(() => {
         </template>
       </UPopover>
     </template>
+    <!-- 最低价 -->
     <template #lowestPrice-cell="{ row }">
       <div v-if="isFetching" class="i-heroicons-ellipsis-horizontal animate-pulse" />
       <div v-else class="text-right min-w-max">
@@ -288,6 +339,8 @@ const uTableloadingState = computed(() => {
         </UPopover>
       </div>
     </template>
+    <!-- 最低价 end -->
+    <!-- 平均标价 -->
     <template #currentAveragePrice-cell="{ row }">
       <div v-if="isFetchingMarket" class="i-heroicons-ellipsis-horizontal animate-pulse" />
       <div v-else class="text-right min-w-max">
@@ -312,6 +365,8 @@ const uTableloadingState = computed(() => {
         <div v-else class="i-heroicons-minus" />
       </div>
     </template>
+    <!-- 平均标价 end -->
+    <!-- 最近成交 -->
     <template #recentPrice-cell="{ row }">
       <div v-if="isFetchingMarket" class="i-heroicons-ellipsis-horizontal animate-pulse" />
       <div v-else class="text-right min-w-max" :title="row.original.recentTimestamp > 0 ? time(new Date(row.original.recentTimestamp * 1000), { max: 'day' }) : undefined">
@@ -351,6 +406,8 @@ const uTableloadingState = computed(() => {
         </UPopover>
       </div>
     </template>
+    <!-- 最近成交 end -->
+    <!-- 平均成交价 -->
     <template #averagePrice-cell="{ row }">
       <div v-if="isFetchingMarket" class="i-heroicons-ellipsis-horizontal animate-pulse" />
       <div v-else class="text-right min-w-max">
@@ -375,6 +432,8 @@ const uTableloadingState = computed(() => {
         <div v-else class="i-heroicons-minus" />
       </div>
     </template>
+    <!-- 平均成交价 end -->
+    <!-- 出货速率 -->
     <template #regularSaleVelocity-cell="{ row }">
       <div v-if="isFetchingMarket" class="i-heroicons-ellipsis-horizontal animate-pulse" />
       <div v-else-if="row.original.regularSaleVelocity >= 0" class="text-right min-w-max">
@@ -384,6 +443,7 @@ const uTableloadingState = computed(() => {
         -
       </div>
     </template>
+    <!-- 出货速率 end -->
   </UTable>
 </template>
 
