@@ -34,7 +34,6 @@ onMounted(() => {
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
-    <UNotifications class="sm:w-96" />
   </UApp>
 </template>
 

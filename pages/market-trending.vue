@@ -271,83 +271,28 @@ const changeColor = scaleLinear([-100, 0, 100], ['green', 'gray', 'red'])
         <!-- 最低价 -->
         <template #lowestPrice-cell="{ row }">
           <div v-if="isFetching" class="i-heroicons-ellipsis-horizontal animate-pulse" />
-          <div v-else class="text-right flex flex-row min-w-max justify-between">
-            <!-- TODO: 把这个抽出成一个组件 -->
-            <UPopover>
-              <UButton block color="neutral" variant="ghost">
-                <div class="text-right w-full">
-                  <div class="text-muted text-xs text-right">
-                    当前
-                  </div>
-                  <div v-if="row.original.current.lowestPrice >= 0" class="text-muted text-xs mb-1">
-                    最低价
-                  </div>
-                  <span v-if="row.original.current.lowestWorld" class="text-muted pr-2 float-left">
-                    {{ row.original.current.lowestWorld }}
-                  </span>
-                  <span v-if="row.original.current.lowestPrice >= 0">
-                    {{ row.original.current.lowestHQ ? '' : '' }}
-                    <UniRichNumber :value="row.original.current.lowestPrice" :options="{ maximumFractionDigits: 0 }" :pad-right="0">
-                      <template #whole="{ num }">
-                        <span>
-                          {{ num }}
-                        </span>
-                      </template>
-                      <template #fraction="{ num, decimalPoint }">
-                        <span class="text-xs">
-                          {{ num ? decimalPoint : '' }}{{ num }}
-                        </span>
-                      </template>
-                    </UniRichNumber>
-                    <span class="text-amber-500"></span>
-                  </span>
-                  <div v-else class="i-heroicons-minus" />
-                </div>
-              </UButton>
-              <template #content>
-                <div class="border-accented border rounded-lg max-h-50vh overflow-auto">
-                  <MarketListings :id="row.original.item.id" />
-                </div>
-              </template>
-            </UPopover>
-            <USeparator class="mx-1 h-18" orientation="vertical" />
-            <UPopover>
-              <UButton block color="neutral" variant="ghost">
-                <div class="text-right w-full">
-                  <div class="text-muted text-xs text-left">
-                    对比
-                  </div>
-                  <div v-if="row.original.intl.lowestPrice >= 0" class="text-muted text-xs mb-1 text-left">
-                    最低价
-                  </div>
-                  <span v-if="row.original.intl.lowestWorld" class="text-muted pr-2 float-left">
-                    {{ row.original.intl.lowestWorld }}
-                  </span>
-                  <span v-if="row.original.intl.lowestPrice >= 0">
-                    {{ row.original.intl.lowestHQ ? '' : '' }}
-                    <UniRichNumber :value="row.original.intl.lowestPrice" :options="{ maximumFractionDigits: 0 }" :pad-right="0">
-                      <template #whole="{ num }">
-                        <span>
-                          {{ num }}
-                        </span>
-                      </template>
-                      <template #fraction="{ num, decimalPoint }">
-                        <span class="text-xs">
-                          {{ num ? decimalPoint : '' }}{{ num }}
-                        </span>
-                      </template>
-                    </UniRichNumber>
-                    <span class="text-amber-500"></span>
-                  </span>
-                  <div v-else class="i-heroicons-minus" />
-                </div>
-              </UButton>
-              <template #content>
-                <div class="border-accented border rounded-lg max-h-50vh overflow-auto">
-                  <MarketListings :id="row.original.item.id" :server="foreignServer" />
-                </div>
-              </template>
-            </UPopover>
+          <div v-else class="text-right flex flex-col min-w-max justify-between">
+            <MarketPriceCard
+              :server="row.original.current.lowestWorld"
+              :price="row.original.current.lowestPrice"
+              :hq="row.original.current.lowestHQ"
+              :item-i-d="row.original.item.id"
+              label="最低价"
+              note="当前"
+              popup-market="listing"
+              :popup-server="settings.selectedServer"
+            />
+            <USeparator class="my-1" orientation="horizontal" />
+            <MarketPriceCard
+              :server="row.original.intl.lowestWorld"
+              :price="row.original.intl.lowestPrice"
+              :hq="row.original.intl.lowestHQ"
+              :item-i-d="row.original.item.id"
+              label="最低价"
+              note="对比"
+              popup-market="listing"
+              :popup-server="foreignServer"
+            />
           </div>
         </template>
         <!-- 最低价 end -->
@@ -361,56 +306,18 @@ const changeColor = scaleLinear([-100, 0, 100], ['green', 'gray', 'red'])
         <!-- 平均成交价 -->
         <template #averagePrice-cell="{ row }">
           <div v-if="isFetchingMarket" class="i-heroicons-ellipsis-horizontal animate-pulse" />
-          <div v-else class="text-right flex flex-row min-w-max justify-between">
-            <div>
-              <div class="text-xs text-right">
-                当前
-              </div>
-              <div v-if="row.original.current.averagePrice >= 0" class="text-muted text-xs mb-1">
-                平均成交价
-              </div>
-              <div v-if="row.original.current.averagePrice >= 0">
-                <UniRichNumber class="text-default" :value="row.original.current.averagePrice" :options="{ maximumFractionDigits: 0 }" :pad-right="0">
-                  <template #whole="{ num }">
-                    <span>
-                      {{ num }}
-                    </span>
-                  </template>
-                  <template #fraction="{ num, decimalPoint }">
-                    <span class="text-xs">
-                      {{ num ? decimalPoint : '' }}{{ num }}
-                    </span>
-                  </template>
-                </UniRichNumber>
-                <span class="text-amber-500"></span>
-              </div>
-              <div v-else class="i-heroicons-minus" />
-            </div>
-            <USeparator class="mx-1 h-12" orientation="vertical" />
-            <div>
-              <div class="text-xs text-left">
-                对比
-              </div>
-              <div v-if="row.original.intl.averagePrice >= 0" class="text-muted text-xs mb-1">
-                平均成交价
-              </div>
-              <div v-if="row.original.intl.averagePrice >= 0">
-                <UniRichNumber class="text-default" :value="row.original.intl.averagePrice" :options="{ maximumFractionDigits: 0 }" :pad-right="0">
-                  <template #whole="{ num }">
-                    <span>
-                      {{ num }}
-                    </span>
-                  </template>
-                  <template #fraction="{ num, decimalPoint }">
-                    <span class="text-xs">
-                      {{ num ? decimalPoint : '' }}{{ num }}
-                    </span>
-                  </template>
-                </UniRichNumber>
-                <span class="text-amber-500"></span>
-              </div>
-              <div v-else class="i-heroicons-minus" />
-            </div>
+          <div v-else class="text-right flex flex-col min-w-max justify-between">
+            <MarketPriceCard
+              :price="row.original.current.averagePrice"
+              label="平均成交价"
+              note="当前"
+            />
+            <USeparator class="mx-1" orientation="horizontal" />
+            <MarketPriceCard
+              :price="row.original.intl.averagePrice"
+              label="平均成交价"
+              note="对比"
+            />
           </div>
         </template>
         <!-- 平均成交价 end -->
@@ -434,7 +341,7 @@ const changeColor = scaleLinear([-100, 0, 100], ['green', 'gray', 'red'])
             <div>
               当前
             </div>
-            <USeparator />
+            <USeparator class="my-1" />
             <div>
               对比
             </div>

@@ -52,6 +52,6 @@
     "pre-commit": "pnpx lint-staged"
   },
   "lint-staged": {
-    "*": "eslint --fix"
+    "*.{json,vue,js,ts,css,md,svg}": "eslint --fix"
   }
 }
