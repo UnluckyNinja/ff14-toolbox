@@ -4,7 +4,7 @@ const props = defineProps<{
   server?: string
   label?: string
   note?: string
-  hq?: string
+  hq?: boolean
   itemID?: string | number
   /**
    * fixed decimal fractions
@@ -30,7 +30,7 @@ const [DefineTemp, UseTemp] = createReusableTemplate()
         </div>
       </div>
       <div v-if="props.price >= 0" class="flex items-baseline justify-between">
-        <span v-if="props.label" class="text-muted text-xs mr-1 float-left">
+        <span class="text-muted text-xs mr-1 float-left">
           {{ props.label }}
         </span>
         <span class="text-default">

@@ -56,26 +56,26 @@ const mobileOpenCurrencyList = ref(false)
           <div class="hidden md:block">
             <CurrencyList v-model="selectedCurrency" @update:model-value="updateURL" @currency-name="selectedCurrencyName = $event" />
           </div>
-          <div class="mx-2 md:hidden" @click="mobileOpenCurrencyList = true">
+          <USlideover v-model:open="mobileOpenCurrencyList" class="text-center md:hidden">
             <UButton block>
               选择货币 {{ selectedCurrencyName !== '' ? `当前已选择：${selectedCurrencyName}` : '' }}
             </UButton>
-          </div>
-          <USlideover v-model="mobileOpenCurrencyList" class="text-center md:hidden" side="left">
-            <UCard
-              class="flex flex-1 flex-col h-full"
-              :ui="{ body: 'flex-1 overflow-auto divide-y divide-gray-100 dark:divide-gray-800 ring-0' }"
-            >
-              <template #header>
-                货币列表
-              </template>
-              <CurrencyList v-model="selectedCurrency" :header="false" @update:model-value="updateURL" @currency-name="selectedCurrencyName = $event" />
-              <template #footer>
-                <UButton variant="soft" size="xl" block @click="mobileOpenCurrencyList = false">
-                  关闭
-                </UButton>
-              </template>
-            </UCard>
+            <template #content>
+              <UCard
+                class="flex flex-1 flex-col h-full"
+                :ui="{ body: 'flex-1 overflow-auto divide-y divide-gray-100 dark:divide-gray-800 ring-0' }"
+              >
+                <template #header>
+                  货币列表
+                </template>
+                <CurrencyList v-model="selectedCurrency" :header="false" @update:model-value="updateURL" @currency-name="selectedCurrencyName = $event" />
+                <template #footer>
+                  <UButton variant="soft" size="xl" block @click="mobileOpenCurrencyList = false">
+                    关闭
+                  </UButton>
+                </template>
+              </UCard>
+            </template>
           </USlideover>
         </div>
         <template #fallback>

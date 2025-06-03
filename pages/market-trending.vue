@@ -38,24 +38,30 @@ watch([ids, () => settings.selectedServer, foreignServer], async ([newIDs, newSe
     return
   }
   isFetchingMarket.value = true
+  const toFetch = newIDs.slice()
   // TODO: 当ID数量超过100时分段请求
-  let data, data2
-  try {
-    const promiseCurrent = fetchMarket(newServer, newIDs)
-    const promiseIntl = fetchMarket(newForeign, newIDs)
-    data = await promiseCurrent
-    data2 = await promiseIntl
-  } catch (e: any) {
-    isFetchingMarket.value = false
-    toast.add({ title: '请求 Universalis 数据失败，请检查网络', description: e, color: 'error', icon: 'i-heroicons-exclamation-circle' })
-    return
+  const dataCur: (CurrentlyShownView | undefined)[] = []
+  const dataIntl: (CurrentlyShownView | undefined)[] = []
+  while (toFetch.length > 0) {
+    const part = toFetch.splice(0, 100)
+    try {
+      const temp1 = await fetchMarket(newServer, part)
+      const temp2 = await fetchMarket(newForeign, part)
+      dataCur.push(...part.map(it => temp1.items?.[it]))
+      dataIntl.push(...part.map(it => temp2.items?.[it]))
+    } catch (e: any) {
+      isFetchingMarket.value = false
+      toast.add({ title: '请求 Universalis 数据失败，请检查网络', description: e, color: 'error', icon: 'i-heroicons-exclamation-circle' })
+      return
+    }
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    if (latestMarketRequest.value !== sym) {
+      return
+    }
   }
 
-  if (latestMarketRequest.value !== sym) {
-    return
-  }
-  marketData.value.push(...newIDs.map(it => data.items?.[it]))
-  foreignMarketData.value.push(...newIDs.map(it => data2.items?.[it]))
+  marketData.value = dataCur
+  foreignMarketData.value = dataIntl
   isFetchingMarket.value = false
 })
 
@@ -111,15 +117,12 @@ watch(ids, async (newIDs) => {
 
 const columns = [
   {
-    id: 'icon',
-  },
-  {
     id: 'name',
-    header: '物品名',
+    header: '物品',
   },
   {
     id: 'lowestPrice',
-    header: '当前最低价',
+    header: '最低价',
   },
   {
     id: 'lowestPriceChange',
@@ -206,6 +209,7 @@ function copyText(text: string | number) {
 }
 
 const changeColor = scaleLinear([-100, 0, 100], ['green', 'gray', 'red'])
+const mobileOpenCurrencyList = ref(false)
 </script>
 
 <template>
@@ -216,8 +220,25 @@ const changeColor = scaleLinear([-100, 0, 100], ['green', 'gray', 'red'])
       </div>
       <USelectMenu v-model="foreignServer" :items="servers.regions" class="min-w-48 w-fit" />
     </OptionsPanel>
-    <div class="flex flex-row gap-2">
-      <TrendList class="flex-initial min-w-60" @update:items="ids = Array.from($event)" />
+    <div class="flex flex-col gap-2 md:flex-row">
+      <div class="hidden md:block">
+        <TrendList class="flex-initial min-w-60" @update:items="ids = Array.from($event)" />
+      </div>
+      <USlideover v-model:open="mobileOpenCurrencyList" class="text-center md:hidden">
+        <UButton block>
+          选择分类
+        </UButton>
+        <template #content>
+          <div class="p-2 flex flex-col h-full items-stretch relative">
+            <div class="flex-1 overflow-y-auto">
+              <TrendList class="" @update:items="ids = Array.from($event); mobileOpenCurrencyList = false" />
+            </div>
+            <UButton class="" variant="solid" size="xl" block @click="mobileOpenCurrencyList = false">
+              关闭
+            </UButton>
+          </div>
+        </template>
+      </USlideover>
       <UTable class="flex-1" :data="data" :columns="columns" :loading="isFetching">
         <template #loading>
           <UIcon name="i-heroicons-arrow-path" class="animate-spin" />
@@ -232,20 +253,19 @@ const changeColor = scaleLinear([-100, 0, 100], ['green', 'gray', 'red'])
             空
           </div>
         </template>
-        <!-- 图标 -->
-        <template #icon-cell="{ row }">
-          <UniImage class="min-h-12 min-w-12 inline-block" :src="base.icon + row.original.item.iconURL" alt="" :title="`ID: ${row.id}`" />
-        </template>
         <!-- 物品名 -->
         <template #name-cell="{ row }">
           <UPopover>
-            <UButton block color="neutral" trailing-icon="i-heroicons-ellipsis-vertical" variant="ghost">
-              <div class="text-left w-full">
-                <div class="whitespace-normal">
-                  {{ row.original.item.name }}
+            <div class="flex flex-col gap-1 items-center md:flex-row">
+              <UniImage class="min-h-12 min-w-12 inline-block" :src="base.icon + row.original.item.iconURL" alt="" :title="`ID: ${row.id}`" />
+              <UButton class="min-w-30" block color="neutral" trailing-icon="i-heroicons-ellipsis-vertical" variant="ghost">
+                <div class="text-left w-full">
+                  <div class="whitespace-normal">
+                    {{ row.original.item.name }}
+                  </div>
                 </div>
-              </div>
-            </UButton>
+              </UButton>
+            </div>
             <template #content>
               <div class="border-accented border rounded-lg">
                 <UButton class="cursor-pointer" block color="neutral" variant="ghost" trailing-icon="i-heroicons-document-duplicate" @click="copyText(row.original.item.id)">
@@ -309,14 +329,14 @@ const changeColor = scaleLinear([-100, 0, 100], ['green', 'gray', 'red'])
           <div v-else class="text-right flex flex-col min-w-max justify-between">
             <MarketPriceCard
               :price="row.original.current.averagePrice"
-              label="平均成交价"
-              note="当前"
+              label=""
+              note="当前平均成交价"
             />
             <USeparator class="mx-1" orientation="horizontal" />
             <MarketPriceCard
               :price="row.original.intl.averagePrice"
-              label="平均成交价"
-              note="对比"
+              label=""
+              note="对比平均成交价"
             />
           </div>
         </template>

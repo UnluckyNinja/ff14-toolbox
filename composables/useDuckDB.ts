@@ -114,7 +114,45 @@ export function useQueries() {
     const params = words.map(it => `%${it}%`)
     return await db.value.query(query, params.concat(params))
   }
+  async function queryExactNameAll<T extends keyof typeof columnTable_cn, D extends boolean = true>(name: string, columns: T[] = [], defaulQuery?: D): Promise<QueryResult<T, D>> {
+    if (!db.value)
+      throw new Error('No valid DuckDBClient when querying.')
 
+    const list = defuList(columns, defaulQuery)
+    const colsCN = list.map(it => columnTable_cn[it])
+    const colsEN = list.map(it => columnTable_en[it])
+
+    // "ilike" is case-insensitive
+    const queryCN = `SELECT ${colsCN.join(', ')} FROM items_cn WHERE name != '' AND name LIKE ?`
+    const queryEN = `SELECT ${colsEN.join(', ')} 
+      FROM items_en 
+      WHERE items_en."9: Name" != '' AND items_en."9: Name" LIKE ?`
+
+    const query = `${queryCN} UNION ALL ${queryEN}`
+
+    const results = await db.value.query(query, [name, name])
+
+    return results[0]
+  }
+  async function queryNamesAll<T extends keyof typeof columnTable_cn, D extends boolean = true>(words: string[], columns: T[] = [], defaulQuery?: D): Promise<QueryResult<T, D>[]> {
+    if (!db.value)
+      throw new Error('No valid DuckDBClient when querying.')
+
+    const list = defuList(columns, defaulQuery)
+    const colsCN = list.map(it => columnTable_cn[it])
+    const colsEN = list.map(it => columnTable_en[it])
+
+    // "ilike" is case-insensitive
+    const queryCN = `SELECT ${colsCN.join(', ')} FROM items_cn WHERE name != '' AND ${new Array(words.length).fill('name ilike ?').join(' and ')}`
+    const queryEN = `SELECT ${colsEN.join(', ')} 
+      FROM items_en
+      WHERE AND items_en."9: Name" != '' AND ${new Array(words.length).fill('items_en."9: Name" ILIKE ?').join(' and ')}`
+
+    const query = `${queryCN} UNION ALL ${queryEN}`
+
+    const params = words.map(it => `%${it}%`)
+    return await db.value.query(query, params.concat(params))
+  }
   async function queryIDs<T extends keyof typeof columnTable_cn, D extends boolean = true>(ids: string[] | number[], columns: T[] = [], defaulQuery?: D): Promise<QueryResult<T, D>[]> {
     if (!db.value)
       throw new Error('No valid DuckDBClient when querying.')
@@ -157,6 +195,8 @@ export function useQueries() {
   return {
     queryExactName,
     queryNames,
+    queryExactNameAll,
+    queryNamesAll,
     queryIDs,
     queryID,
   }

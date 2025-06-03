@@ -13,7 +13,7 @@ const db = useDuckDB()
 
 provide('duckDB', db)
 
-const { queryID, queryExactName } = useQueries()
+const { queryID, queryExactNameAll } = useQueries()
 
 const input = ref('')
 const output = ref('')
@@ -84,7 +84,7 @@ async function search() {
   const lines = input.value.split('\n').map(it => it.trim())
   results.splice(0)
 
-  const queryFunc = sourceType.value === 'ID' ? queryID : queryExactName
+  const queryFunc = sourceType.value === 'ID' ? queryID : queryExactNameAll
   for (let i = 0; i < lines.length; i++)
     results[i] = await queryFunc(lines[i])
   updateOutput()
