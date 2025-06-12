@@ -46,7 +46,7 @@ const toast = useToast()
 
 const { data, error, pending, refresh } = useAsyncData(() => fetchListings(props.server ?? selectedServer.value, props.id, numberPerPage.value, props.hq))
 
-watch([() => props.id, () => (props.server ?? selectedServer), () => props.hq], () => {
+watch([() => props.id, () => (props.server ?? selectedServer.value), () => props.hq], () => {
   data.value = []
   refresh()
 })

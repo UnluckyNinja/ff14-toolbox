@@ -5,6 +5,7 @@ import type { SaleView } from '~/utils/universalis'
 const props = withDefaults(defineProps<{
   id: number | string
   hq?: boolean
+  server?: string
 }>(), {
   hq: undefined,
 })
@@ -43,9 +44,9 @@ const allColumns: TableColumn<SaleView>[] = [
 const { selectedServer, numberPerPage } = useSettings()
 const toast = useToast()
 
-const { data, error, pending, refresh } = useAsyncData(() => fetchHistory(selectedServer.value, props.id, numberPerPage.value, props.hq))
+const { data, error, pending, refresh } = useAsyncData(() => fetchHistory(props.server ?? selectedServer.value, props.id, numberPerPage.value, props.hq))
 
-watch([() => props.id, selectedServer, () => props.hq], () => {
+watch([() => props.id, () => (props.server ?? selectedServer.value), () => props.hq], () => {
   data.value = []
   refresh()
 })
