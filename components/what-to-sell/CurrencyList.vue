@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { notNullish } from '@vueuse/core'
 import { tokens } from '~/data/tokens'
+import { fallbackItems } from '~/data/xivapiFallback'
 
 const props = withDefaults(defineProps<{
   modelValue: number
@@ -19,7 +20,13 @@ async function fetchCurrency() {
     return []
 
   const items = await fetchItems(tokens)
-  return tokens.map(id => items.find(it => it.ID === id)).filter(notNullish)
+  return tokens.map((id) => {
+    let item: { ID: number, Name: string, Icon: string } | undefined = items.find(it => it.ID === id)
+    if (!item || !item.Name) {
+      item = fallbackItems[id]
+    }
+    return item
+  }).filter(notNullish)
 }
 
 const { base } = useXABase()
@@ -27,7 +34,7 @@ const list = await fetchCurrency()
 
 emits('currencyName', list.find(it => it.ID === props.modelValue)?.Name ?? '')
 
-function currencyChange(item: XAItem) {
+function currencyChange(item: { ID: number, Name: string }) {
   emits('update:modelValue', item.ID)
   emits('currencyName', item.Name)
 }

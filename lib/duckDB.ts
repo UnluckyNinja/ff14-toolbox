@@ -1,6 +1,6 @@
 import type { ShallowRef } from 'vue'
 import { AsyncDuckDB, ConsoleLogger, getJsDelivrBundles, selectBundle } from '@duckdb/duckdb-wasm'
-import { csvParseRows } from 'd3-dsv'
+import { csvParseRows } from 'd3'
 import { decompressSync } from 'fflate'
 import item_cn_compressed from '~/assets/data/Item_cn_compressed.csv?url'
 import item_en_compressed from '~/assets/data/Item_compressed.csv?url'

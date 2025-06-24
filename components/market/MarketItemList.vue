@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { TableColumn } from '@nuxt/ui'
 import { formatTimeAgo, notNullish } from '@vueuse/core'
+import { fallbackItems } from '~/data/xivapiFallback'
 
 const props = withDefaults(defineProps<{
   ids: number[]
@@ -87,9 +88,15 @@ watch(() => props.ids, async (newVal) => {
     return
 
   itemsData.value = newVal.map((id) => {
-    const item = results.find(it => it.ID === id)
-    if (!item)
-      return null
+    let item: { ID: number, Name: string, Icon: string } | undefined = results.find((it) => {
+      return it.ID === id
+    })
+    if (!item) {
+      if (!fallbackItems[id]) {
+        return null
+      }
+      item = fallbackItems[id]
+    }
     return {
       id: item.ID,
       name: item.Name,
