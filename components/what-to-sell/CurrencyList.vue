@@ -34,9 +34,14 @@ const list = await fetchCurrency()
 
 emits('currencyName', list.find(it => it.ID === props.modelValue)?.Name ?? '')
 
+const overwrites: Record<number, string> = {
+  6688: '采集宝图',
+}
+
 function currencyChange(item: { ID: number, Name: string }) {
   emits('update:modelValue', item.ID)
-  emits('currencyName', item.Name)
+  const name = overwrites[item.ID] ?? item.Name
+  emits('currencyName', name)
 }
 </script>
 
@@ -59,7 +64,7 @@ function currencyChange(item: { ID: number, Name: string }) {
             <img class="h-4 w-4 inline-block" :src="base.icon + item.Icon">
             <!-- name -->
             <div class="flex-grow truncate" :title="item.Name">
-              {{ item.Name }}
+              {{ overwrites[item.ID] ?? item.Name }}
             </div>
           </div>
           <template v-if="props.modelValue === item.ID" #trailing>

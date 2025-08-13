@@ -269,7 +269,7 @@ function copyText(text: string | number) {
     </template>
     <!-- 图标 -->
     <template #icon-cell="{ row }">
-      <UniImage class="min-h-12 min-w-12 inline-block" :src="base.icon + row.original.iconURL" alt="" :title="`ID: ${row.id}`" />
+      <UniImage class="min-h-12 min-w-12 inline-block" :src="base.icon + row.original.iconURL" alt="" :title="`ID: ${row.original.id}`" />
     </template>
     <!-- 物品名 -->
     <template #name-cell="{ row }">
