@@ -91,9 +91,9 @@ watch(() => props.ids, async (newVal) => {
     let item: { ID: number, Name: string, Icon: string } | undefined = results.find((it) => {
       return it.ID === id
     })
-    if (!item) {
+    if (!item || !item.Name) {
       if (!fallbackItems[id]) {
-        return null
+        return { id, name: `API未返回有效数据 ${id}`, iconURL: '' }
       }
       item = fallbackItems[id]
     }

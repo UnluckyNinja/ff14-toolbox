@@ -23,7 +23,7 @@ async function fetchCurrency() {
   return tokens.map((id) => {
     let item: { ID: number, Name: string, Icon: string } | undefined = items.find(it => it.ID === id)
     if (!item || !item.Name) {
-      item = fallbackItems[id]
+      item = fallbackItems[id] ?? { ID: id, Name: 'API未返回有效数据', Icon: '' }
     }
     return item
   }).filter(notNullish)

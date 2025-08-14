@@ -28,7 +28,7 @@ const iconUrl = computed(() => itemIconUrl(item.value.iconID, base.value ?? unde
 
 <template>
   <div class="my-2 flex items-center">
-    <UniImage class="min-h-8 min-w-8 inline-block" :src="iconUrl" alt="item icon" @error="failedIcons.add(props.item.iconID);base = BASE_EN" />
+    <UniImage class="min-h-8 min-w-8 inline-block" :src="iconUrl" alt="item icon" :title="`IconID: ${props.item.iconID}`" @error="failedIcons.add(props.item.iconID);base = BASE_EN" />
     <UButton
       class="mx-2 cursor-pointer"
       color="neutral" size="xl" variant="ghost" @click="copyText(item.id)"
