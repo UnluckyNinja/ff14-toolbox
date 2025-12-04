@@ -264,6 +264,19 @@ const crescentIsle = {
   },
 }
 
+const newItems_7_3 = {
+  46179: {
+    ID: 46179,
+    Name: '稀少默示神典石',
+    Icon: '/i/026000/026346.png',
+  },
+  46185: {
+    ID: 46185,
+    Name: '陈旧的卡冈图亚革地图',
+    Icon: '/i/025000/025930.png',
+  },
+}
+
 export const fallbackItems: Record<number, {
   ID: number
   Name: string
@@ -271,4 +284,5 @@ export const fallbackItems: Record<number, {
 }> = {
   ...cosmosExploration,
   ...crescentIsle,
+  ...newItems_7_3,
 }
