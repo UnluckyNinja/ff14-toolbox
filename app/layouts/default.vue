@@ -49,7 +49,7 @@ function toggleItem() {
       <slot />
     </main>
     <footer
-      class="border-default text-2xl mx-auto mt-10 py-2 border-t flex top-100vh justify-center sticky md:(py-6) container"
+      class="border-default text-2xl mx-auto mt-10 py-2 border-t container flex top-100vh justify-center sticky md:(py-6)"
     >
       <UButton
         size="xl" variant="link" color="neutral" to="https://github.com/UnluckyNinja/ff14-toolbox" target="_blank"

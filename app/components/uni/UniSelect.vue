@@ -31,12 +31,12 @@ onClickOutside(rootComp, () => {
     <!-- Selected -->
     <div
       ref="reference"
-      class="flex items-center border rounded bg-white p-1 text-sm ring-blue hover:cursor-pointer dark:bg-dark-1 dark:bg-gray-800 focus:ring focus:ring-2px"
+      class="dark:bg-dark-1 text-sm p-1 border rounded bg-white flex ring-blue items-center dark:bg-gray-800 hover:cursor-pointer focus:ring focus:ring-2px"
       tabindex="0"
       @click="showDropdown = true"
     >
       <slot class="flex-1" name="content">
-        <div class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+        <div class="flex-1 whitespace-nowrap text-ellipsis overflow-hidden">
           {{ props.current }}
         </div>
       </slot>
@@ -45,7 +45,7 @@ onClickOutside(rootComp, () => {
     <!-- Dropdown -->
     <div
       v-if="showDropdown" ref="floating"
-      class="z-10 max-h-50vh overflow-auto border rounded bg-white divide-y dark:bg-gray-800 children:px-4 children:py-1 hover:children:cursor-pointer hover:children:bg-gray/20"
+      class="border rounded bg-white max-h-50vh z-10 overflow-auto divide-y children:px-4 children:py-1 dark:bg-gray-800 hover:children:bg-gray/20 hover:children:cursor-pointer"
       :style="floatingStyles"
     >
       <slot name="default" :handle-click="handleClick" />
