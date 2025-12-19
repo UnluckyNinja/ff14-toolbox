@@ -15,8 +15,6 @@ const settings = reactive(useSettings())
 
 const toast = useToast()
 
-const { base } = useXABase()
-
 const ids = ref<number[]>([])
 
 /**
@@ -102,13 +100,13 @@ watch(ids, async (newIDs) => {
   }
 
   itemsData.value = newIDs.map((id) => {
-    const item = data.find(it => it.ID === id)
+    const item = data.find(it => it.row_id === id)
     if (!item)
       return null
     return {
-      id: item.ID,
-      name: item.Name,
-      iconURL: item.Icon,
+      id: item.row_id,
+      name: item.fields.Name,
+      iconURL: itemIconUrl(item.fields.Icon.id),
     }
   })
 
@@ -257,7 +255,7 @@ const mobileOpenCurrencyList = ref(false)
         <template #name-cell="{ row }">
           <UPopover>
             <div class="flex flex-col gap-1 items-center md:flex-row">
-              <UniImage class="min-h-12 min-w-12 inline-block" :src="base.icon + row.original.item.iconURL" alt="" :title="`ID: ${row.id}`" />
+              <UniImage class="min-h-12 min-w-12 inline-block" :src="row.original.item.iconURL" alt="" :title="`ID: ${row.id}`" />
               <UButton class="min-w-30" block color="neutral" trailing-icon="i-heroicons-ellipsis-vertical" variant="ghost">
                 <div class="text-left w-full">
                   <div class="whitespace-normal">

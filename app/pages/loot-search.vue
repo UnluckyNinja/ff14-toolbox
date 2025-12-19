@@ -29,7 +29,7 @@ const isNotDone = computed(() => {
 const loots = computed(() => {
   if (!selectedInstance.value || !instanceLoots[selectedInstance.value.i])
     return []
-  return instanceLoots[selectedInstance.value.i]
+  return instanceLoots[selectedInstance.value.i] ?? []
 })
 
 const imgUrl = itemIconUrl
@@ -43,7 +43,7 @@ const imgUrl = itemIconUrl
         <InstanceList class="col-span-2" @update:model-value="selectedInstance = $event" />
         <div v-if="selectedInstance" class="col-span-5">
           <h2 class="text-xl font-bold text-center">
-            <img class="h-8 w-8 inline-block" :src="imgUrl(selectedInstance.c.toString()).value">
+            <img class="h-8 w-8 inline-block" :src="imgUrl(selectedInstance.c.toString())">
             {{ selectedInstance.n }}
           </h2>
           <MarketItemList v-if="loots.length > 0" :ids="loots" />

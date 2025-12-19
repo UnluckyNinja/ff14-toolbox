@@ -5,7 +5,7 @@ const props = defineProps<{
 
 const failedIcons = useFailedIcons()
 const base = ref(failedIcons.value.has(props.item.iconID) ? BASE_EN : null)
-const iconUrl = computed(() => itemIconUrl(props.item.iconID, base.value ?? undefined).value)
+const iconUrl = computed(() => itemIconUrl(props.item.iconID, base.value ?? undefined))
 
 const isUntradable = computed(() => {
   return props.item.isUntradable === 'True'

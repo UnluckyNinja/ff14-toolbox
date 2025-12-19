@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { TableColumn } from '@nuxt/ui'
 import { formatTimeAgo, notNullish } from '@vueuse/core'
-import { fallbackItems } from '~/data/xivapiFallback'
+// import { fallbackItems } from '~/data/xivapiFallback'
 
 const props = withDefaults(defineProps<{
   ids: number[]
@@ -32,8 +32,6 @@ const toast = useToast()
 const isFetchingMarket = ref(false)
 const isFetchingXIV = ref(false)
 const isFetching = computed(() => isFetchingMarket.value || isFetchingXIV.value)
-
-const { base } = useXABase()
 
 // fetch prices from universalis into `marketData`
 watch([() => props.ids, () => settings.selectedServer], async ([newIDs, newServer]) => {
@@ -88,19 +86,20 @@ watch(() => props.ids, async (newVal) => {
     return
 
   itemsData.value = newVal.map((id) => {
-    let item: { ID: number, Name: string, Icon: string } | undefined = results.find((it) => {
-      return it.ID === id
+    const item: XAItem | undefined = results.find((it) => {
+      return it.row_id === id
     })
-    if (!item || !item.Name) {
-      if (!fallbackItems[id]) {
-        return { id, name: `API未返回有效数据 ${id}`, iconURL: '' }
-      }
-      item = fallbackItems[id]
+    // @TODO migrate fallback to xivapi v2
+    if (!item || !item.fields.Name) {
+    //   if (!fallbackItems[id]) {
+      return { id, name: `API未返回有效数据 ${id}`, iconURL: '' }
+    //   }
+    //   item = fallbackItems[id]
     }
     return {
-      id: item.ID,
-      name: item.Name,
-      iconURL: item.Icon,
+      id: item.row_id,
+      name: item.fields.Name,
+      iconURL: itemIconUrl(item.fields.Icon.id),
     }
   })
 
@@ -123,7 +122,7 @@ const data = computed(() => {
     const cost = props.costs?.[item.id]
     const result = {
       ...item,
-      cost: props.costs ? props.costs[item.id] : 1,
+      cost: props.costs ? props.costs[item.id] ?? 1 : 1,
       currentAveragePrice: mitem?.currentAveragePrice ?? -1,
       averagePrice: mitem?.averagePrice ?? -1,
       regularSaleVelocity: mitem?.regularSaleVelocity ?? -1,
@@ -269,7 +268,7 @@ function copyText(text: string | number) {
     </template>
     <!-- 图标 -->
     <template #icon-cell="{ row }">
-      <UniImage class="min-h-12 min-w-12 inline-block" :src="base.icon + row.original.iconURL" alt="" :title="`ID: ${row.original.id}`" />
+      <UniImage class="min-h-12 min-w-12 inline-block" :src="row.original.iconURL" alt="" :title="`ID: ${row.original.id}`" />
     </template>
     <!-- 物品名 -->
     <template #name-cell="{ row }">

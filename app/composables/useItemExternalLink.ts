@@ -1,5 +1,3 @@
-import type { MaybeRef } from '@vueuse/core'
-
 // utils to generate links
 export function huijiLink(id: string | number, name: string) {
   const _id = typeof id === 'number' ? id : Number.parseInt(id)

@@ -11,7 +11,7 @@ export function useSearchHistory() {
   const history = useState('item-search:history', () => {
     const store = useLocalStorage('item-search:history', [] as HistoryItem[])
 
-    return store
+    return store.value
   })
 
   function add(item: HistoryItem) {

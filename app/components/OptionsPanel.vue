@@ -22,7 +22,7 @@ if (settings.selectedRegion === '') {
         if (servers.regions.includes('中国'))
           settings.selectedRegion = '中国'
         else
-          settings.selectedRegion = servers.regions[0]
+          settings.selectedRegion = servers.regions[0]!
 
         stop()
       }
@@ -36,8 +36,8 @@ watch(() => settings.selectedRegion, (newVal) => {
   if (!dcs || dcs.length === 0)
     return
 
-  settings.selectedDataCenter = dcs[0].name
-  settings.selectedServer = dcs[0].name
+  settings.selectedDataCenter = dcs[0]!.name
+  settings.selectedServer = dcs[0]!.name
 })
 
 const dataCenterObj = computed(() => {

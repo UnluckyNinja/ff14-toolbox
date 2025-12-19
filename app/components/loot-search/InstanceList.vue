@@ -56,7 +56,11 @@ const list = computed(() => {
     const types = [100, 90, 80, 70, 60, 50]
     const result = filteredInstances.reduce((arr, ins) => {
       const id = types.findLastIndex(lvl => lvl >= (ins.max_lvl ?? 100))
-      arr[id].children.push(ins)
+      if (id < 0) {
+        console.error(`failed to sort instance: ${JSON.stringify(ins)}`)
+      } else {
+        arr[id]!.children.push(ins)
+      }
       return arr
     }, ['等级 91~100', '等级 81~90', '等级 71~80', '等级 61~70', '等级 51~60', '等级 1~50'].map((it) => {
       return {
@@ -90,7 +94,7 @@ const list = computed(() => {
         :title="c.name"
         @click="chooseCategory(c.type)"
       >
-        <img class="h-8 w-8" :src="imgUrl(c.icon).value">
+        <img class="h-8 w-8" :src="imgUrl(c.icon)">
       </UButton>
     </div>
     <!-- instances list -->
@@ -109,7 +113,7 @@ const list = computed(() => {
           >
             <div class="text-base text-left flex gap-1 w-full items-center">
               <!-- icon -->
-              <img class="h-4 w-4 inline-block" :src="imgUrl(`${ins.c}`).value">
+              <img class="h-4 w-4 inline-block" :src="imgUrl(`${ins.c}`)">
               <!-- name -->
               <div class="flex-grow truncate" :title="ins.n">
                 {{ ins.n }}

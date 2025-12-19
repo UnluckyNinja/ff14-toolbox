@@ -1,25 +1,24 @@
 export interface XAContent<T> {
-  Pagination: {
-    Page: number
-    PageNext: number | null
-    PagePrev: number | null
-    PageTotal: number
-    Results: number
-    ResultsPerPage: number
-    ResultsTotal: number
-  }
-  Results: T[]
+  schema: string
+  version: string
+  rows: T[]
 }
 
 export interface XAItem {
-  ID: number
-  Icon: string // URL
-  Name: string
-  Url: string // URL
+  row_id: number
+  fields: {
+    Icon: {
+      id: number
+      path: string
+      path_hr1: string
+    }
+    Name: string
+    Singular: string // URL
+  }
 }
 
-export const BASE_EN = 'https://xivapi.com'
-export const BASE_ZH = 'https://cafemaker.wakingsands.com'
+export const BASE_EN = 'https://v2.xivapi.com/api/'
+export const BASE_ZH = 'https://xivapi-v2.xivcdn.com/api/'
 
 type LangOption = 'en' | 'zh'
 interface BaseSetting {
@@ -49,7 +48,7 @@ export function useXABase() {
   }
 
   const itemURL = computed(() => {
-    return new URL('item', base.value.item).href
+    return new URL('sheet/Item', base.value.item).href
   })
 
   return {
@@ -65,23 +64,23 @@ export async function fetchItems<T extends string | number>(ids: T[]): Promise<X
   const { itemURL } = useXABase()
   const json = await $fetch<XAContent<XAItem>>(itemURL.value, {
     query: {
-      ids: ids.join(','),
+      rows: ids.join(','),
       limit: ids.length,
     },
   })
-  return json.Results
+  return json.rows
 }
 
 export function itemIconUrl(iconID: string | number, base?: string) {
   const defaultBase = useXABase().base
   const _id = `${iconID}`.padStart(6, '0')
   const folder = _id.substring(0, 3).padEnd(6, '0')
-  return computed(() => `${base || defaultBase.value.icon}/i/${folder}/${_id}.png`)
+  return new URL(`asset?path=ui/icon/${folder}/${_id}.tex&format=png`, base || defaultBase.value.icon).href
 }
 
 export function itemUrl(id: string | number, base?: string) {
   const defaultBase = useXABase().base
-  return computed(() => `${base || defaultBase.value.item}/item/${id}`)
+  return new URL(`sheet/Item/${id}`, base || defaultBase.value.item).href
 }
 
 export function useFailedIcons() {

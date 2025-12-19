@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { notNullish } from '@vueuse/core'
 import { tokens } from '~/data/tokens'
-import { fallbackItems } from '~/data/xivapiFallback'
 
 const props = withDefaults(defineProps<{
   modelValue: number
@@ -21,15 +20,19 @@ async function fetchCurrency() {
 
   const items = await fetchItems(tokens)
   return tokens.map((id) => {
-    let item: { ID: number, Name: string, Icon: string } | undefined = items.find(it => it.ID === id)
-    if (!item || !item.Name) {
-      item = fallbackItems[id] ?? { ID: id, Name: 'API未返回有效数据', Icon: '' }
+    const item: XAItem | undefined = items.find(it => it.row_id === id)
+    if (!item || !item.fields.Name) {
+      // item = fallbackItems[id] ?? { ID: id, Name: 'API未返回有效数据', Icon: '' }
+      return { ID: id, Name: 'API未返回有效数据', Icon: '' }
     }
-    return item
+    return {
+      ID: item.row_id,
+      Name: item.fields.Name,
+      Icon: itemIconUrl(item.fields.Icon.id),
+    }
   }).filter(notNullish)
 }
 
-const { base } = useXABase()
 const list = await fetchCurrency()
 
 emits('currencyName', list.find(it => it.ID === props.modelValue)?.Name ?? '')
@@ -61,7 +64,7 @@ function currencyChange(item: { ID: number, Name: string }) {
         >
           <div class="text-base text-left flex gap-1 w-full items-center">
             <!-- icon -->
-            <img class="h-4 w-4 inline-block" :src="base.icon + item.Icon">
+            <img class="h-4 w-4 inline-block" :src="item.Icon">
             <!-- name -->
             <div class="flex-grow truncate" :title="item.Name">
               {{ overwrites[item.ID] ?? item.Name }}
