@@ -52,7 +52,7 @@ const gameTools: ToolItem[] = [
     icon: 'i-heroicons:presentation-chart-line',
     label: '艾欧泽亚什么涨得凶/跌得狠',
     tags: [],
-    description: '用于对比国际服与国服物品价格，查看因版本差导致的市场供需平衡变化',
+    description: '（版本同步后已不再适用）用于对比国际服与国服物品价格，查看因版本差导致的市场供需平衡变化',
   },
 ]
 const devTools: ToolItem[] = [

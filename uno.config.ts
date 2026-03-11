@@ -12,10 +12,12 @@ export default defineConfig({
       preflights: {
         reset: false,
       },
-
     }),
     presetIcons(),
   ],
+  outputToCssLayers: {
+    allLayers: true,
+  },
   transformers: [
     transformerVariantGroup(),
   ],

@@ -5,8 +5,8 @@ export default defineNuxtConfig({
     '@vite-pwa/nuxt',
     '@nuxt/devtools',
     '@vueuse/nuxt',
-    '@nuxt/ui',
     '@unocss/nuxt',
+    '@nuxt/ui',
   ],
 
   // css: ['~/assets/css/main.css'],
