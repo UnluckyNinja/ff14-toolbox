@@ -31,15 +31,6 @@ onMounted(() => {
   <UApp class="md:px-2 dark:bg-slate-900">
     <NuxtPwaManifest />
     <NuxtLoadingIndicator />
-    <UBanner class="text-black text-center" icon="i-carbon:warning">
-      <template #title>
-        网站已切换域名到
-        <NuxtLink class="underline" to="https://ff14.unun.dev">
-          ff14.unun.dev
-        </NuxtLink>
-        ，旧域名即将停止跳转，请各位及时更新收藏夹！
-      </template>
-    </UBanner>
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
