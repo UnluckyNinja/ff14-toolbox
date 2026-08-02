@@ -1,0 +1,6 @@
+allowBuilds:
+  esbuild: true
+  sharp: false
+  simple-git-hooks: true
+  unrs-resolver: false
+  vue-demi: true

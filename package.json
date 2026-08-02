@@ -2,7 +2,7 @@
   "name": "ffxiv-itemkit",
   "type": "module",
   "private": true,
-  "packageManager": "pnpm@10.32.1",
+  "packageManager": "pnpm@11.18.0+sha512.33d83c77da82f49fba836925c6f1b841181ec3132b670639bd012f7075f5c7cf634c5f870147c19aae7478fac01df09d8892e880454896edd23ee9b33757563c",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
@@ -18,49 +18,36 @@
     "@floating-ui/vue": "^1.1.11",
     "d3": "^7.9.0",
     "d3-dsv": "^3.0.1",
-    "fflate": "^0.8.2",
-    "tailwindcss": "^4.2.1",
-    "vue": "^3.5.30"
+    "fflate": "^0.8.3",
+    "tailwindcss": "^4.3.3",
+    "vue": "^3.5.40"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "3.12.0",
-    "@iconify-json/carbon": "^1.2.19",
-    "@iconify-json/game-icons": "^1.2.3",
+    "@antfu/eslint-config": "^9.2.0",
+    "@iconify-json/carbon": "^1.2.25",
+    "@iconify-json/game-icons": "^1.2.4",
     "@iconify-json/heroicons": "^1.2.3",
     "@iconify-json/line-md": "^1.2.16",
-    "@iconify-json/logos": "^1.2.10",
+    "@iconify-json/logos": "^1.2.11",
     "@iconify-json/mdi": "^1.2.3",
-    "@nuxt/devtools": "^3.2.3",
-    "@nuxt/ui": "^4.5.1",
+    "@nuxt/devtools": "^3.4.0",
+    "@nuxt/ui": "^4.10.0",
     "@types/d3": "^7.4.3",
-    "@types/node": "^24.12.0",
-    "@unocss/eslint-config": "^66.6.6",
-    "@unocss/nuxt": "^66.6.6",
-    "@unocss/transformer-variant-group": "^66.6.6",
+    "@types/node": "^24.13.3",
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "@unocss/eslint-config": "^66.7.5",
+    "@unocss/nuxt": "^66.7.5",
+    "@unocss/transformer-variant-group": "^66.7.5",
     "@vite-pwa/assets-generator": "^1.0.2",
     "@vite-pwa/nuxt": "^1.1.1",
-    "@vueuse/core": "^14.2.1",
-    "@vueuse/nuxt": "^14.2.1",
-    "eslint": "^9.39.4",
-    "lint-staged": "^16.3.3",
-    "nuxt": "^4.2.2",
+    "@vueuse/core": "^14.4.0",
+    "@vueuse/nuxt": "^14.4.0",
+    "eslint": "^10.8.0",
+    "lint-staged": "^17.3.0",
+    "nuxt": "^4.5.1",
     "simple-git-hooks": "^2.13.1",
-    "typescript": "^5.9.3",
-    "unocss": "^66.6.6"
-  },
-  "pnpm": {
-    "overrides": {
-      "@nuxt/vite-builder": "https://pkg.pr.new/@nuxt/vite-builder@33682",
-      "vite": "^8.0.0-beta.18"
-    },
-    "ignoredBuiltDependencies": [
-      "@tailwindcss/oxide",
-      "vue-demi"
-    ],
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "simple-git-hooks"
-    ]
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
+    "unocss": "^66.7.5"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpx lint-staged"
