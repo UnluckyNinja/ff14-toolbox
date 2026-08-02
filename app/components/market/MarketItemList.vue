@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import type { TableColumn } from '@nuxt/ui'
 import { formatTimeAgo, notNullish } from '@vueuse/core'
-// import { fallbackItems } from '~/data/xivapiFallback'
 
 const props = withDefaults(defineProps<{
   ids: number[]
@@ -10,6 +9,10 @@ const props = withDefaults(defineProps<{
 }>(), {
   costMode: false,
 })
+
+// import { fallbackItems } from '~/data/xivapiFallback'
+
+const ITEMS_PER_PAGE = 25
 
 const UButton = resolveComponent('UButton')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
@@ -61,10 +64,10 @@ watch([() => props.ids, () => settings.selectedServer], async ([newIDs, newServe
     //   marketData.value.push(data)
   }
 
-  for (let i = 0; i < newIDs.length / 100; i++) {
+  for (let i = 0; i < newIDs.length / ITEMS_PER_PAGE; i++) {
     if (props.ids !== newIDs) // fast fail if it is changed to another list of items
       return
-    await batchAdd(toFetch.splice(0, 100))
+    await batchAdd(toFetch.splice(0, ITEMS_PER_PAGE))
   }
 
   isFetchingMarket.value = false

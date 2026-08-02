@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { notNullish } from '@vueuse/core'
-import { tokens } from '~/data/tokens'
+import { tokenRewards, tokens } from '~/data/tokens'
 
 const props = withDefaults(defineProps<{
   modelValue: number
@@ -67,7 +67,7 @@ function currencyChange(item: { ID: number, Name: string }) {
             <img class="h-4 w-4 inline-block" :src="item.Icon">
             <!-- name -->
             <div class="flex-grow truncate" :title="item.Name">
-              {{ overwrites[item.ID] ?? item.Name }}
+              {{ overwrites[item.ID] ?? item.Name }} ({{ Object.keys(tokenRewards[item.ID]!).length }})
             </div>
           </div>
           <template v-if="props.modelValue === item.ID" #trailing>

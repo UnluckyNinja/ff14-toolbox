@@ -23,7 +23,7 @@ const sublistIndex = ref(0)
           color="neutral" variant="ghost" block
           @click="emits('update:items', child.items)"
         >
-          {{ child.name }}
+          {{ child.name }} ({{ child.items.length }})
         </UButton>
       </div>
     </div>

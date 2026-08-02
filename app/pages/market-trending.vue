@@ -17,6 +17,8 @@ const toast = useToast()
 
 const ids = ref<number[]>([])
 
+const ITEMS_PER_PAGE = 25
+
 /**
  * Fetching market data
  */
@@ -41,7 +43,7 @@ watch([ids, () => settings.selectedServer, foreignServer], async ([newIDs, newSe
   const dataCur: (CurrentlyShownView | undefined)[] = []
   const dataIntl: (CurrentlyShownView | undefined)[] = []
   while (toFetch.length > 0) {
-    const part = toFetch.splice(0, 100)
+    const part = toFetch.splice(0, ITEMS_PER_PAGE)
     try {
       const temp1 = await fetchMarket(newServer, part)
       const temp2 = await fetchMarket(newForeign, part)

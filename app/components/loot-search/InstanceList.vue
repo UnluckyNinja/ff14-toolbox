@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { Instance } from '~/composables/instances'
+import { instanceLoots } from '~/data/loots'
 
 const emits = defineEmits<{
   (event: 'update:modelValue', value: Instance): void
@@ -115,8 +116,13 @@ const list = computed(() => {
               <!-- icon -->
               <img class="h-4 w-4 inline-block" :src="imgUrl(`${ins.c}`)">
               <!-- name -->
-              <div class="flex-grow truncate" :title="ins.n">
-                {{ ins.n }}
+              <div class="flex flex-1 overflow-hidden" :title="ins.n">
+                <span class="flex-shrink truncate">
+                  {{ ins.n }} &nbsp;
+                </span>
+                <span class="flex-1">
+                  ({{ instanceLoots[ins.i]?.length ?? 0 }})
+                </span>
               </div>
               <!-- minimum character level -->
               <div class="text-muted">

@@ -23,7 +23,7 @@ async function updateURL(value: number | string) {
 const ids = computed(() => {
   if (!tokenRewards[selectedCurrency.value])
     return []
-  return Object.keys(tokenRewards[selectedCurrency.value]).map(it => Number.parseInt(it))
+  return Object.keys(tokenRewards[selectedCurrency.value]!).map(it => Number.parseInt(it))
 })
 const costs = computed(() => {
   if (!tokenRewards[selectedCurrency.value])
