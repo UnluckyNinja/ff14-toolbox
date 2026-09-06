@@ -8,7 +8,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
+    "postinstall": "nuxt prepare && node ./scripts/downloadItemCSV.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "generate-pwa-assets": "pwa-assets-generator --preset minimal public/maskable_icon_x192.png"
