@@ -1,3 +1,4 @@
+import * as fs from 'node:fs'
 import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
@@ -23,21 +24,32 @@ async function compressDownload(url: string, saveloc: string, filename: string) 
     mtime: new Date(),
     filename,
   })
-  await writeFile(path.join(saveloc, filename), result)
+  await writeFile(saveloc, result)
 }
 
-try {
-  const dir = fileURLToPath(new URL('../app/assets/data', import.meta.url))
+async function main(args: string[]) {
+  const OVERWRITE = args.includes('-f') || args.includes('--force')
 
-  await mkdir(dir, { recursive: true })
+  try {
+    const dir = fileURLToPath(new URL('../app/assets/data', import.meta.url))
 
-  console.info(`Downloading ${itemENurl}`)
-  await compressDownload(itemENurl, dir, 'Item_compressed.csv')
+    await mkdir(dir, { recursive: true })
+    const file_en = path.join(dir, 'Item_compressed.csv')
+    if (OVERWRITE || !fs.existsSync(file_en)) {
+      console.info(`Downloading ${itemENurl}`)
+      await compressDownload(itemENurl, file_en, 'Item_compressed.csv')
+    }
 
-  console.info(`Downloading ${itemCNurl}`)
-  await compressDownload(itemCNurl, dir, 'Item_cn_compressed.csv')
-} catch (e) {
-  console.error('Caught exception, if it\'s connection issue with github, '
-    + 'consider run `node ./scripts/downloadItemCSV.ts` with env `NODE_USE_ENV_PROXY=1`')
-  console.error(e)
+    const file_cn = path.join(dir, 'Item_compressed.csv')
+    if (OVERWRITE || !fs.existsSync(file_cn)) {
+      console.info(`Downloading ${itemCNurl}`)
+      await compressDownload(itemCNurl, file_cn, 'Item_cn_compressed.csv')
+    }
+  } catch (e) {
+    console.error('Caught exception, if it\'s connection issue with github, '
+      + 'consider run `node ./scripts/downloadItemCSV.ts` with env `NODE_USE_ENV_PROXY=1`')
+    console.error(e)
+  }
 }
+
+main(process.argv)

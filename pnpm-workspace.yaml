@@ -1,3 +1,11 @@
+minimumReleaseAgeExclude:
+  - '@types/node@24.13.5'
+
+shellEmulator: true
+
+trustPolicy: no-downgrade
+trustPolicyIgnoreAfter: 144000
+
 allowBuilds:
   esbuild: true
   sharp: false
