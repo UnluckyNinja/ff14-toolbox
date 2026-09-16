@@ -2,7 +2,7 @@
   "name": "ffxiv-itemkit",
   "type": "module",
   "private": true,
-  "packageManager": "pnpm@11.18.0+sha512.33d83c77da82f49fba836925c6f1b841181ec3132b670639bd012f7075f5c7cf634c5f870147c19aae7478fac01df09d8892e880454896edd23ee9b33757563c",
+  "packageManager": "pnpm@12.4.2+sha512.08adc6613180275c7c9edada39dcf08c9c61ad4e7eaf330a4f3461f102b0f907423454d117f98e72d47fef0616070644d7bffc973a6a57f5090a6d7c368b07c9",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
@@ -11,7 +11,8 @@
     "postinstall": "nuxt prepare && node ./scripts/downloadItemCSV.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "generate-pwa-assets": "pwa-assets-generator --preset minimal public/maskable_icon_x192.png"
+    "generate-pwa-assets": "pwa-assets-generator --preset minimal public/maskable_icon_x192.png",
+    "prepare": "simple-git-hooks"
   },
   "dependencies": {
     "@duckdb/duckdb-wasm": "~1.29.0",
@@ -43,16 +44,18 @@
     "@vueuse/core": "^14.4.0",
     "@vueuse/nuxt": "^14.4.0",
     "eslint": "^10.8.0",
-    "lint-staged": "^17.3.0",
+    "lint-staged": "^17.5.1",
     "nuxt": "^4.5.1",
-    "simple-git-hooks": "^2.13.1",
+    "simple-git-hooks": "^2.14.0",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "unocss": "^66.7.5"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpx lint-staged"
+    "pre-commit": "pnpm lint-staged"
   },
   "lint-staged": {
-    "*.{json,vue,js,ts,css,md,svg}": "eslint --fix"
+    "**/*.{json,vue,js,ts,css,md,svg}": [
+      "eslint --fix --cache"
+    ]
   }
 }
