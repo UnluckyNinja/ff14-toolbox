@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { TableColumn } from '@nuxt/ui'
-import type { SaleView } from '~/utils/universalis'
+import type { SaleView } from '~/utils/universalis.types'
 
 const props = withDefaults(defineProps<{
   id: number | string

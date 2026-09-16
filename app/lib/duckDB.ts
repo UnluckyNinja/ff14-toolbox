@@ -47,7 +47,7 @@ export function useDuckDB() {
   async function queryStream(query: string, params?: any[]) {
     if (!client?.value) {
       return {
-        async *readRows() {
+        async* readRows() {
         },
       }
     }
@@ -70,7 +70,7 @@ export function useDuckDB() {
       throw error
     }
     return {
-      async *readRows() {
+      async* readRows() {
         try {
           while (!batch.done) {
             yield batch.value.toArray()
@@ -146,7 +146,7 @@ async function loadDataFromURL(url: string) {
   const blob = await fetch(url)
 
   const uarray = new Uint8Array(await blob.arrayBuffer())
-  const result = decompressSync(uarray)
+  const result = decompressSync(uarray) as Uint8Array<ArrayBuffer>
   const data = await new Blob([result]).text()
   return data
 }
@@ -163,7 +163,7 @@ function parseItemCSV(text: string) {
   const dataColumns = Object.fromEntries(keys.map(it => [it, [] as any[]]))
   csvParseRows(text.slice(lineend3 + 1), (d) => {
     for (let i = 0; i < d.length; i++) {
-      dataColumns[keys[i]].push(d[i])
+      dataColumns[keys[i]!]!.push(d[i])
     }
     return null
   })

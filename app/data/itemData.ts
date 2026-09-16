@@ -14,7 +14,7 @@ async function loadItemCSV(fileURL: string): Promise<string> {
   if (!blob)
     return ''
   const uarray = new Uint8Array(await blob.arrayBuffer())
-  const result = decompressSync(uarray)
+  const result = decompressSync(uarray) as Uint8Array<ArrayBuffer>
   return await new Blob([result]).text()
 }
 
@@ -33,7 +33,7 @@ function parseItemCSV(text: string) {
   return csvParseRows(text.slice(lineend3 + 1), (d) => {
     const row: Record<string, any> = {}
     d.forEach((it, idx) => {
-      row[keys[idx]] = it
+      row[keys[idx]!] = it
     })
     return row
   })

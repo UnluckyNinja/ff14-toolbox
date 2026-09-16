@@ -86,7 +86,7 @@ async function search() {
 
   const queryFunc = sourceType.value === 'ID' ? queryID : queryExactNameAll
   for (let i = 0; i < lines.length; i++)
-    results[i] = await queryFunc(lines[i])
+    results[i] = await queryFunc(lines[i]!)
   updateOutput()
 }
 watch(targetProperty, () => {

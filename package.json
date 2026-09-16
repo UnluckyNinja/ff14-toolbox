@@ -48,7 +48,8 @@
     "nuxt": "^4.5.2",
     "simple-git-hooks": "^2.14.0",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
-    "unocss": "^66.10.3"
+    "unocss": "^66.10.3",
+    "vue-tsc": "^3.3.11"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged"

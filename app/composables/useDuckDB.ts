@@ -43,8 +43,8 @@ const columnTable_en = {
   equipSlotCategory: 'items_en."17: EquipSlotCategory" as equipSlotCategory',
 }
 
-type UnionOfColumns<T extends keyof typeof columnTable_cn, D extends boolean> =
-  T | (typeof necessaryQueries[number]) | (D extends true ? typeof defaultQueries[number] : never)
+type UnionOfColumns<T extends keyof typeof columnTable_cn, D extends boolean>
+  = T | (typeof necessaryQueries[number]) | (D extends true ? typeof defaultQueries[number] : never)
 
 type QueryResult<T extends keyof typeof columnTable_cn, D extends boolean> = {
   [key in UnionOfColumns<T, D>]: string
