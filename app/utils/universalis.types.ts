@@ -357,7 +357,7 @@ export interface CurrentlyShownMultiViewV2 {
   // The item IDs that were requested.
   itemIDs?: number[]
   // The item data that was requested, keyed on the item ID.
-  items?: Record<string | number, CurrentlyShownView>
+  items?: Record<string, CurrentlyShownView>
   // The ID of the world requested, if applicable.
   worldID?: number // int32
   // The name of the DC requested, if applicable.
@@ -374,7 +374,7 @@ export interface HistoryMultiViewV2 {
   // The item IDs that were requested.
   itemIDs?: number[]
   // The item data that was requested, keyed on the item ID.
-  items?: Record<string | number, HistoryView>
+  items?: Record<string, HistoryView>
   // The ID of the world requested, if applicable.
   worldID?: number // int32
   // The name of the DC requested, if applicable.

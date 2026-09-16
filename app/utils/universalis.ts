@@ -27,41 +27,139 @@ const BASE_EN = 'https://universalis.app/api/v2/'
 
 const base: typeof BASE_EN = BASE_EN
 
-/* Endpoint helper */
+interface EndpointParameters {
+  'data-centers': never
+  'worlds': never
+  'aggregated/{worldDcRegion}/{itemIds}': {
+    path: {
+      itemIds: (string | number)[]
+      worldDcRegion: string
+    }
+    header?: {
+      'User-Agent'?: string
+      'CF-Connecting-IP'?: string
+    }
+  }
+  'extra/content/{contentId}': {
+    path: {
+      contentId: string
+    }
+  }
+  'extra/stats/least-recently-updated': {
+    query?: {
+      world?: string
+      dcName?: string
+      entries?: number
+    }
+  }
+  '{worldDcRegion}/{itemIds}': {
+    path: {
+      itemIds: (string | number)[]
+      worldDcRegion: string
+    }
+    query?: {
+      listings?: number // default to all
+      entries?: number // default to 5
+      hq?: boolean // only HQ or all
+      statsWithin?: number // ms, default 7 days
+      entriesWithin?: number // s
+      fields?: string
+    }
+    header?: {
+      'User-Agent'?: string
+      'CF-Connecting-IP'?: string
+    }
+  }
+  'history/{worldDcRegion}/{itemIds}': {
+    path: {
+      itemIds: (string | number)[]
+      worldDcRegion: string
+    }
+    query?: {
+      entriesToReturn?: number // default to 1800
+      statsWithin?: number // ms default to 7 days
+      entriesWithin?: number // s default to 7 days
+      entriesUntil?: string // default to now
+      minSalePrice?: number
+      maxSalePrice?: number
+    }
+    header?: {
+      'User-Agent'?: string
+      'CF-Connecting-IP'?: string
+    }
+  }
+  'tax-rates': {
+    query?: {
+      world?: string
+    }
+    header?: {
+      'User-Agent'?: string
+    }
+  }
+  'marketable': never
+  'extra/stats/most-recently-updated': {
+    query?: {
+      world?: string
+      dcName?: string
+      entries?: number
+    }
+  }
+  'extra/stats/recently-updated': never
+  'extra/stats/uploader-upload-counts': never
+  'extra/stats/world-upload-counts': never
+  'extra/stats/upload-history': never
+  'lists/{listId}': {
+    path: {
+      listId: string
+    }
+  }
+}
 
-function endpointBase() {
-  return base
-}
-function dataCenters() {
-  return new URL('data-centers', base).href
-}
-function worlds() {
-  return new URL('worlds', base).href
-}
-function marketCurrently(server: string | number, items: number | string | readonly number[] | readonly string[]) {
-  return new URL(`${server}/${Array.isArray(items) ? items.join(',') : items}`, base).href
-}
-function marketHistory(server: string | number, items: number | string | readonly number[] | readonly string[]) {
-  return new URL(`history/${server}/${Array.isArray(items) ? items.join(',') : items}`, base).href
+// type SameKeysWith<Target, Type> = [keyof Target] extends [keyof Type] ? Type : never
+
+// type EndpointResult = SameKeysWith<EndpointParameters, {
+interface EndpointResult {
+  'data-centers': DataCenter[]
+  'worlds': World[]
+  'aggregated/{worldDcRegion}/{itemIds}': AggregatedMarketBoardData
+  'extra/content/{contentId}': ContentView
+  'extra/stats/least-recently-updated': MostRecentlyUpdatedItemsView | ProblemDetails
+  '{worldDcRegion}/{itemIds}': CurrentlyShownView | CurrentlyShownMultiViewV2
+  'history/{worldDcRegion}/{itemIds}': HistoryView | HistoryMultiViewV2
+  'tax-rates': HistoryMultiViewV2 | ProblemDetails
+  'marketable': number[]
+  'extra/stats/most-recently-updated': MostRecentlyUpdatedItemsView | ProblemDetails
+  'extra/stats/recently-updated': RecentlyUpdatedItemsView
+  'extra/stats/uploader-upload-counts': SourceUploadCountView[]
+  'extra/stats/world-upload-counts': Record<string, WorldUploadCountView>
+  'extra/stats/upload-history': UploadCountHistoryView
+  'lists/{listId}': UserListView
 }
 
-export const Endpoint = {
-  base: endpointBase,
-  dataCenters,
-  worlds,
-  marketCurrently,
-  marketHistory,
-}
-// listing
-// multiple items
-// history
+export function fetchUniversalis<T extends keyof EndpointParameters>(endpoint: T, options: EndpointParameters[T]): Promise<EndpointResult[T]> {
+  let path = endpoint as string
+  if ('path' in options) {
+    Object.entries(options.path).forEach(([k, v]) => {
+      const str = Array.isArray(v) ? v.join(',') : String(v)
+      path = path.replaceAll(`{${k}`, str)
+    })
+  }
+  const url = new URL(path, base)
 
-export function fetchDataCenters() {
-  return $fetch<DataCenter[]>(Endpoint.dataCenters())
-}
+  let query
+  if ('query' in options) {
+    query = options.query
+  }
 
-export function fetchWorlds() {
-  return $fetch<World[]>(Endpoint.worlds())
+  let headers
+  if ('header' in options) {
+    headers = options.header
+  }
+
+  return $fetch<EndpointResult[T]>(url.href, {
+    headers,
+    query,
+  })
 }
 
 export async function fetchListings(server: string | number, item: number | string, num = 10, hq?: boolean) {
