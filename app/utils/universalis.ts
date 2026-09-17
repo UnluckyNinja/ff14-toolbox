@@ -1,3 +1,121 @@
+import type { Equal, Expect } from './utils.types'
+
+/**
+ * MARK: Types
+ */
+
+interface EndpointParameters {
+  'data-centers': void
+  'worlds': void
+  'aggregated/{worldDcRegion}/{itemIds}': {
+    path: {
+      itemIds: string | number | readonly string[] | readonly number[]
+      worldDcRegion: string
+    }
+    header?: {
+      'User-Agent'?: string
+      'CF-Connecting-IP'?: string
+    }
+  }
+  'extra/content/{contentId}': {
+    path: {
+      contentId: string
+    }
+  }
+  'extra/stats/least-recently-updated': {
+    query?: {
+      world?: string
+      dcName?: string
+      entries?: number
+    }
+  }
+  '{worldDcRegion}/{itemIds}': {
+    path: {
+      itemIds: string | number | readonly string[] | readonly number[]
+      worldDcRegion: string
+    }
+    query?: {
+      listings?: number // default to all
+      entries?: number // default to 5
+      hq?: boolean // only HQ or all
+      statsWithin?: number // ms, default 7 days
+      entriesWithin?: number // s
+      fields?: string
+    }
+    header?: {
+      'User-Agent'?: string
+      'CF-Connecting-IP'?: string
+    }
+  }
+  'history/{worldDcRegion}/{itemIds}': {
+    path: {
+      itemIds: string | number | readonly string[] | readonly number[]
+      worldDcRegion: string
+    }
+    query?: {
+      entriesToReturn?: number // default to 1800
+      statsWithin?: number // ms default to 7 days
+      entriesWithin?: number // s default to 7 days
+      entriesUntil?: string // default to now
+      minSalePrice?: number
+      maxSalePrice?: number
+    }
+    header?: {
+      'User-Agent'?: string
+      'CF-Connecting-IP'?: string
+    }
+  }
+  'tax-rates': {
+    query?: {
+      world?: string
+    }
+    header?: {
+      'User-Agent'?: string
+    }
+  }
+  'marketable': void
+  'extra/stats/most-recently-updated': {
+    query?: {
+      world?: string
+      dcName?: string
+      entries?: number
+    }
+  }
+  'extra/stats/recently-updated': void
+  'extra/stats/uploader-upload-counts': void
+  'extra/stats/world-upload-counts': void
+  'extra/stats/upload-history': void
+  'lists/{listId}': {
+    path: {
+      listId: string
+    }
+  }
+}
+
+interface EndpointResult {
+  'data-centers': DataCenter[]
+  'worlds': World[]
+  'aggregated/{worldDcRegion}/{itemIds}': AggregatedMarketBoardData
+  'extra/content/{contentId}': ContentView
+  'extra/stats/least-recently-updated': MostRecentlyUpdatedItemsView | ProblemDetails
+  '{worldDcRegion}/{itemIds}': CurrentlyShownView | CurrentlyShownMultiViewV2
+  'history/{worldDcRegion}/{itemIds}': HistoryView | HistoryMultiViewV2
+  'tax-rates': HistoryMultiViewV2 | ProblemDetails
+  'marketable': number[]
+  'extra/stats/most-recently-updated': MostRecentlyUpdatedItemsView | ProblemDetails
+  'extra/stats/recently-updated': RecentlyUpdatedItemsView
+  'extra/stats/uploader-upload-counts': SourceUploadCountView[]
+  'extra/stats/world-upload-counts': Record<string, WorldUploadCountView>
+  'extra/stats/upload-history': UploadCountHistoryView
+  'lists/{listId}': UserListView
+}
+
+type _KeysShouldMatch = Expect<Equal<keyof EndpointParameters, keyof EndpointResult>>
+
+/**
+ * MARK: Code
+ */
+
 const overviewIncludedFields = [
   // when multiple items
   'items.listings.pricePerUnit',
@@ -27,170 +145,81 @@ const BASE_EN = 'https://universalis.app/api/v2/'
 
 const base: typeof BASE_EN = BASE_EN
 
-interface EndpointParameters {
-  'data-centers': never
-  'worlds': never
-  'aggregated/{worldDcRegion}/{itemIds}': {
-    path: {
-      itemIds: (string | number)[]
-      worldDcRegion: string
-    }
-    header?: {
-      'User-Agent'?: string
-      'CF-Connecting-IP'?: string
-    }
-  }
-  'extra/content/{contentId}': {
-    path: {
-      contentId: string
-    }
-  }
-  'extra/stats/least-recently-updated': {
-    query?: {
-      world?: string
-      dcName?: string
-      entries?: number
-    }
-  }
-  '{worldDcRegion}/{itemIds}': {
-    path: {
-      itemIds: (string | number)[]
-      worldDcRegion: string
-    }
-    query?: {
-      listings?: number // default to all
-      entries?: number // default to 5
-      hq?: boolean // only HQ or all
-      statsWithin?: number // ms, default 7 days
-      entriesWithin?: number // s
-      fields?: string
-    }
-    header?: {
-      'User-Agent'?: string
-      'CF-Connecting-IP'?: string
-    }
-  }
-  'history/{worldDcRegion}/{itemIds}': {
-    path: {
-      itemIds: (string | number)[]
-      worldDcRegion: string
-    }
-    query?: {
-      entriesToReturn?: number // default to 1800
-      statsWithin?: number // ms default to 7 days
-      entriesWithin?: number // s default to 7 days
-      entriesUntil?: string // default to now
-      minSalePrice?: number
-      maxSalePrice?: number
-    }
-    header?: {
-      'User-Agent'?: string
-      'CF-Connecting-IP'?: string
-    }
-  }
-  'tax-rates': {
-    query?: {
-      world?: string
-    }
-    header?: {
-      'User-Agent'?: string
-    }
-  }
-  'marketable': never
-  'extra/stats/most-recently-updated': {
-    query?: {
-      world?: string
-      dcName?: string
-      entries?: number
-    }
-  }
-  'extra/stats/recently-updated': never
-  'extra/stats/uploader-upload-counts': never
-  'extra/stats/world-upload-counts': never
-  'extra/stats/upload-history': never
-  'lists/{listId}': {
-    path: {
-      listId: string
-    }
-  }
-}
+type ResultType<Endpoint extends keyof EndpointParameters, Params extends EndpointParameters[Endpoint]>
+  = Endpoint extends '{worldDcRegion}/{itemIds}'
+    ? Params extends { path: { itemIds: string | number } }
+      ? CurrentlyShownView
+      : CurrentlyShownMultiViewV2
+    : Endpoint extends 'history/{worldDcRegion}/{itemIds}'
+      ? Params extends { path: { itemIds: string | number } }
+        ? HistoryView
+        : HistoryMultiViewV2
+      : EndpointResult[Endpoint]
 
-// type SameKeysWith<Target, Type> = [keyof Target] extends [keyof Type] ? Type : never
-
-// type EndpointResult = SameKeysWith<EndpointParameters, {
-interface EndpointResult {
-  'data-centers': DataCenter[]
-  'worlds': World[]
-  'aggregated/{worldDcRegion}/{itemIds}': AggregatedMarketBoardData
-  'extra/content/{contentId}': ContentView
-  'extra/stats/least-recently-updated': MostRecentlyUpdatedItemsView | ProblemDetails
-  '{worldDcRegion}/{itemIds}': CurrentlyShownView | CurrentlyShownMultiViewV2
-  'history/{worldDcRegion}/{itemIds}': HistoryView | HistoryMultiViewV2
-  'tax-rates': HistoryMultiViewV2 | ProblemDetails
-  'marketable': number[]
-  'extra/stats/most-recently-updated': MostRecentlyUpdatedItemsView | ProblemDetails
-  'extra/stats/recently-updated': RecentlyUpdatedItemsView
-  'extra/stats/uploader-upload-counts': SourceUploadCountView[]
-  'extra/stats/world-upload-counts': Record<string, WorldUploadCountView>
-  'extra/stats/upload-history': UploadCountHistoryView
-  'lists/{listId}': UserListView
-}
-
-export function fetchUniversalis<T extends keyof EndpointParameters>(endpoint: T, options: EndpointParameters[T]): Promise<EndpointResult[T]> {
+export function fetchUniversalis<T extends keyof EndpointParameters, K extends EndpointParameters[T]>(endpoint: T, options: K) {
   let path = endpoint as string
-  if ('path' in options) {
+  if (options && 'path' in options) {
     Object.entries(options.path).forEach(([k, v]) => {
       const str = Array.isArray(v) ? v.join(',') : String(v)
-      path = path.replaceAll(`{${k}`, str)
+      path = path.replaceAll(`{${k}}`, str)
     })
   }
   const url = new URL(path, base)
 
   let query
-  if ('query' in options) {
+  if (options && 'query' in options) {
     query = options.query
   }
 
   let headers
-  if ('header' in options) {
+  if (options && 'header' in options) {
     headers = options.header
   }
 
-  return $fetch<EndpointResult[T]>(url.href, {
+  return $fetch<ResultType<T, K>>(url.href, {
     headers,
     query,
   })
 }
 
+/**
+ * MARK: Old helpers
+ */
+
 export async function fetchListings(server: string | number, item: number | string, num = 10, hq?: boolean) {
   // here using this marketCurrently has more options
-  const fetchOptions: any = {
-    query: {
-      fields: ['listings'],
-      listings: num,
+  const fetchOptions = {
+    path: {
+      worldDcRegion: String(server),
+      itemIds: item,
     },
-  }
+    query: {
+      fields: ['listings'].join(','),
+      listings: num,
+      ...(hq === undefined ? undefined : { hq }),
+    },
+  } satisfies EndpointParameters['{worldDcRegion}/{itemIds}']
 
-  if (hq !== undefined)
-    fetchOptions.query.hq = hq
+  const res = await fetchUniversalis('{worldDcRegion}/{itemIds}', fetchOptions)
 
-  const res = await $fetch<CurrentlyShownView>(Endpoint.marketCurrently(server, item), fetchOptions)
   return res.listings ?? []
 }
 
 export async function fetchHistory(server: string | number, item: number | string, num = 10, hq?: boolean) {
   // here using this marketCurrently has more options
-  const fetchOptions: any = {
-    query: {
-      fields: ['recentHistory'],
-      entries: num,
+  const fetchOptions = {
+    path: {
+      worldDcRegion: String(server),
+      itemIds: item,
     },
-  }
+    query: {
+      fields: ['recentHistory'].join(','),
+      entries: num,
+      ...(hq === undefined ? undefined : { hq }),
+    },
+  } satisfies EndpointParameters['{worldDcRegion}/{itemIds}']
 
-  if (hq !== undefined)
-    fetchOptions.query.hq = hq
-
-  const res = await $fetch<CurrentlyShownView>(Endpoint.marketCurrently(server, item), fetchOptions)
+  const res = await fetchUniversalis('{worldDcRegion}/{itemIds}', fetchOptions)
   return res.recentHistory ?? []
 }
 
@@ -208,12 +237,27 @@ export async function fetchMarket(server: string | number, items: string | numbe
 
   let res
 
-  if (Array.isArray(items))
+  if (Array.isArray(items)) {
+    // in case of array length 1
     // put 0, 1 at the end will make response alway become multi view, and avoid 100 limt lost
     // caller still needs to care about 100 limit though
-    res = await $fetch<CurrentlyShownMultiViewV2>(Endpoint.marketCurrently(server, [...items, 0, 1]), fetchOptions)
-  else
-    res = await $fetch<CurrentlyShownView>(Endpoint.marketCurrently(server, items), options)
+    res = await fetchUniversalis('{worldDcRegion}/{itemIds}', {
+      path: {
+        worldDcRegion: String(server),
+        itemIds: [...items, 0, 1],
+      },
+      ...fetchOptions,
+    })
+  }
+  else {
+    res = await fetchUniversalis('{worldDcRegion}/{itemIds}', {
+      path: {
+        worldDcRegion: String(server),
+        itemIds: items,
+      },
+      ...fetchOptions,
+    })
+  }
 
   return res
 }
