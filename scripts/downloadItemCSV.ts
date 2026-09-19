@@ -40,7 +40,7 @@ async function main(args: string[]) {
       await compressDownload(itemENurl, file_en, 'Item_compressed.csv')
     }
 
-    const file_cn = path.join(dir, 'Item_compressed.csv')
+    const file_cn = path.join(dir, 'Item_cn_compressed.csv')
     if (OVERWRITE || !fs.existsSync(file_cn)) {
       console.info(`Downloading ${itemCNurl}`)
       await compressDownload(itemCNurl, file_cn, 'Item_cn_compressed.csv')
