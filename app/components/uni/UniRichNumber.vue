@@ -1,41 +1,46 @@
 <script lang="ts" setup>
+import { useNumberSystem } from '~/utils/intl'
+
 const props = withDefaults(defineProps<{
   value: number
-  options?: Partial<Intl.NumberFormatOptions>
+  locale?: Intl.LocalesArgument
+  options?: Intl.NumberFormatOptions
   padRight?: number
   padChar?: string
 }>(), {
-  options: (): Intl.NumberFormatOptions => ({
+  options: () => ({
     maximumFractionDigits: 2,
   }),
   padRight: 0,
   padChar: '0',
 })
-const decimalPoint = 1.1.toLocaleString().replace(/\d/g, '')
-const parts = computed(() => {
-  const str = props.value.toLocaleString(undefined, props.options)
-  const dotPosition = str.indexOf(decimalPoint)
-  if (dotPosition < 0) {
-    return {
-      whole: str,
-      fraction: `${props.padChar.repeat(props.padRight)}`,
-    }
+
+const { decimal, formatter, group } = useNumberSystem(() => props.locale, () => props.options)
+
+const num = computed(() => {
+  const parts = formatter.value.formatToParts(props.value)
+
+  const integers = parts.filter(it => it.type === 'integer').map(it => it.value)
+  let fraction = parts.find(it => it.type === 'fraction')?.value ?? ''
+  if (fraction.length < props.padRight) {
+    fraction = fraction + props.padChar.repeat(props.padRight - fraction.length)
   }
-  const pad = props.padChar.repeat(Math.max(props.padRight - (str.length - dotPosition - 1), 0))
   return {
-    whole: str.substring(0, dotPosition),
-    fraction: str.substring(dotPosition + 1, str.length) + pad,
+    integers,
+    fraction,
+    decimal,
+    group,
   }
 })
 </script>
 
 <template>
   <span>
-    <slot name="whole" :num="parts.whole" :decimal-point="decimalPoint">
-      <span>{{ parts.whole }}</span>
+    <slot name="integer" v-bind="num">
+      <span>{{ num.integers.join(group) }}</span>
     </slot>
-    <slot name="fraction" :num="parts.fraction" :decimal-point="decimalPoint">
-      <span>{{ decimalPoint }} {{ parts.fraction }}</span>
+    <slot name="fraction" v-bind="num">
+      <span>{{ decimal }}{{ num.fraction }}</span>
     </slot>
   </span>
 </template>

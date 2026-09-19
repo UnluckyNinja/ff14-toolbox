@@ -282,36 +282,38 @@ export interface AggregatedMarketBoardData {
 
 export interface AggregatedResult {
   minListing: MinListing
-  medianListing: MedianListing
+  // medianListing: MedianListing // actually not implemented in universalis
   recentPurchase: RecentPurchase
   averageSalePrice: AverageSalePrice
   dailySaleVelocity: DailySaleVelocity
 }
 
 export interface AverageSalePrice {
-  world: AverageSalePriceEntry
-  dc: AverageSalePriceEntry
-  region: AverageSalePriceEntry
+  world?: AverageSalePriceEntry
+  dc?: AverageSalePriceEntry
+  region?: AverageSalePriceEntry
 }
 
 export interface AverageSalePriceEntry {
+  worldId: undefined
   price: number
 }
 
 export interface DailySaleVelocity {
-  world: DailySaleVelocityEntry
-  dc: DailySaleVelocityEntry
-  region: DailySaleVelocityEntry
+  world?: DailySaleVelocityEntry
+  dc?: DailySaleVelocityEntry
+  region?: DailySaleVelocityEntry
 }
 
 export interface DailySaleVelocityEntry {
+  worldId: undefined
   quantity: number
 }
 
 export interface MedianListing {
-  world: MedianListingEntry
-  dc: MedianListingEntry
-  region: MedianListingEntry
+  world?: MedianListingEntry
+  dc?: MedianListingEntry
+  region?: MedianListingEntry
 }
 
 export interface MedianListingEntry {
@@ -319,9 +321,9 @@ export interface MedianListingEntry {
 }
 
 export interface MinListing {
-  world: MinListingEntry
-  dc: MinListingEntry
-  region: MinListingEntry
+  world?: MinListingEntry
+  dc?: MinListingEntry
+  region?: MinListingEntry
 }
 
 export interface MinListingEntry {
@@ -330,9 +332,9 @@ export interface MinListingEntry {
 }
 
 export interface RecentPurchase {
-  world: RecentPurchaseEntry
-  dc: RecentPurchaseEntry
-  region: RecentPurchaseEntry
+  world?: RecentPurchaseEntry
+  dc?: RecentPurchaseEntry
+  region?: RecentPurchaseEntry
 }
 
 export interface RecentPurchaseEntry {

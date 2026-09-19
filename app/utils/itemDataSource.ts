@@ -7,6 +7,7 @@ export interface XAContent<T> {
 export interface XAItem {
   row_id: number
   fields: {
+    CanBeHq: boolean
     Icon: {
       id: number
       path: string
@@ -66,6 +67,7 @@ export async function fetchItems<T extends string | number>(ids: T[]): Promise<X
     query: {
       rows: ids.join(','),
       limit: ids.length,
+      fields: 'Name,Icon,CanBeHq',
     },
   })
   return json.rows

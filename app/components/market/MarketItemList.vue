@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { TableColumn } from '@nuxt/ui'
-import { formatTimeAgo, notNullish } from '@vueuse/core'
+import { notNullish } from '@vueuse/core'
 
 const props = withDefaults(defineProps<{
   ids: number[]
@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<{
 
 // import { fallbackItems } from '~/data/xivapiFallback'
 
-const ITEMS_PER_PAGE = 25
+const ITEMS_PER_PAGE = 50
 
 const UButton = resolveComponent('UButton')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
@@ -21,14 +21,16 @@ const displayCost = computed(() => {
   return !!props.costs
 })
 
-const marketData = ref<any[]>([])
+const marketData = reactive(new Map<number, Result>())
 const itemsData = ref<({
   id: number
   name: string
   iconURL: string
+  canBeHQ: boolean
 } | null)[]>([])
 
 const settings = reactive(useSettings())
+const { getWorldName } = useServerInfo()
 
 const toast = useToast()
 
@@ -39,14 +41,19 @@ const isFetching = computed(() => isFetchingMarket.value || isFetchingXIV.value)
 // fetch prices from universalis into `marketData`
 watch([() => props.ids, () => settings.selectedServer], async ([newIDs, newServer]) => {
   if (newIDs.length === 0) {
-    marketData.value = []
+    marketData.clear()
     return
   }
   isFetchingMarket.value = true
-  marketData.value = []
+  marketData.clear()
   const toFetch = newIDs.slice(0)
   async function batchAdd(ids: number[]) {
-    const promise = fetchMarket(newServer, ids).catch((e) => {
+    const promise = fetchUniversalis('aggregated/{worldDcRegion}/{itemIds}', {
+      path: {
+        worldDcRegion: newServer,
+        itemIds: ids,
+      },
+    }).catch((e) => {
       toast.add({ title: '请求 Universalis 数据失败，请检查网络', description: e, color: 'error', icon: 'i-heroicons-exclamation-circle' })
       return null
     })
@@ -58,10 +65,9 @@ watch([() => props.ids, () => settings.selectedServer], async ([newIDs, newServe
     if (props.ids !== newIDs) // fast fail if it is changed to another list of items
       return
 
-    // if (ids.length > 1)
-    marketData.value.push(...ids.map(it => data.items?.[it]))
-    // else
-    //   marketData.value.push(data)
+    data.results?.forEach((item) => {
+      marketData.set(item.itemId, item)
+    })
   }
 
   for (let i = 0; i < newIDs.length / ITEMS_PER_PAGE; i++) {
@@ -95,7 +101,7 @@ watch(() => props.ids, async (newVal) => {
     // @TODO migrate fallback to xivapi v2
     if (!item || !item.fields.Name) {
     //   if (!fallbackItems[id]) {
-      return { id, name: `API未返回有效数据 ${id}`, iconURL: '' }
+      return { id, name: `API未返回有效数据 ${id}`, iconURL: '', canBeHQ: false }
     //   }
     //   item = fallbackItems[id]
     }
@@ -103,6 +109,7 @@ watch(() => props.ids, async (newVal) => {
       id: item.row_id,
       name: item.fields.Name,
       iconURL: itemIconUrl(item.fields.Icon.id),
+      canBeHQ: item.fields.CanBeHq,
     }
   })
 
@@ -117,42 +124,61 @@ const data = computed(() => {
 
   // console.log('[FF14工具] 市场数据条目数量和传入数据对不上，可能会显示错误数据')
 
-  return itemsData.value.map((item, idx) => {
+  return itemsData.value.map((item) => {
     if (!item)
       return null
 
-    const mitem = marketData.value[idx]
-    const cost = props.costs?.[item.id]
+    const mitem = marketData.get(item.id)
+
+    const cost = props.costs?.[item.id] ?? 1
+    const factor = props.costMode ? cost : 1
     const result = {
       ...item,
-      cost: props.costs ? props.costs[item.id] ?? 1 : 1,
-      currentAveragePrice: mitem?.currentAveragePrice ?? -1,
-      averagePrice: mitem?.averagePrice ?? -1,
-      regularSaleVelocity: mitem?.regularSaleVelocity ?? -1,
-      lowestPrice: mitem?.listings[0]?.pricePerUnit ?? -1,
-      lowestWorld: mitem?.listings[0]?.worldName ?? '',
-      lowestHQ: mitem?.listings[0]?.hq ?? false,
-      recentPrice: mitem?.recentHistory[0]?.pricePerUnit ?? -1,
-      recentWorld: mitem?.recentHistory[0]?.worldName ?? '',
-      recentHQ: mitem?.recentHistory[0]?.hq ?? false,
-      recentTimestamp: mitem?.recentHistory[0]?.timestamp ?? -1,
+      nq: mitem
+        ? {
+            minListing: toRowValue(mitem.nq.minListing, false, factor),
+            recentPurchase: toRowValue(mitem.nq.recentPurchase, false, factor),
+            averageSalePrice: toRowValue(mitem.nq.averageSalePrice, false, factor),
+            dailySaleVelocity: toRowValue(mitem.nq.dailySaleVelocity, false, factor),
+          }
+        : undefined,
+      hq: mitem
+        ? {
+            minListing: toRowValue(mitem.hq.minListing, true, factor),
+            recentPurchase: toRowValue(mitem.hq.recentPurchase, true, factor),
+            averageSalePrice: toRowValue(mitem.hq.averageSalePrice, true, factor),
+            dailySaleVelocity: toRowValue(mitem.hq.dailySaleVelocity, true, factor),
+          }
+        : undefined,
+      cost,
     }
-    if (!props.costMode || !cost) {
-      return result
-    }
-    else {
-      return {
-        ...result,
-        currentAveragePrice: result.currentAveragePrice / cost,
-        averagePrice: result.averagePrice / cost,
-        lowestPrice: result.lowestPrice / cost,
-        recentPrice: result.recentPrice / cost,
-      }
-    }
+
+    return result
   }).filter(notNullish)
 })
 
-const columns = [
+type Listing = MinListing
+  | RecentPurchase
+  | AverageSalePrice
+  | DailySaleVelocity
+
+// helper
+function toRowValue(listing: Listing | undefined, hq?: boolean, cost = 1) {
+  const obj = listing?.world ?? listing?.dc ?? listing?.region
+  return obj
+    ? 'price' in obj
+      ? { value: obj.price / cost, worldName: getWorldName(obj.worldId), hq }
+      : { value: obj.quantity, worldName: getWorldName(obj.worldId), hq }
+    : { value: -1, worldName: undefined, hq }
+}
+
+function getValidMinValue(nq: number, hq: number) {
+  if (nq < 0) return hq
+  if (hq < 0) return nq
+  return Math.min(nq, hq)
+}
+
+const columns: TableColumn<typeof data.value[number]>[] = [
   {
     id: 'icon',
   },
@@ -163,30 +189,39 @@ const columns = [
   },
   {
     id: 'lowestPrice',
-    accessorKey: 'lowestPrice',
+    accessorFn: (item) => {
+      return getValidMinValue(item.nq?.minListing.value ?? -1, item.hq?.minListing.value ?? -1)
+    },
     header: ({ column }) => getHeader(column, '当前最低价'),
   },
-  {
-    id: 'currentAveragePrice',
-    accessorKey: 'currentAveragePrice',
-    header: ({ column }) => getHeader(column, '平均标价'),
-  },
+  // // Aggreated results doesn't have similar field
+  // {
+  //   id: 'currentAveragePrice',
+  //   accessorKey: 'currentAveragePrice',
+  //   header: ({ column }) => getHeader(column, '平均标价'),
+  // },
   {
     id: 'recentPrice',
-    accessorKey: 'recentPrice',
+    accessorFn: (item) => {
+      return getValidMinValue(item.nq?.recentPurchase.value ?? -1, item.hq?.recentPurchase.value ?? -1)
+    },
     header: ({ column }) => getHeader(column, '最近成交'),
   },
   {
     id: 'averagePrice',
-    accessorKey: 'averagePrice',
+    accessorFn: (item) => {
+      return getValidMinValue(item.nq?.averageSalePrice.value ?? -1, item.hq?.averageSalePrice.value ?? -1)
+    },
     header: ({ column }) => getHeader(column, '平均成交价'),
   },
   {
     id: 'regularSaleVelocity',
-    accessorKey: 'regularSaleVelocity',
+    accessorFn: (item) => {
+      return getValidMinValue(item.nq?.dailySaleVelocity.value ?? -1, item.hq?.dailySaleVelocity.value ?? -1)
+    },
     header: ({ column }) => getHeader(column, '出货速率'),
   },
-] satisfies TableColumn<any>[]
+]
 
 function getHeader(column: any, label: string) {
   const isSorted = column.getIsSorted()
@@ -243,12 +278,24 @@ function getHeader(column: any, label: string) {
   )
 }
 
-const time = formatTimeAgo
 const maximumFractionDigits = computed(() => props.costMode ? 2 : 0)
 
 function copyText(text: string | number) {
   if (copy(`${text}`))
     toast.add({ title: '已复制', duration: 2000 })
+}
+
+function toCardArray(row: typeof data.value[number]) {
+  if (row.canBeHQ) {
+    if (!row.nq && !row.hq) {
+      return undefined
+    }
+    return [row.nq, row.hq]
+  }
+  if (!row.nq) {
+    return undefined
+  }
+  return [row.nq]
 }
 </script>
 
@@ -312,107 +359,31 @@ function copyText(text: string | number) {
     <template #lowestPrice-cell="{ row }">
       <div v-if="isFetching" class="i-heroicons-ellipsis-horizontal animate-pulse" />
       <div v-else class="text-right min-w-max">
-        <UPopover>
-          <UButton block color="neutral" variant="ghost">
-            <div class="text-right w-full">
-              <div v-if="row.original.lowestPrice >= 0" class="text-xs text-gray mb-1">
-                当前最低价
-              </div>
-              <span v-if="row.original.lowestWorld" class="text-gray pr-2 float-left">
-                {{ row.original.lowestWorld }}
-              </span>
-              <span v-if="row.original.lowestPrice >= 0">
-                {{ row.original.lowestHQ ? '' : '' }}
-                <UniRichNumber :value="row.original.lowestPrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
-                  <template #whole="{ num }">
-                    <span>
-                      {{ num }}
-                    </span>
-                  </template>
-                  <template #fraction="{ num, decimalPoint }">
-                    <span class="text-xs">
-                      {{ num ? decimalPoint : '' }}{{ num }}
-                    </span>
-                  </template>
-                </UniRichNumber>
-                <span class="text-amber-500"></span>
-              </span>
-              <div v-else class="i-heroicons-minus" />
-            </div>
-          </UButton>
-          <template #content>
-            <div class="border-accented border rounded-lg max-h-50vh overflow-auto">
-              <MarketListings :id="row.original.id" />
-            </div>
-          </template>
-        </UPopover>
+        <MarketPriceCard
+          label="当前最低价"
+          :rows="toCardArray(row.original)?.map(it => it?.minListing)"
+          :maximum-fraction-digits
+          :pad-right="maximumFractionDigits"
+          :item-i-d="row.original.id"
+          popup-market="listing"
+          unit=""
+        />
       </div>
     </template>
     <!-- 最低价 end -->
-    <!-- 平均标价 -->
-    <template #currentAveragePrice-cell="{ row }">
-      <div v-if="isFetchingMarket" class="i-heroicons-ellipsis-horizontal animate-pulse" />
-      <div v-else class="text-right min-w-max">
-        <div v-if="row.original.currentAveragePrice >= 0" class="text-xs text-gray mb-1">
-          平均标价
-        </div>
-        <span v-if="row.original.currentAveragePrice >= 0">
-          <UniRichNumber :value="row.original.currentAveragePrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
-            <template #whole="{ num }">
-              <span>
-                {{ num }}
-              </span>
-            </template>
-            <template #fraction="{ num, decimalPoint }">
-              <span class="text-xs">
-                {{ num ? decimalPoint : '' }}{{ num }}
-              </span>
-            </template>
-          </UniRichNumber>
-          <span class="text-amber-500"></span>
-        </span>
-        <div v-else class="i-heroicons-minus" />
-      </div>
-    </template>
-    <!-- 平均标价 end -->
     <!-- 最近成交 -->
     <template #recentPrice-cell="{ row }">
       <div v-if="isFetchingMarket" class="i-heroicons-ellipsis-horizontal animate-pulse" />
-      <div v-else class="text-right min-w-max" :title="row.original.recentTimestamp > 0 ? time(new Date(row.original.recentTimestamp * 1000), { max: 'day' }) : undefined">
-        <UPopover>
-          <UButton block color="neutral" variant="ghost">
-            <div class="text-right w-full">
-              <div v-if="row.original.recentPrice >= 0" class="text-xs text-gray mb-1">
-                最近成交
-              </div>
-              <span v-if="row.original.recentWorld" class="text-gray mr-2 float-left">
-                {{ row.original.recentWorld }}
-              </span>
-              <span v-if="row.original.recentPrice >= 0">
-                {{ row.original.recentHQ ? '' : '' }}
-                <UniRichNumber :value="row.original.recentPrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
-                  <template #whole="{ num }">
-                    <span>
-                      {{ num }}
-                    </span>
-                  </template>
-                  <template #fraction="{ num, decimalPoint }">
-                    <span class="text-xs">
-                      {{ num ? decimalPoint : '' }}{{ num }}
-                    </span>
-                  </template>
-                </UniRichNumber>
-                <span class="text-amber-500"></span>
-              </span>
-              <div v-else class="i-heroicons-minus" />
-            </div>
-          </UButton>
-          <template #content>
-            <div class="border-accented rounded-lg max-h-50vh overflow-auto">
-              <MarketHistory :id="row.original.id" />
-            </div>
-          </template>
-        </UPopover>
+      <div v-else class="text-right min-w-max">
+        <MarketPriceCard
+          label="最近成交"
+          :rows="toCardArray(row.original)?.map(it => it?.recentPurchase)"
+          :maximum-fraction-digits
+          :pad-right="maximumFractionDigits"
+          :item-i-d="row.original.id"
+          popup-market="history"
+          unit=""
+        />
       </div>
     </template>
     <!-- 最近成交 end -->
@@ -420,36 +391,26 @@ function copyText(text: string | number) {
     <template #averagePrice-cell="{ row }">
       <div v-if="isFetchingMarket" class="i-heroicons-ellipsis-horizontal animate-pulse" />
       <div v-else class="text-right min-w-max">
-        <div v-if="row.original.averagePrice >= 0" class="text-xs text-gray mb-1">
-          平均成交价
-        </div>
-        <span v-if="row.original.averagePrice >= 0">
-          <UniRichNumber :value="row.original.averagePrice" :options="{ maximumFractionDigits }" :pad-right="maximumFractionDigits">
-            <template #whole="{ num }">
-              <span>
-                {{ num }}
-              </span>
-            </template>
-            <template #fraction="{ num, decimalPoint }">
-              <span class="text-xs">
-                {{ num ? decimalPoint : '' }}{{ num }}
-              </span>
-            </template>
-          </UniRichNumber>
-          <span class="text-amber-500"></span>
-        </span>
-        <div v-else class="i-heroicons-minus" />
+        <MarketPriceCard
+          label="平均成交价"
+          :rows="toCardArray(row.original)?.map(it => it?.averageSalePrice)"
+          :maximum-fraction-digits
+          :pad-right="maximumFractionDigits"
+          unit=""
+        />
       </div>
     </template>
     <!-- 平均成交价 end -->
     <!-- 出货速率 -->
     <template #regularSaleVelocity-cell="{ row }">
       <div v-if="isFetchingMarket" class="i-heroicons-ellipsis-horizontal animate-pulse" />
-      <div v-else-if="row.original.regularSaleVelocity >= 0" class="text-right min-w-max">
-        {{ row.original.regularSaleVelocity.toFixed(2) }}
-      </div>
-      <div v-else class="text-center">
-        -
+      <div v-else class="text-right min-w-max">
+        <MarketPriceCard
+          label="平均日销量"
+          :rows="toCardArray(row.original)?.map(it => it?.dailySaleVelocity)"
+          :maximum-fraction-digits="2"
+          :pad-right="0"
+        />
       </div>
     </template>
     <!-- 出货速率 end -->

@@ -1,56 +1,82 @@
 <script lang="ts" setup>
 const props = defineProps<{
-  price: number
-  server?: string
+  rows?: ({
+    value: number
+    worldName?: string
+    hq?: boolean
+  } | undefined | null)[]
+  itemID?: string | number
   label?: string
   note?: string
-  hq?: boolean
-  itemID?: string | number
+  unit?: string
   /**
    * fixed decimal fractions
    */
-  fixed?: number
+  maximumFractionDigits?: number
   padRight?: number
   popupMarket?: 'listing' | 'history'
   popupServer?: string
 }>()
 
 const [DefineTemp, UseTemp] = createReusableTemplate()
+
+const numbersColor = usePricePalette()
+
+function digitsColor(level: number) {
+  return numbersColor.value[Math.min(numbersColor.value.length - 1, level)]
+}
 </script>
 
 <template>
   <DefineTemp>
     <div class="text-right w-full">
-      <div v-if="props.server || props.note" class="text-muted text-xs mb-1 flex justify-between">
+      <div v-if="props.label || props.note" class="text-muted text-xs mb-1 flex justify-between">
         <div v-if="props.note">
           {{ props.note }}
         </div>
-        <div v-if="props.server">
-          {{ props.server }}
+        <div v-if="props.label" class="ml-auto">
+          {{ props.label }}
         </div>
       </div>
-      <div v-if="props.price >= 0" class="flex items-baseline justify-between">
-        <span class="text-muted text-xs mr-1 float-left">
-          {{ props.label }}
-        </span>
-        <span class="text-default">
-          {{ props.hq ? '' : '' }}
-          <UniRichNumber :value="props.price" :options="{ maximumFractionDigits: props.fixed ?? 0 }" :pad-right="props.padRight ?? 0">
-            <template #whole="{ num }">
-              <span>
-                {{ num }}
+      <template v-if="rows && rows.length > 0">
+        <template v-for="row, idx in props.rows" :key="idx">
+          <div v-if="row && row.value >= 0" class="flex items-baseline justify-between">
+            <span v-if="row.worldName || row.hq" class="text-muted text-xs mr-2 float-left">
+              {{ row.worldName }}
+              <span v-if="row.hq" class="ml-1">
+                
               </span>
-            </template>
-            <template #fraction="{ num, decimalPoint }">
-              <span class="text-xs">
-                {{ num ? decimalPoint : '' }}{{ num }}
-              </span>
-            </template>
-          </UniRichNumber>
-          <span class="text-amber-500"></span>
-        </span>
-      </div>
-      <div v-else class="i-heroicons-minus" />
+            </span>
+            <span class="text-default ml-auto">
+              <UniRichNumber :value="row.value" :options="{ maximumFractionDigits: props.maximumFractionDigits ?? 0 }" :pad-right="props.padRight ?? 0">
+                <template #integer="{ integers, group }">
+                  <template v-for="part, i in integers" :key="i">
+                    <span v-if="i !== 0">
+                      {{ group }}
+                    </span>
+                    <span :style="{ color: digitsColor(integers.length - 1 - i) }">
+                      {{ part }}
+                    </span>
+                  </template>
+                </template>
+                <template #fraction="{ fraction, decimal }">
+                  <span class="text-xs">
+                    {{ fraction ? decimal : '' }}{{ fraction }}
+                  </span>
+                </template>
+              </UniRichNumber>
+              <span v-if="props.unit">{{ props.unit }}</span>
+            </span>
+          </div>
+          <div v-else class="text-muted">
+            <span class="text-xs mr-2">
+              {{ row?.hq ? '' : '' }}
+            </span>
+            <span class="i-heroicons-minus inline-block" />
+          </div>
+        </template>
+      </template>
+      <div v-else class="i-heroicons-minus text-muted mx-auto" />
     </div>
   </DefineTemp>
   <UseTemp v-if="!props.itemID" class="p-2" />

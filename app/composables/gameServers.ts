@@ -14,9 +14,24 @@ export const useServerInfo = createGlobalState(() => {
     return [...new Set(dataCenters.value.map(it => it.region))]
   })
 
+  const worldMap = new Map<number, string>()
+  watch(worlds, (newVal) => {
+    if (!newVal) return
+    worldMap.clear()
+    for (const world of newVal) {
+      worldMap.set(world.id, world.name)
+    }
+  })
+
   return {
     regions,
     dataCenters,
     worlds,
+    getWorldName(id: number | undefined | null) {
+      if (id === undefined || id === null) {
+        return ''
+      }
+      return worldMap.get(id)
+    },
   }
 })
