@@ -1,6 +1,6 @@
 import type { Equal, Expect } from './utils.types'
 
-/**
+/*
  * MARK: Types
  */
 
@@ -112,7 +112,7 @@ interface EndpointResult {
 
 type _KeysShouldMatch = Expect<Equal<keyof EndpointParameters, keyof EndpointResult>>
 
-/**
+/*
  * MARK: Code
  */
 
@@ -156,7 +156,9 @@ type ResultType<Endpoint extends keyof EndpointParameters, Params extends Endpoi
         : HistoryMultiViewV2
       : EndpointResult[Endpoint]
 
-export function fetchUniversalis<T extends keyof EndpointParameters, K extends EndpointParameters[T]>(endpoint: T, options: K) {
+type FetchOptions = Parameters<typeof $fetch>[1]
+
+export function fetchUniversalis<T extends keyof EndpointParameters, K extends EndpointParameters[T]>(endpoint: T, options: K & FetchOptions) {
   let path = endpoint as string
   if (options && 'path' in options) {
     Object.entries(options.path).forEach(([k, v]) => {
@@ -166,23 +168,17 @@ export function fetchUniversalis<T extends keyof EndpointParameters, K extends E
   }
   const url = new URL(path, base)
 
-  let query
-  if (options && 'query' in options) {
-    query = options.query
-  }
-
-  let headers
   if (options && 'header' in options) {
-    headers = options.header
+    options.headers = options.headers ?? {}
+    Object.assign(options.headers, options.header)
   }
 
   return $fetch<ResultType<T, K>>(url.href, {
-    headers,
-    query,
+    ...options,
   })
 }
 
-/**
+/*
  * MARK: Old helpers
  */
 

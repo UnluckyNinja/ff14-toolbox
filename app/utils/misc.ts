@@ -18,3 +18,6 @@ export const usePricePalette = createGlobalState(() => {
 
   return numbersColor
 })
+
+export type TypeofMapKey<T> = T extends Map<infer K, any> ? K : never
+export type TypeofMapValue<T> = T extends Map<any, infer V> ? V : never

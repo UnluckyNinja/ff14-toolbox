@@ -69,7 +69,6 @@ export default defineNuxtConfig({
       globPatterns: [
         '**/*.{js,css,html,png,svg,ico}',
         '_nuxt\/*.csv',
-        // '_nuxt\/*.wasm' // too large, "Configure maximumFileSizeToCacheInBytes to change this limit."
       ],
       maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
     },

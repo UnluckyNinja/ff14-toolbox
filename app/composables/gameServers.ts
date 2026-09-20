@@ -14,7 +14,7 @@ export const useServerInfo = createGlobalState(() => {
     return [...new Set(dataCenters.value.map(it => it.region))]
   })
 
-  const worldMap = new Map<number, string>()
+  const worldMap = reactive(new Map<number, string>())
   watch(worlds, (newVal) => {
     if (!newVal) return
     worldMap.clear()
