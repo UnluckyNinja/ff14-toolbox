@@ -89,6 +89,13 @@ function toCardArray(id: number, mode: keyof AggregatedResult) {
   ]
 }
 
+// WORKAROUND: Change data without resetSorting
+// will make column in sorting not sortable
+const table = useTemplateRef('table')
+watch(() => props.ids, () => {
+  table.value?.tableApi.resetSorting()
+})
+
 // MARK: table columns
 
 const columns: TableColumn<number>[] = [
@@ -189,8 +196,8 @@ function getHeader(column: any, label: string) {
         },
       ],
     },
-    () =>
-      h(UButton, {
+    () => {
+      return h(UButton, {
         'color': 'neutral',
         'variant': 'ghost',
         label,
@@ -201,7 +208,8 @@ function getHeader(column: any, label: string) {
           : 'i-lucide-arrow-up-down',
         'class': '-mx-2.5 data-[state=open]:bg-elevated',
         'aria-label': `排序为 ${isSorted === 'asc' ? '升序' : '降序'}`,
-      }),
+      })
+    },
   )
 }
 
@@ -218,14 +226,14 @@ function copyText(text: string | number | undefined) {
 
 <template>
   <UTable
-    sticky
+    ref="table" sticky
     :data="ids" :columns="columns" :loading="isFetching"
   >
     <template #loading>
       <UIcon name="i-heroicons-arrow-path" class="animate-spin" />
       <div>
-        {{ `物品数据 ${itemData.pending ? '⌛️' : '✔️'}，\
-            市场数据 ${marketData.pending ? '⌛️' : '✔️'}` }}
+        {{ `物品数据 ${itemData.pending.value ? '⌛️' : '✔️'}，\
+            市场数据 ${marketData.pending.value ? '⌛️' : '✔️'}` }}
       </div>
     </template>
     <template #empty>
@@ -236,7 +244,7 @@ function copyText(text: string | number | undefined) {
     </template>
     <!-- MARK: 图标 -->
     <template #icon-cell="{ row }">
-      <UniImage class="h-12 w-12 inline-block" :src="getItem(row.original)?.iconURL ?? ''" alt="" :title="`ID: ${row.original}`" />
+      <UniImage class="size-12 min-h-12 min-w-12 inline-block" :src="getItem(row.original)?.iconURL ?? ''" alt="" :title="`ID: ${row.original}`" />
     </template>
     <!-- MARK: 物品名菜单 -->
     <template #name-cell="{ row }">

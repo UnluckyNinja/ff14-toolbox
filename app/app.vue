@@ -31,9 +31,13 @@ onMounted(() => {
   <UApp class="md:px-2 dark:bg-slate-900">
     <NuxtPwaManifest />
     <NuxtLoadingIndicator />
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
+    <AppHeader />
+    <UMain>
+      <NuxtLayout>
+        <NuxtPage />
+      </NuxtLayout>
+    </UMain>
+    <AppFooter />
   </UApp>
 </template>
 

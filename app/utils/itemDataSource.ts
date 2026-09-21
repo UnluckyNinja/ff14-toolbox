@@ -77,7 +77,7 @@ export function itemIconUrl(iconID: string | number, base?: string) {
   const defaultBase = useXABase().base
   const _id = `${iconID}`.padStart(6, '0')
   const folder = _id.substring(0, 3).padEnd(6, '0')
-  return new URL(`asset?path=ui/icon/${folder}/${_id}.tex&format=png`, base || defaultBase.value.icon).href
+  return new URL(`asset?path=ui/icon/${folder}/${_id}.tex&format=webp`, base || defaultBase.value.icon).href
 }
 
 export function itemUrl(id: string | number, base?: string) {
