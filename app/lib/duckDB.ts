@@ -2,8 +2,23 @@ import type { ShallowRef } from 'vue'
 import { AsyncDuckDB, ConsoleLogger, getJsDelivrBundles, selectBundle } from '@duckdb/duckdb-wasm'
 import { csvParseRows } from 'd3'
 import { decompressSync } from 'fflate'
-import item_cn_compressed from '~/assets/data/Item_cn_compressed.csv?url'
-import item_en_compressed from '~/assets/data/Item_compressed.csv?url'
+import item_cn_compressed_url from '~/assets/data/Item_cn_compressed.csv?url'
+import item_en_compressed_url from '~/assets/data/Item_compressed.csv?url'
+
+export const useDuckDBStatus = createGlobalState(() => {
+  const msg = useState(() => '未加载')
+  const progress = useState(() => -1)
+  return {
+    msg,
+    progress,
+    setMessage: (status: string) => {
+      msg.value = status
+    },
+    setProgress: (percent: number) => {
+      progress.value = percent
+    },
+  }
+})
 
 async function loadDuckDB() {
   if (!import.meta.client) {
@@ -14,6 +29,8 @@ async function loadDuckDB() {
   // Select a bundle based on browser checks
   const bundle = await selectBundle(JSDELIVR_BUNDLES)
 
+  const { setMessage } = useDuckDBStatus()
+
   const worker_url = URL.createObjectURL(
     new Blob([`importScripts("${bundle.mainWorker!}");`], { type: 'text/javascript' }),
   )
@@ -22,7 +39,23 @@ async function loadDuckDB() {
   const worker = new Worker(worker_url)
   const logger = new ConsoleLogger()
   const db = new AsyncDuckDB(logger, worker)
-  await db.instantiate(bundle.mainModule, bundle.pthreadWorker)
+
+  const buffer = await fetchWithProgress(bundle.mainModule, {
+    onProgress: (received, contentLength) => {
+      const bytes = +Math.max(received / (1024 * 1024), 0.01).toFixed(2)
+      if (contentLength) {
+        const total = +Math.max(contentLength / (1024 * 1024), 0.01).toFixed(2)
+        setMessage(`下载数据库依赖：总传输大小：${total} MB，已解压：${bytes} MB`)
+      } else {
+        setMessage(`下载数据库依赖：已解压：${bytes} MB`)
+      }
+    },
+  })
+  const module_url = URL.createObjectURL(
+    new Blob([buffer!], { type: 'application/wasm' }),
+  )
+
+  await db.instantiate(module_url, bundle.pthreadWorker)
   URL.revokeObjectURL(worker_url)
   return db
 }
@@ -32,16 +65,6 @@ export interface DuckDBClient {
   query: (query: string, params?: any[]) => Promise<any[]>
 }
 let client: ShallowRef<DuckDBClient | null> | null = null
-
-export const useDuckDBStatus = createGlobalState(() => {
-  const msg = ref('未加载')
-  return {
-    msg,
-    setStatus: (status: string) => {
-      msg.value = status
-    },
-  }
-})
 
 export function useDuckDB() {
   async function queryStream(query: string, params?: any[]) {
@@ -96,13 +119,14 @@ export function useDuckDB() {
 
   if (client) return client
   const status = useDuckDBStatus()
-  status.setStatus('创建数据库中……')
+  status.setProgress(-1)
+  status.setMessage('创建数据库中……')
   client = shallowRef<DuckDBClient | null>(null)
   loadDuckDB().then((db) => {
-    status.setStatus('加载游戏数据……')
+    status.setMessage('下载游戏数据……')
     return prepareItemData(db)
   }).then((db) => {
-    status.setStatus('加载完毕')
+    status.setMessage('加载完毕')
     client!.value = {
       db,
       query,
@@ -113,15 +137,48 @@ export function useDuckDB() {
 
 // prepare item data for DuckDB
 export async function prepareItemData(db: AsyncDuckDB) {
-  const item_cn = parseItemCSV(await loadDataFromURL(item_cn_compressed))
-  const item_en = parseItemCSV(await loadDataFromURL(item_en_compressed))
-  await feedJSON(db, [{
-    name: 'items_cn',
-    text: JSON.stringify(item_cn),
-  }, {
-    name: 'items_en',
-    text: JSON.stringify(item_en),
-  }])
+  if (!import.meta.client)
+    throw (new Error('this code should never be run on server'))
+
+  const { setMessage } = useDuckDBStatus()
+  const decoder = new TextDecoder()
+
+  const item_cn_compressed = await fetchWithProgress(item_cn_compressed_url, {
+    onProgress: (received, contentLength) => {
+      const bytes = +Math.max(received / (1024 * 1024), 0.01).toFixed(2)
+      if (contentLength) {
+        const total = +Math.max(contentLength / (1024 * 1024), 0.01).toFixed(2)
+        setMessage(`下载中文物品数据：总传输大小：${total} MB，已解压：${bytes} MB`)
+      } else {
+        setMessage(`下载中文物品数据：已解压：${bytes} MB`)
+      }
+    },
+  }, 'u8array')
+  const item_cn = parseItemCSV(decoder.decode(decompressSync(item_cn_compressed)))
+  // const item_cn = parseItemCSV(await loadDataFromURL(item_cn_compressed))
+  const item_en_compressed = await fetchWithProgress(item_en_compressed_url, {
+    onProgress: (received, contentLength) => {
+      const bytes = +Math.max(received / (1024 * 1024), 0.01).toFixed(2)
+      if (contentLength) {
+        const total = +Math.max(contentLength / (1024 * 1024), 0.01).toFixed(2)
+        setMessage(`下载英文物品数据：总传输大小：${total} MB，已解压：${bytes} MB`)
+      } else {
+        setMessage(`下载英文物品数据：已解压：${bytes} MB`)
+      }
+    },
+  }, 'u8array')
+  const item_en = parseItemCSV(decoder.decode(decompressSync(item_en_compressed)))
+  setMessage('下载完毕，加载数据中……')
+  await feedJSON(db, [
+    {
+      name: 'items_cn',
+      text: JSON.stringify(item_cn),
+    },
+    {
+      name: 'items_en',
+      text: JSON.stringify(item_en),
+    },
+  ])
   return db
 }
 
@@ -136,19 +193,6 @@ async function feedJSON(db: AsyncDuckDB, json: Array<{ name: string, text: strin
   }
   await Promise.allSettled(arr)
   await c.close()
-}
-
-// async load compressed item.csv file
-async function loadDataFromURL(url: string) {
-  if (import.meta.server)
-    throw (new Error('this code should never be run on server'))
-
-  const blob = await fetch(url)
-
-  const uarray = new Uint8Array(await blob.arrayBuffer())
-  const result = decompressSync(uarray) as Uint8Array<ArrayBuffer>
-  const data = await new Blob([result]).text()
-  return data
 }
 
 // parse item.csv file into column datas

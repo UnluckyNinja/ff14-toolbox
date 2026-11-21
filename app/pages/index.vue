@@ -23,7 +23,9 @@ const gameTools: ToolItem[] = [
     link: '/item-search',
     icon: 'i-heroicons-magnifying-glass',
     label: '市场物品价格速查',
-    tags: [{ type: 'warning', label: '~10MB' }],
+    tags: [
+      { type: 'warning', label: '~10MB' },
+    ],
     description: '任意关键词查询物品价格，例如“乐谱 暗影”，也适合查背包中物品或者配方原料。会下载数据库到本地运行。',
   },
   {
@@ -44,7 +46,9 @@ const gameTools: ToolItem[] = [
     link: '/quest-gear-box',
     icon: 'i-game-icons-chest-armor',
     label: '主线装备箱可筹备查询',
-    tags: [{ type: 'warning', label: '~10MB' }],
+    tags: [
+      { type: 'warning', label: '~10MB' },
+    ],
     description: '查看装备箱开出的道具哪些可以用于筹备（注意未包含理符数据）。会下载数据库到本地运行。',
   },
   {
@@ -60,7 +64,9 @@ const devTools: ToolItem[] = [
     link: '/name-to-id',
     icon: 'i-heroicons-document-magnifying-glass',
     label: '数据库批量查询',
-    tags: [{ type: 'warning', label: '~10MB' }],
+    tags: [
+      { type: 'warning', label: '~10MB' },
+    ],
     description: '按行批量将物品ID/名称互转，或转为物品属性。会下载数据库到本地运行。',
   },
 ]
@@ -75,7 +81,6 @@ const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{ list: ToolItem[
           <div class="text-xl flex gap-1 items-center">
             <UIcon :name="tool.icon" class="size-5" />
             {{ tool.label }}
-            <UIcon name="tool.icon" class="size-5" />
           </div>
         </template>
         <div class="flex flex-col gap-2 items-start">

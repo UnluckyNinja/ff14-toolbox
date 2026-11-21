@@ -11,7 +11,7 @@
 
     <template #right>
       <UButton
-        icon="i-simple-icons-github"
+        icon="i-mdi:github"
         color="neutral"
         variant="ghost"
         to="https://github.com/UnluckyNinja/ff14-toolbox"
