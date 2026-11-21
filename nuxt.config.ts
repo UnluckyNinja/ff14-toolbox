@@ -1,6 +1,33 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   ssr: false,
+  app: {
+    head: {
+      title: 'FF14 杂七杂八工具箱',
+      meta: [
+        {
+          name: 'description',
+          content: 'FF14 个人工具站',
+        },
+        {
+          name: 'theme-color',
+          content: '#ffffff',
+        },
+      ],
+      htmlAttrs: {
+        lang: 'zh-CN',
+      },
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        {
+          rel: 'apple-touch-icon',
+          type: 'image/x-icon',
+          href: '/apple-touch-icon.png',
+          sizes: '180x180',
+        },
+      ],
+    },
+  },
   modules: [
     '@vite-pwa/nuxt',
     '@nuxt/devtools',
@@ -44,7 +71,8 @@ export default defineNuxtConfig({
     registerType: 'prompt',
     strategies: 'generateSW',
     manifest: {
-      name: 'FF14 速查',
+      name: 'FF14 杂七杂八工具箱',
+      description: 'FF14 个人工具站',
       short_name: 'FF14速查',
       theme_color: '#ffffff',
       icons: [
@@ -66,13 +94,13 @@ export default defineNuxtConfig({
         },
       ],
     },
-    workbox: {
+    generateSW: {
       globPatterns: [
         '**/*.{js,css,html,png,svg,ico}',
         '_nuxt\/*.csv',
       ],
-      maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
     },
+    maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
     client: {
       installPrompt: true,
     },

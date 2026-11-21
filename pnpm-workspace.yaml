@@ -1,7 +1,4 @@
 minimumReleaseAgeExcludePrune: true
-minimumReleaseAgeExclude:
-  - '@types/node@24.13.5'
-
 trustPolicy: no-downgrade
 trustPolicyIgnoreAfter: 144000
 shellEmulator: true
@@ -12,3 +9,10 @@ allowBuilds:
   simple-git-hooks: true
   unrs-resolver: false
   vue-demi: true
+minimumReleaseAgeExclude:
+  - '@unplugin-pwa/core@0.0.8'
+  - '@unplugin-pwa/inspector@0.0.8'
+  - '@unplugin-pwa/vite@0.0.8'
+  - '@vite-pwa/nuxt-core@2.0.3'
+  - '@vite-pwa/nuxt-vite@2.0.3'
+  - '@vite-pwa/nuxt@2.0.3'
